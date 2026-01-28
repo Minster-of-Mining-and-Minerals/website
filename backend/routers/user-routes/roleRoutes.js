@@ -4,9 +4,9 @@ const router = express.Router();
 const {
   validateCreateRole,
   validateUpdateRole,
-} = require("../validators/roleValidator");
+} = require("../../validators/user/roleValidator");
 
-const { authenticateToken } = require("../middlewares/authMiddleware");
+const { authenticateToken } = require("../../middlewares/authMiddleware");
 
 const {
   createRole,

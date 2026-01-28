@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const authController = require("../controllers/authController");
-const { validateLogin } = require("../validators/authValidator");
+const authController = require("../../controllers/user/authController");
+const { validateLogin } = require("../../validators/user/authValidator");
 /**
  * @swagger
  * tags:
