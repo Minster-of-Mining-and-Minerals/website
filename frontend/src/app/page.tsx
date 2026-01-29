@@ -5,4 +5,4 @@ export default function Home() {
 
     </div>
   );
-}
+}console.log('husky test')
