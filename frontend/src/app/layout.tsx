@@ -29,7 +29,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased text-primary`}
       >
-        <NextTopLoader />
+        <NextTopLoader showSpinner={false} />
         <ReduxProvider>{children}</ReduxProvider>
       </body>
     </html>
