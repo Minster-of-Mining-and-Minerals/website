@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import { GlobeIcon } from "@radix-ui/react-icons";
 import { IconMenu2, IconX } from "@tabler/icons-react";
 import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "framer-motion";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import React, { useEffect, useRef, useState } from "react";
@@ -88,7 +89,7 @@ export const NavBody = ({ children, className, visible }: NavBodyProps) => {
                 boxShadow: visible
                     ? "0 0 24px rgba(34, 42, 53, 0.06), 0 1px 1px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(34, 42, 53, 0.04), 0 0 4px rgba(34, 42, 53, 0.08), 0 16px 68px rgba(47, 48, 55, 0.05), 0 1px 0 rgba(255, 255, 255, 0.1) inset"
                     : "none",
-                width: visible ? "40%" : "100%",
+                width: visible ? "100%" : "100%",
                 y: visible ? 20 : 0,
             }}
             transition={{
@@ -101,7 +102,7 @@ export const NavBody = ({ children, className, visible }: NavBodyProps) => {
             }}
             className={cn(
                 "relative z-[60] mx-auto hidden w-full max-w-7xl flex-row items-center justify-between self-start rounded-full bg-transparent px-4 py-2 lg:flex dark:bg-transparent",
-                visible && "bg-white/80 dark:bg-neutral-950/80",
+                visible ? "bg-white/80 dark:bg-neutral-950/80" : "bg-white dark:bg-neutral-950",
                 className,
             )}
         >
@@ -334,21 +335,21 @@ export const MobileNavToggle = ({
 
 export const NavbarLogo = () => {
     return (
-        <a
+        <Link
             href="/"
             className="relative z-20 mr-4 flex items-center space-x-2 px-2 py-1 text-sm font-normal text-black"
         >
             <img
                 src="/logo-only.svg"
                 alt="logo"
-                width={40}
-                height={40}
+                width={50}
+                height={50}
             />
             <div className="flex flex-col">
-                <span className="text-golden-dark font-black dark:text-white -mt-[2px]">Ministry of Mines</span>
-                <span className="text-golden-dark font-black dark:text-white">የማዕድን ሚኒስቴር</span>
+                <span className="text-golden-dark font-semibold dark:text-white text-md -mt-[2px]">Ministry of Mines</span>
+                <span className="text-golden-dark font-semibold dark:text-white text-md">የማዕድን ሚኒስቴር</span>
             </div>
-        </a>
+        </Link>
     );
 };
 

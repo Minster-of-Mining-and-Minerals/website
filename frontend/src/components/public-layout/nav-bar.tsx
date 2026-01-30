@@ -41,11 +41,11 @@ export default function PublicNavbar() {
     return (
         <Navbar>
             {/* Desktop Navigation */}
-            <NavBody className="border">
+            <NavBody className="">
                 <NavbarLogo />
                 <NavItems items={navItems} />
-
             </NavBody>
+
 
             {/* Mobile Navigation */}
             <MobileNav>
