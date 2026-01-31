@@ -106,7 +106,9 @@ export default function HeroSection() {
 
     useEffect(() => {
         startAutoSlide();
-        return () => intervalRef.current && clearInterval(intervalRef.current);
+        return () => {
+            if (intervalRef.current) clearInterval(intervalRef.current);
+        };
     }, [current]);
 
     return (
