@@ -2,12 +2,13 @@
 import { cn } from "@/lib/utils";
 import { GlobeIcon } from "@radix-ui/react-icons";
 import { IconMenu2, IconX } from "@tabler/icons-react";
+import clsx from "clsx";
 import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "framer-motion";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { Locale, useLocale, useTranslations } from "next-intl";
+import Image from "next/image";
+import { Link, useRouter, usePathname } from "@/i18n/navigation";
 
-import React, { useEffect, useRef, useState } from "react";
-
+import React, { useEffect, useRef, useState, useTransition } from "react";
 
 interface NavbarProps {
     children: React.ReactNode;
@@ -90,7 +91,7 @@ export const NavBody = ({ children, className, visible }: NavBodyProps) => {
                     ? "0 0 24px rgba(34, 42, 53, 0.06), 0 1px 1px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(34, 42, 53, 0.04), 0 0 4px rgba(34, 42, 53, 0.08), 0 16px 68px rgba(47, 48, 55, 0.05), 0 1px 0 rgba(255, 255, 255, 0.1) inset"
                     : "none",
                 width: visible ? "100%" : "100%",
-                y: visible ? 20 : 0,
+                y: visible ? 0 : 0,
             }}
             transition={{
                 type: "spring",
@@ -111,53 +112,65 @@ export const NavBody = ({ children, className, visible }: NavBodyProps) => {
     );
 };
 
-const LanguageSwitcher = () => {
-    const [open, setOpen] = useState(false);
+export const LanguageSwitcher = () => {
+    const locale = useLocale(); // current locale from next-intl
+    const router = useRouter();
     const pathname = usePathname();
+    const [isPending, startTransition] = useTransition();
+    const [open, setOpen] = useState(false);
     const ref = useRef<HTMLDivElement>(null);
 
-    const languages = [
+    // List of supported locales
+    const languages: { code: Locale; label: string; full: string }[] = [
         { code: "en", label: "EN", full: "English" },
         { code: "am", label: "AM", full: "አማርኛ" },
     ];
 
-    const currentLang = pathname.split("/")[1] || "en";
-    const activeLang = languages.find(l => l.code === currentLang) || languages[0];
+    const currentLang = languages.find(l => l.code === locale) || languages[0];
 
-    const changeLanguage = (lang: string) => {
-        const segments = pathname.split("/");
-        segments[1] = lang;
-        window.location.href = segments.join("/");
+    // Store locale in localStorage
+    const setLocaleStorage = (lang: Locale) => {
+        if (typeof window !== "undefined") {
+            localStorage.setItem("NEXT_LOCALE", lang);
+        }
     };
 
-    // 👇 Close on outside click
+    const changeLanguage = (lang: Locale) => {
+        setLocaleStorage(lang);
+        startTransition(() => {
+            // Navigate with next-intl locale
+            router.replace(pathname, { locale: lang });
+        });
+        setOpen(false);
+    };
+
+    // Close dropdown when clicking outside
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (ref.current && !ref.current.contains(event.target as Node)) {
                 setOpen(false);
             }
         };
-
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
     return (
         <div ref={ref} className="relative">
-            {/* 🌍 Trigger */}
             <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setOpen((v) => !v)}
-                className="flex items-center gap-2 rounded-full px-3 py-2 hover:bg-gray-100 dark:hover:bg-neutral-800 transition"
+                className={clsx(
+                    "flex items-center gap-2 rounded-full px-3 py-2 hover:bg-gray-100 dark:hover:bg-neutral-800 transition"
+                )}
             >
                 <GlobeIcon className="h-5 w-5 animate-spin [animation-duration:6s]" />
                 <span className="text-sm font-semibold text-golden-dark dark:text-white">
-                    {activeLang.label}
+                    {currentLang.label}
                 </span>
             </motion.button>
 
-            {/* 🌐 Dropdown */}
             <AnimatePresence>
                 {open && (
                     <motion.div
@@ -168,13 +181,12 @@ const LanguageSwitcher = () => {
                         className="absolute right-0 mt-2 w-40 rounded-lg bg-white dark:bg-neutral-900 shadow-lg border border-neutral-200 dark:border-neutral-700 overflow-hidden z-50"
                     >
                         {languages.map((lang) => {
-                            const isActive = currentLang === lang.code;
-
+                            const isActive = currentLang.code === lang.code;
                             return (
                                 <button
                                     key={lang.code}
                                     onClick={() => changeLanguage(lang.code)}
-                                    className={cn(
+                                    className={clsx(
                                         "w-full px-4 py-2 text-left text-sm transition",
                                         isActive
                                             ? "bg-gray-100 dark:bg-neutral-800 font-semibold text-golden-dark"
@@ -191,7 +203,6 @@ const LanguageSwitcher = () => {
         </div>
     );
 };
-
 
 
 export const NavItems = ({ items, className, onItemClick }: NavItemsProps) => {

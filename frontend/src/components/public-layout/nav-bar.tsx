@@ -11,27 +11,29 @@ import {
     MobileNavMenu,
 } from "@/components/ui/resizable-navbar";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 export default function PublicNavbar() {
+    const t = useTranslations();
     const navItems = [
         {
-            name: "Home",
+            name: t("nav.home"),
             link: "/",
         },
         {
-            name: "About",
+            name: t("nav.about"),
             link: "/about",
         },
         {
-            name: "Services",
+            name: t("nav.services"),
             link: "/services",
         },
         {
-            name: "News",
+            name: t("nav.news"),
             link: "/news",
         },
         {
-            name: "Contact",
+            name: t("nav.contact"),
             link: "/contact",
         },
     ];
@@ -39,7 +41,7 @@ export default function PublicNavbar() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     return (
-        <Navbar>
+        <Navbar className="py-3">
             {/* Desktop Navigation */}
             <NavBody className="">
                 <NavbarLogo />

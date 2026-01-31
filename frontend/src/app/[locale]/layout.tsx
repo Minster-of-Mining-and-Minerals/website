@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import ReduxProvider from "@/providers/ReduxProvider";
 import NextTopLoader from 'nextjs-toploader';
-
+import { NextIntlClientProvider } from 'next-intl';
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -30,7 +30,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased text-primary`}
       >
         <NextTopLoader showSpinner={false} />
-        <ReduxProvider>{children}</ReduxProvider>
+        <NextIntlClientProvider>
+          <ReduxProvider>{children}</ReduxProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

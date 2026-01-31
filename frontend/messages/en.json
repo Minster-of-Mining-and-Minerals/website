@@ -1,0 +1,14 @@
+{
+    "nav": {
+        "home": "Home",
+        "about": "About",
+        "services": "Services",
+        "news": "News",
+        "contact": "Contact"
+    },
+    "hero": {
+        "button": "Explore Opportunities",
+        "button2": "Learn More",
+        "badge": "Minister of Mines"
+    }
+}

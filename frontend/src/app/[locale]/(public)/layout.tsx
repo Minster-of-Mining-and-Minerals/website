@@ -16,7 +16,7 @@ export default function RootLayout({
             <body
                 className=""
             >
-                <div className="relative pt-5 w-full">
+                <div className="relative  w-full">
                     <PublicNavbar />
                     <div className="">
                         {children}
