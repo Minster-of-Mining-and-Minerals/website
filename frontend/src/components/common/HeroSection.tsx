@@ -102,6 +102,7 @@ export default function HeroSection() {
     const startAutoSlide = () => {
         if (intervalRef.current) clearInterval(intervalRef.current);
         intervalRef.current = setInterval(() => next(), 10000);
+
     };
 
     useEffect(() => {
@@ -112,17 +113,26 @@ export default function HeroSection() {
     }, [current]);
 
     return (
-        <div className="relative w-full h-[80vh] overflow-hidden">
+        <div className="relative w-full h-[80vh] overflow-hidden bg-black">
+
             {slides.map((slide, index) => {
                 const isActive = index === current;
+                const isPrev = index === (current - 1 + slides.length) % slides.length;
+
+
                 return (
                     <div
                         key={slide.id}
                         className={clsx(
-                            "absolute inset-0 transition-all duration-700 ease-in-out",
-                            isActive ? "opacity-100 translate-x-0" : "opacity-0 translate-x-12 pointer-events-none"
+                            "absolute inset-0 will-change-[transform,opacity,filter]",
+                            "transition-[transform,opacity,filter] duration-[6000ms]",
+                            "ease-[cubic-bezier(0.25,0.1,0.25,1)]",
+                            isActive && "translate-x-0 opacity-100 blur-0 z-20",
+                            isPrev && "-translate-x-full opacity-0 blur-xl z-10",
+                            !isActive && !isPrev && "translate-x-full opacity-0 blur-xl z-0 pointer-events-none"
                         )}
                     >
+
                         <div className={clsx("relative flex items-center justify-start w-full h-full overflow-hidden", slide.bg)}>
                             <Image
                                 src={slide.image}
@@ -152,10 +162,10 @@ export default function HeroSection() {
                                         {slide.description[locale]}
                                     </p>
                                     <div className="flex flex-col sm:flex-row gap-4 mt-4 w-fit">
-                                        <Button className="bg-golden-dark w-full sm:w-fit hover:bg-golden-darkHover h-12  text-base flex items-center justify-center">
+                                        <Button className="bg-golden-dark z-30 w-full sm:w-fit hover:bg-golden-darkHover h-12  text-base flex items-center justify-center">
                                             {t("hero.button")} <ArrowRight className="w-4 h-4 " />
                                         </  Button>
-                                        <Button className="bg-white text-primary w-full sm:w-fit h-12  text-base hover:bg-white/80">
+                                        <Button className="bg-white z-30 text-primary w-full sm:w-fit h-12  text-base hover:bg-white/80">
                                             <Activity className="w-4 h-4 " />  {t("hero.button2")}
                                         </Button>
                                     </div>
@@ -170,19 +180,19 @@ export default function HeroSection() {
             {/* Controls */}
             <button
                 onClick={prev}
-                className="absolute start-5 top-1/2 -translate-y-1/2 z-10 size-10 rounded-full bg-base-100 shadow-sm flex items-center justify-center hover:bg-base-200 transition"
+                className="absolute start-5 top-1/2 -translate-y-1/2 z-30 size-10 rounded-full bg-base-100 shadow-sm flex items-center justify-center hover:bg-base-200 transition"
             >
                 <span className="icon-[tabler--chevron-left] size-5" />
             </button>
             <button
                 onClick={next}
-                className="absolute end-5 top-1/2 -translate-y-1/2 z-10 size-10 rounded-full bg-base-100 shadow-sm flex items-center justify-center hover:bg-base-200 transition"
+                className="absolute end-5 top-1/2 -translate-y-1/2 z-30 size-10 rounded-full bg-base-100 shadow-sm flex items-center justify-center hover:bg-base-200 transition"
             >
                 <span className="icon-[tabler--chevron-right] size-5" />
             </button>
 
             {/* Pagination */}
-            <div className="absolute px-4 max-w-7xl mx-auto w-full bottom-4 inset-x-0 flex justify-between items-center gap-3 z-10">
+            <div className="absolute px-4 max-w-7xl mx-auto w-full bottom-4 inset-x-0 flex justify-between items-center gap-3 z-30">
                 <div className="flex gap-1">
                     {slides.map((_, idx) => (
                         <button
@@ -198,15 +208,15 @@ export default function HeroSection() {
                 <div className="flex gap-2">
                     <button
                         onClick={prev}
-                        className="size-10 rounded-md hover:bg-white/80 bg-white shadow-sm flex items-center justify-center transition"
+                        className=" rounded-md p-1 md:p-3 hover:bg-white/80 bg-white shadow-sm flex items-center justify-center transition"
                     >
-                        <ChevronDown className="rotate-90" />
+                        <ChevronDown className="rotate-90 size-7" />
                     </button>
                     <button
                         onClick={next}
-                        className="size-10 rounded-md hover:bg-white/80 bg-white shadow-sm flex items-center justify-center transition"
+                        className="p-1 md:p-3 rounded-md hover:bg-white/80 bg-white shadow-sm flex items-center justify-center transition"
                     >
-                        <ChevronDown className="-rotate-90" />
+                        <ChevronDown className="-rotate-90 h-6" />
                     </button>
                 </div>
             </div>

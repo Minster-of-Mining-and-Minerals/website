@@ -41,7 +41,7 @@ export default function PublicNavbar() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     return (
-        <Navbar className="py-3">
+        <Navbar className=" lg:py-3 ">
             {/* Desktop Navigation */}
             <NavBody className="">
                 <NavbarLogo />
@@ -74,7 +74,7 @@ export default function PublicNavbar() {
                         </a>
                     ))}
                     <div className="flex w-full flex-col gap-4">
-                        <NavbarButton
+                        {/* <NavbarButton
                             onClick={() => setIsMobileMenuOpen(false)}
                             variant="primary"
                             className="w-full"
@@ -87,7 +87,7 @@ export default function PublicNavbar() {
                             className="w-full"
                         >
                             Book a call
-                        </NavbarButton>
+                        </NavbarButton> */}
                     </div>
                 </MobileNavMenu>
             </MobileNav>
