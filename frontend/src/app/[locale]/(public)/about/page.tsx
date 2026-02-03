@@ -11,7 +11,7 @@ const BackgroundOfMoMPage = () => {
                         Background
                     </h2>
 
-                    <p className="text-gray-700 leading-relaxed text-sm sm:text-base  max-w-5xl">
+                    <p className="text-gray-700 leading-relaxed text-sm sm:text-base   ">
                         The Ministry of Mines and Petroleum was reestablished by
                         Proclamation <span className="font-medium text-golden-dark">1097/2018</span> as
                         a regulatory organ of the country’s Mines and Petroleum Sector. The Ministry
@@ -19,7 +19,7 @@ const BackgroundOfMoMPage = () => {
                         exploration and mining licenses.
                     </p>
 
-                    <p className="text-gray-700 leading-relaxed text-sm sm:text-base  max-w-5xl">
+                    <p className="text-gray-700 leading-relaxed text-sm sm:text-base   ">
                         As one of the priority sectors under the country’s homegrown economic reform
                         agenda, the Ministry is encouraging private sector investment by streamlining
                         bureaucratic and regulatory procedures, updating policies, and strengthening
@@ -27,7 +27,7 @@ const BackgroundOfMoMPage = () => {
                         system.
                     </p>
 
-                    <p className="text-gray-700 leading-relaxed text-sm sm:text-base  max-w-5xl">
+                    <p className="text-gray-700 leading-relaxed text-sm sm:text-base   ">
                         The Ministry is working to position the country as a priority destination for
                         international mining and petroleum investors by promoting its strategic
                         minerals, including gold, gemstones such as opal, emerald, and sapphire,
@@ -35,7 +35,7 @@ const BackgroundOfMoMPage = () => {
                         construction minerals and petroleum.
                     </p>
 
-                    <p className="text-gray-700 leading-relaxed text-sm sm:text-base  max-w-5xl">
+                    <p className="text-gray-700 leading-relaxed text-sm sm:text-base   ">
                         Through Public–Private Partnership (PPP) modalities, the Ministry—via its
                         corporations—is promoting joint ventures to establish centralized laboratory
                         and drilling service provision.
@@ -48,7 +48,7 @@ const BackgroundOfMoMPage = () => {
                         Autonomous Institutions
                     </h3>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8  ">
                         <div className="bg-white rounded-xl p-6 shadow-sm border">
                             <h4 className="font-semibold text-golden-dark mb-2">
                                 Geological Survey of Ethiopia (GSE)

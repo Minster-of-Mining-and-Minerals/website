@@ -86,9 +86,9 @@ export default function LatestNewsSection() {
                     <div className="flex items-center">
                         <a
                             href="/news"
-                            className="flex items-center gap-2 bg-golden-dark hover:bg-golden-darkHover text-white px-5 py-3 rounded-2xl shadow-md transition-all transform hover:-translate-y-1"
+                            className="flex items-center gap-2 bg-golden-dark hover:bg-golden-darkHover text-white px-2 md:px-5 py-2 md:py-3 rounded-md md:rounded-2xl  shadow-md transition-all transform "
                         >
-                            <span className="font-medium">Find All News</span>
+                            <span className="font-medium text-xs md:text-base">Find All News</span>
                             <ArrowRight size={18} />
                         </a>
                     </div>
@@ -109,7 +109,7 @@ export default function LatestNewsSection() {
                             />
 
                             {/* Date */}
-                            <span className="absolute top-4 left-4 bg-white text-primary text-sm font-medium px-4 py-1 rounded-full shadow">
+                            <span className="absolute top-4 left-4 bg-white text-primary text-xs md:text-sm font-medium px-4 py-1 rounded-full shadow">
                                 {item.date}
                             </span>
 
@@ -117,11 +117,11 @@ export default function LatestNewsSection() {
                         </div>
 
                         {/* Content */}
-                        <div className="p-8 flex flex-col justify-center gap-4">
-                            <h3 className="text-xl sm:text-2xl font-semibold text-gray-900">
+                        <div className="p-4 md:p-8 flex flex-col justify-center gap-4">
+                            <h3 className="text-lg md:text-xl font-semibold text-gray-900">
                                 {item.title}
                             </h3>
-                            <p className="text-gray-600 leading-relaxed">
+                            <p className="text-gray-600 leading-relaxed text-sm md:text-base">
                                 {item.description}
                             </p>
 
@@ -133,7 +133,8 @@ export default function LatestNewsSection() {
                 </div>
 
                 {/* Thumbnails (6 images) */}
-                <div className="mt-6 flex w-full justify-center gap-4 overflow-x-auto pb-2">
+                <div className="mt-6 flex w-full md:justify-center md:items-center gap-4 overflow-x-auto py-2 px-4 md:px-0 scroll-smooth snap-x snap-mandatory">
+
                     {news.map((n, i) => (
                         <button
                             key={n.id}
@@ -141,7 +142,7 @@ export default function LatestNewsSection() {
                             className={clsx(
                                 "relative flex-shrink-0 w-28 h-20 rounded-xl overflow-hidden border transition",
                                 active === i
-                                    ? "border-primary ring-2 ring-primary/30"
+                                    ? "border-golden-dark ring-2 ring-primary/30"
                                     : "border-transparent opacity-70 hover:opacity-100"
                             )}
                         >

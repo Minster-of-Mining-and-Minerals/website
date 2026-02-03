@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import PublicNavbar from "@/components/public-layout/nav-bar";
+import Footer from "@/components/public-layout/footer";
 
 export const metadata: Metadata = {
     title: "Minister of Mining",
@@ -12,17 +13,12 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="en">
-            <body
-                className=""
-            >
-                <div className="relative w-full">
-                    <PublicNavbar />
-                    <div className="">
-                        {children}
-                    </div>
-                </div>
-            </body>
-        </html>
+        <div className="relative w-full">
+            <PublicNavbar />
+            <div className="">
+                {children}
+            </div>
+            <Footer />
+        </div>
     );
 }
