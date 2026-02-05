@@ -97,12 +97,12 @@ const NewsIdPage = () => {
                             >
                                 <span><ArrowLeft size={14} /></span> Back to News
                             </button>
-                            <div className="flex items-center gap-2 mt-1">
+                            <div className="flex md:items-center flex-col md:flex-row md:gap-2 mt-1">
                                 <div className="flex items-center gap-1 text-gray-500 text-sm">
                                     <Calendar size={14} />
                                     <span>{formatDate(newsItem.date)}</span>
                                 </div>
-                                <span className="text-gray-500 text-sm">•</span>
+                                <span className="text-gray-500 text-sm hidden md:block">•</span>
                                 <div className="flex items-center gap-1 text-gray-500 text-sm">
                                     <User size={14} />
                                     <span>{newsItem.author}</span>
@@ -114,7 +114,7 @@ const NewsIdPage = () => {
                 </div>
             </header>
 
-            <main className="max-w-7xl mx-auto px-4 py-8">
+            <main className="max-w-7xl mx-auto md:px-4 py-8">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Main Content */}
                     <div className="lg:col-span-2">
