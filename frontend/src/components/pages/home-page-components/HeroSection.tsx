@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import clsx from "clsx";
 import Image from "next/image";
 import { Activity, ArrowRight, ChevronDown, InfoIcon, ThermometerSun, WavesArrowDown, WavesIcon } from "lucide-react";
-import { Button } from "../ui/button";
+import { Button } from "../../ui/button";
 import { useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
 

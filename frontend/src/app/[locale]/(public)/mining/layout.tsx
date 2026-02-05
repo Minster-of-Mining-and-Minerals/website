@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { ChevronDown, Quote } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
-import PageHeader from "@/components/common/PageHeader";
+import PageHeader from "@/components/pages/home-page-components/PageHeader";
 import { Button } from "@/components/ui/button";
 
 const items = [

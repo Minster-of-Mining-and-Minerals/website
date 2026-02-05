@@ -4,7 +4,7 @@ import Image from "next/image";
 import { ChevronLeft, ChevronRight, ArrowRight, ChevronDown } from "lucide-react";
 import { useEffect, useState } from "react";
 import clsx from "clsx";
-import { Button } from "../ui/button";
+import { Button } from "../../ui/button";
 
 type NewsItem = {
     id: number;

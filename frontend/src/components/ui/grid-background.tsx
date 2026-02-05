@@ -3,7 +3,7 @@ import React from "react";
 
 export default function GridBackground({ children }: { children: React.ReactNode }) {
     return (
-        <div className="relative flex h-[35vh] w-full items-center justify-center overflow-hidden">
+        <div className="relative flex   min-h-[35vh] w-full items-center justify-center overflow-hidden">
             {/* Static background image */}
             <div
                 className="absolute inset-0 z-0 bg-cover bg-center "
