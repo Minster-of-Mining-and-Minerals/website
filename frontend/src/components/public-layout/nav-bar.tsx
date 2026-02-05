@@ -31,7 +31,7 @@ export default function PublicNavbar() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     return (
-        <Navbar className="lg:py-3">
+        <Navbar className="lg:py-3 z-[1000]">
             {/* Desktop Navigation */}
             <NavBody>
                 <NavbarLogo />

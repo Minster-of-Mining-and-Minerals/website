@@ -3,7 +3,7 @@ import React from "react";
 
 export default function GridBackground({ children }: { children: React.ReactNode }) {
     return (
-        <div className="relative flex h-[30vh] w-full items-center justify-center overflow-hidden">
+        <div className="relative flex h-[35vh] w-full items-center justify-center overflow-hidden">
             {/* Static background image */}
             <div
                 className="absolute inset-0 z-0 bg-cover bg-center "
@@ -27,7 +27,7 @@ export default function GridBackground({ children }: { children: React.ReactNode
             <div className="pointer-events-none absolute inset-0 z-20 bg-white/60 [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)] dark:bg-black/60"></div>
 
             {/* Children content */}
-            <div className="relative z-30">
+            <div className="relative z-30 pb-20">
                 {children}
             </div>
         </div>

@@ -6,7 +6,6 @@ const page = () => {
         <div className='flex flex-col items-center' >
             <HeroSection />
             <LatestNewsSection />
-
         </div>
     )
 }
