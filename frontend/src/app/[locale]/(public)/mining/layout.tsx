@@ -43,10 +43,10 @@ export default function Layout({
             <div className="relative">
                 {/* Overlay Search Bar - positioned to cover half of the PageHeader */}
                 <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-7xl z-[999]">
-                    <div className="pt-5 pb-10 w-full bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden space-y-6 px-7">
-                        <h1 className="text-2xl font-bold text-golden-dark text-center">More On Mining</h1>
+                    <div className="pt-5 pb-5 w-full bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden space-y-6 px-7">
+                        {/* <h1 className="text-2xl font-bold text-golden-dark text-left">More On Mining</h1> */}
 
-                        <div className={`bg-white flex items-center justify-around gap-4`}>
+                        <div className={`bg-  flex items-center justify-around gap-4`}>
                             {items.map((item) => {
                                 const active = normalizedPathname === item.slug;
                                 return (
