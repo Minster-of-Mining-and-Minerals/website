@@ -1,18 +1,18 @@
 "use client";
 
-import React, { useState } from "react";
-import { ChevronDown, Quote } from "lucide-react";
+import React from "react";
+import { Quote } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import PageHeader from "@/components/common/PageHeader";
 import { Button } from "@/components/ui/button";
 
 const items = [
-    { label: "Snapshot of mining sector", slug: "/mining" },
-    { label: "Licensing and Legislations", slug: "/mining/licensing-and-legislation" },
-    { label: "Legislation & Regulations", slug: "/mining/regional-legislation" },
-    { label: "Application Portal", slug: "/mining/application-portal" },
-    { label: "Mining Data", slug: "/mining/data" },
-    { label: "Gemstones", slug: "/mining/gemstones" },
+    { label: "Snapshot of mining sector", slug: "/mining", description: "Overview of Ethiopia's mining sector" },
+    { label: "Licensing and Legislations", slug: "/mining/licensing-and-legislation", description: "Overview of Ethiopia's mining sector" },
+    { label: "Legislation & Regulations", slug: "/mining/regional-legislation", description: "Overview of Ethiopia's mining sector" },
+    { label: "Application Portal", slug: "/mining/application-portal", description: "Digital gateway for transparent and efficient mining license applications with the Ministry of Mines" },
+    { label: "Mining Data", slug: "/mining/data", description: "Overview of Ethiopia's mining sector" },
+    { label: "Gemstones", slug: "/mining/gemstones", description: "Overview of Ethiopia's mining sector" },
 ];
 
 export default function Layout({
@@ -29,6 +29,7 @@ export default function Layout({
     // Find active item for title & breadcrumb
     const activeItem = items.find((item) => item.slug === normalizedPathname);
     const title = activeItem?.label ?? "Background of MoM";
+    const description = activeItem?.description ?? "Overview of Ethiopia's mining sector";
 
     return (
         <>
@@ -73,6 +74,7 @@ export default function Layout({
                                 <h1 className="text-2xl flex gap-2 flex-col font-serif text-teal-800 leading-tight">
                                     {title}
                                     <span className="text-golden-dark h-1 w-1/2 bg-teal-800"></span>
+                                    <p className="text-gray-600 text-lg text-teal-800">{description}</p>
                                 </h1>
                             </div>
                         </div>
