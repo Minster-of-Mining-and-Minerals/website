@@ -75,64 +75,10 @@ export default function Layout({
                 description="About the Ministry of Mines"
             />
 
-            <section className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-4 gap-10">
-                {/* LEFT SIDEBAR */}
-                <aside className="bg-white rounded-xl shadow-sm border overflow-hidden h-fit md:col-span-1">
-                    <button
-                        onClick={() => setOpen((v) => !v)}
-                        className="w-full bg-golden-dark text-white px-5 py-3 font-medium flex items-center justify-between"
-                    >
-                        <span className="flex items-center gap-2">
-                            <span className="text-lg">☰</span>
-                            more on about MoM
-                        </span>
-                        <ChevronDown
-                            className={`h-5 w-5 transition-transform md:hidden ${open ? "rotate-180" : "rotate-0"
-                                }`}
-                        />
-                    </button>
-
-                    <AnimatePresence>
-                        {(open || !isMobile) && (
-                            <motion.ul
-                                variants={sidebarVariants}
-                                initial={isMobile ? "closed" : "open"}
-                                animate="open"
-                                exit={isMobile ? "closed" : undefined}
-                                transition={{ duration: 0.35, ease: "easeInOut" }}
-                                className="divide-y text-sm overflow-hidden"
-                            >
-                                {items.map((item) => {
-                                    const active = normalizedPathname === item.slug;
-
-                                    return (
-                                        <motion.li
-                                            key={item.slug}
-                                            initial={{ opacity: 0, x: -10 }}
-                                            animate={{ opacity: 1, x: 0 }}
-                                            exit={{ opacity: 0, x: -10 }}
-                                            transition={{ duration: 0.2 }}
-                                            onClick={() => {
-                                                router.push(item.slug);
-                                                if (isMobile) setOpen(false);
-                                            }}
-                                            className={`px-5 py-3 cursor-pointer hover:bg-gray-50 transition-colors
-                            ${active ? "text-golden-dark font-medium" : "text-gray-700"}
-                        `}
-                                        >
-                                            » {item.label}
-                                        </motion.li>
-                                    );
-                                })}
-                            </motion.ul>
-                        )}
-                    </AnimatePresence>
-
-                </aside>
-
+            <section className="max-w-7xl mx-auto p-6">
                 {/* RIGHT MAIN CONTENT (route content) */}
-                <div className="md:col-span-3">
-                    <div className="flex items-start gap-6 mb-8">
+                <div className="w-full">
+                    <div className="flex">
                         <div>
                             <h1 className="text-2xl flex gap-1 flex-col font-serif text-teal-800 leading-tight">
                                 {title}
