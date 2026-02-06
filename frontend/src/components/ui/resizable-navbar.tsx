@@ -9,6 +9,7 @@ import Image from "next/image";
 import { Link, useRouter, usePathname } from "@/i18n/navigation";
 
 import React, { useEffect, useRef, useState, useTransition } from "react";
+import { ChevronDown } from "lucide-react";
 
 interface NavbarProps {
     children: React.ReactNode;
@@ -21,11 +22,14 @@ interface NavBodyProps {
     visible?: boolean;
 }
 
+type NavItem = {
+    name: string;
+    link?: string;
+    children?: NavItem[];
+};
+
 interface NavItemsProps {
-    items: {
-        name: string;
-        link: string;
-    }[];
+    items: NavItem[];
     className?: string;
     onItemClick?: () => void;
 }
@@ -204,7 +208,6 @@ export const LanguageSwitcher = () => {
     );
 };
 
-
 export const NavItems = ({ items, className, onItemClick }: NavItemsProps) => {
     const [hovered, setHovered] = useState<number | null>(null);
     const pathname = usePathname();
@@ -213,51 +216,84 @@ export const NavItems = ({ items, className, onItemClick }: NavItemsProps) => {
         <motion.div
             onMouseLeave={() => setHovered(null)}
             className={cn(
-                "absolute inset-0 hidden flex-1 flex-row items-center justify-end space-x-2 px-4 text-sm font-medium lg:flex",
-                className,
+                "absolute inset-0 hidden flex-1 items-center justify-end space-x-2 px-4 text-sm font-medium lg:flex",
+                className
             )}
         >
             {items.map((item, idx) => {
-                const isActive =
-                    item.link === "/"
+                const isActive = item.link
+                    ? item.link === "/"
                         ? pathname === "/"
-                        : pathname.startsWith(item.link);
+                        : pathname.startsWith(item.link)
+                    : false;
 
                 return (
-                    <a
-                        key={`link-${idx}`}
-                        href={item.link}
-                        onClick={onItemClick}
+                    <div
+                        key={idx}
+                        className="relative"
                         onMouseEnter={() => setHovered(idx)}
-                        className={cn(
-                            "relative px-4 py-2 transition-colors",
-                            isActive
-                                ? "text-golden-dark dark:text-white font-semibold"
-                                : "text-neutral-600 dark:text-neutral-300"
-                        )}
                     >
-                        {(hovered === idx || isActive) && (
-                            <motion.div
-                                layoutId="hovered"
-                                className={cn(
-                                    "absolute inset-0 rounded-full",
-                                    isActive
-                                        ? "bg-gray-200 dark:bg-neutral-700"
-                                        : "bg-gray-100 dark:bg-neutral-800"
+                        {/* Top-level item */}
+                        <div
+                            className={cn(
+                                "relative px-4 py-2 cursor-pointer transition-colors",
+                                isActive
+                                    ? "text-golden-dark dark:text-white font-semibold"
+                                    : "text-neutral-600 dark:text-neutral-300"
+                            )}
+                        >
+                            <div className="flex items-center gap-1">
+                                {item.link ? (
+                                    <Link href={item.link} onClick={onItemClick}>
+                                        {item.name}
+                                    </Link>
+                                ) : (
+                                    <span>{item.name}</span>
                                 )}
-                            />
-                        )}
 
-                        <span className="relative z-20">
-                            {item.name}
-                        </span>
-                    </a>
+                                {item.children && (
+                                    <ChevronDown
+                                        className={cn(
+                                            "text-neutral-400 group-hover:text-neutral-600 dark:text-neutral-400 h-4 w-4 transition-transform duration-200",
+                                            hovered === idx ? "rotate-180" : "rotate-0"
+                                        )}
+                                    />
+                                )}
+                            </div>
+
+                            {(hovered === idx || isActive) && (
+                                <motion.div
+                                    layoutId="hovered"
+                                    className="absolute inset-0 rounded-full bg-gray-100 dark:bg-neutral-800 -z-10"
+                                />
+                            )}
+                        </div>
+
+                        {/* 🔽 Dropdown */}
+                        {item.children && hovered === idx && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 8 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: 8 }}
+                                className="absolute left-0 mt-2 min-w-[180px] rounded-xl bg-white dark:bg-neutral-900 shadow-lg border border-neutral-200 dark:border-neutral-700 overflow-hidden z-50"
+                            >
+                                {item.children.map((child, cIdx) => (
+                                    <Link
+                                        key={cIdx}
+                                        href={child.link!}
+                                        onClick={onItemClick}
+                                        className="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-neutral-800 transition"
+                                    >
+                                        {child.name}
+                                    </Link>
+                                ))}
+                            </motion.div>
+                        )}
+                    </div>
                 );
             })}
 
-            <div className="flex items-center gap-2">
-                <LanguageSwitcher />
-            </div>
+            <LanguageSwitcher />
         </motion.div>
     );
 };
@@ -417,3 +453,4 @@ export const NavbarButton = ({
         </Tag>
     );
 };
+

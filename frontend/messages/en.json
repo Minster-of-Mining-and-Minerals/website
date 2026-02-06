@@ -1,11 +1,14 @@
 {
     "nav": {
         "home": "Home",
+        "sector": "Sector",
+        "mining": "Mining",
+        "gie": "GIE",
+        "midi": "MIDI",
         "about": "About",
         "services": "Services",
         "news": "News",
-        "contact": "Contact",
-        "mining": "Mining"
+        "contact": "Contact"
     },
     "hero": {
         "button": "Explore Opportunities",

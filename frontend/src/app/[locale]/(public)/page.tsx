@@ -1,7 +1,7 @@
-import HeroSection from '@/components/common/HeroSection'
-import LatestNewsSection from '@/components/common/LatestNewsSection'
-import CardSection from '@/components/common/CardSection'
-import PartnersSection from '@/components/common/PartnersSection'
+import HeroSection from '@/components/pages/home-page-components/HeroSection'
+import LatestNewsSection from '@/components/pages/home-page-components/LatestNewsSection'
+import CardSection from '@/components/pages/home-page-components/CardSection'
+import PartnersSection from '@/components/pages/home-page-components/PartnersSection'
 
 const page = () => {
     return (
