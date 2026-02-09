@@ -4,10 +4,8 @@ import { Building2, Target, Shield, Gem, Users, Globe, Award, FileText, Rocket, 
 import RotatingImage3D from "./RotatingImage3D";
 
 const BackgroundPage = () => {
-
-
     return (
-        <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-12 px-4">
+        <div className="h-auto  py-12 px-4">
             <div className="max-w-7xl mx-auto">
                 {/* Hero Header */}
                 <div className="text-center mb-12">
@@ -24,8 +22,9 @@ const BackgroundPage = () => {
                         for sustainable economic growth and national development.
                     </p>
                 </div>
-                <RotatingImage3D frontUrl="/map.jpg" backUrl="/home-2.jpg" />
-                {/* <GlobeTwoSided frontUrl="/map.jpg" backUrl="/home-2.jpg" /> */}
+
+                <div className="flex items-center justify-center">
+                    <RotatingImage3D frontUrl="/map.jpg" backUrl="/home-2.jpg" /></div>
             </div>
         </div>
     );

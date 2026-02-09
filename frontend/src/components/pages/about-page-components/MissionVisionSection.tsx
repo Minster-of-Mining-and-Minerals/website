@@ -31,7 +31,7 @@ const coreValues = {
 
 export default function VisionMissionValues() {
     return (
-        <div className="flex flex-col">
+        <div className="flex flex-col bg-[#09e32d] p-6">
             <div className="max-w-7xl mx-auto">
 
                 {/* Page Header */}
@@ -45,43 +45,43 @@ export default function VisionMissionValues() {
                     </p>
                 </div>
 
+                {/* TOP: Mission & Vision */}
+                <div className="grid grid-cols-1 md:grid-cols-2 md:gap-6 gap-4">
+                    <InfoCard icon={missionVision.mission.icon} title="Mission">
+                        <p className="text-center">
+                            {missionVision.mission.description}
+                        </p>
+                    </InfoCard>
 
-            </div>
-            {/* TOP: Mission & Vision */}
-            <div className="grid grid-cols-1 md:grid-cols-2 md:gap-6 gap-4">
-                <InfoCard icon={missionVision.mission.icon} title="Mission">
-                    <p className="text-center">
-                        {missionVision.mission.description}
-                    </p>
-                </InfoCard>
-
-                <InfoCard icon={missionVision.vision.icon} title="Vision">
-                    <p className="text-center">
-                        {missionVision.vision.description}
-                    </p>
-                </InfoCard>
-            </div>
-
-            {/* BOTTOM: Values (CENTERED & WIDER) */}
-            <div className="flex justify-center">
-                <div className="w-full md:max-w-4xl ">
-                    <InfoCard
-                        icon={coreValues.icon}
-                        title={coreValues.title}
-                        center
-                    >
-                        <div className="grid md:grid-cols-12 grid-cols-1">
-                            <div className="md:col-span-1 hidden md:block">
-                            </div>
-                            <ul className="md:col-span-11 col-span-1 grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-20 list-disc pl-6 md:outline-none text-left">
-                                {coreValues.values.map((value, index) => (
-                                    <li key={index}>{value}</li>
-                                ))}
-                            </ul>
-                        </div>
+                    <InfoCard icon={missionVision.vision.icon} title="Vision">
+                        <p className="text-center">
+                            {missionVision.vision.description}
+                        </p>
                     </InfoCard>
                 </div>
+
+                {/* BOTTOM: Values (CENTERED & WIDER) */}
+                <div className="flex justify-center">
+                    <div className="w-full md:max-w-4xl ">
+                        <InfoCard
+                            icon={coreValues.icon}
+                            title={coreValues.title}
+                            center
+                        >
+                            <div className="grid md:grid-cols-12 grid-cols-1">
+                                <div className="md:col-span-1 hidden md:block">
+                                </div>
+                                <ul className="md:col-span-11 col-span-1 grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-20 list-disc pl-6 md:outline-none text-left">
+                                    {coreValues.values.map((value, index) => (
+                                        <li key={index}>{value}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </InfoCard>
+                    </div>
+                </div>
             </div>
+
 
         </div>
     );

@@ -75,7 +75,7 @@ export default function Layout({
                 description="About the Ministry of Mines"
             />
 
-            <section className="max-w-7xl mx-auto p-6">
+            <section className="mx-auto">
                 {/* RIGHT MAIN CONTENT (route content) */}
                 <div className="w-full">
                     <div className="flex">
