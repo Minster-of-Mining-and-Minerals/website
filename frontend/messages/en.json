@@ -1,0 +1,18 @@
+{
+    "nav": {
+        "home": "Home",
+        "sector": "Sector",
+        "mining": "Mining",
+        "gie": "GIE",
+        "midi": "MIDI",
+        "about": "About",
+        "services": "Services",
+        "news": "News",
+        "contact": "Contact"
+    },
+    "hero": {
+        "button": "Explore Opportunities",
+        "button2": "Learn More",
+        "badge": "Minister of Mines"
+    }
+}

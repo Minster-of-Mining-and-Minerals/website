@@ -2,12 +2,14 @@
 import { cn } from "@/lib/utils";
 import { GlobeIcon } from "@radix-ui/react-icons";
 import { IconMenu2, IconX } from "@tabler/icons-react";
+import clsx from "clsx";
 import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "framer-motion";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { Locale, useLocale, useTranslations } from "next-intl";
+import Image from "next/image";
+import { Link, useRouter, usePathname } from "@/i18n/navigation";
 
-import React, { useEffect, useRef, useState } from "react";
-
+import React, { useEffect, useRef, useState, useTransition } from "react";
+import { ChevronDown } from "lucide-react";
 
 interface NavbarProps {
     children: React.ReactNode;
@@ -20,11 +22,14 @@ interface NavBodyProps {
     visible?: boolean;
 }
 
+type NavItem = {
+    name: string;
+    link?: string;
+    children?: NavItem[];
+};
+
 interface NavItemsProps {
-    items: {
-        name: string;
-        link: string;
-    }[];
+    items: NavItem[];
     className?: string;
     onItemClick?: () => void;
 }
@@ -90,7 +95,7 @@ export const NavBody = ({ children, className, visible }: NavBodyProps) => {
                     ? "0 0 24px rgba(34, 42, 53, 0.06), 0 1px 1px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(34, 42, 53, 0.04), 0 0 4px rgba(34, 42, 53, 0.08), 0 16px 68px rgba(47, 48, 55, 0.05), 0 1px 0 rgba(255, 255, 255, 0.1) inset"
                     : "none",
                 width: visible ? "100%" : "100%",
-                y: visible ? 20 : 0,
+                y: visible ? 0 : 0,
             }}
             transition={{
                 type: "spring",
@@ -111,53 +116,65 @@ export const NavBody = ({ children, className, visible }: NavBodyProps) => {
     );
 };
 
-const LanguageSwitcher = () => {
-    const [open, setOpen] = useState(false);
+export const LanguageSwitcher = () => {
+    const locale = useLocale(); // current locale from next-intl
+    const router = useRouter();
     const pathname = usePathname();
+    const [isPending, startTransition] = useTransition();
+    const [open, setOpen] = useState(false);
     const ref = useRef<HTMLDivElement>(null);
 
-    const languages = [
+    // List of supported locales
+    const languages: { code: Locale; label: string; full: string }[] = [
         { code: "en", label: "EN", full: "English" },
         { code: "am", label: "AM", full: "አማርኛ" },
     ];
 
-    const currentLang = pathname.split("/")[1] || "en";
-    const activeLang = languages.find(l => l.code === currentLang) || languages[0];
+    const currentLang = languages.find(l => l.code === locale) || languages[0];
 
-    const changeLanguage = (lang: string) => {
-        const segments = pathname.split("/");
-        segments[1] = lang;
-        window.location.href = segments.join("/");
+    // Store locale in localStorage
+    const setLocaleStorage = (lang: Locale) => {
+        if (typeof window !== "undefined") {
+            localStorage.setItem("NEXT_LOCALE", lang);
+        }
     };
 
-    // 👇 Close on outside click
+    const changeLanguage = (lang: Locale) => {
+        setLocaleStorage(lang);
+        startTransition(() => {
+            // Navigate with next-intl locale
+            router.replace(pathname, { locale: lang });
+        });
+        setOpen(false);
+    };
+
+    // Close dropdown when clicking outside
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (ref.current && !ref.current.contains(event.target as Node)) {
                 setOpen(false);
             }
         };
-
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
     return (
         <div ref={ref} className="relative">
-            {/* 🌍 Trigger */}
             <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setOpen((v) => !v)}
-                className="flex items-center gap-2 rounded-full px-3 py-2 hover:bg-gray-100 dark:hover:bg-neutral-800 transition"
+                className={clsx(
+                    "flex items-center gap-2 rounded-full px-3 py-2 hover:bg-gray-100 dark:hover:bg-neutral-800 transition"
+                )}
             >
                 <GlobeIcon className="h-5 w-5 animate-spin [animation-duration:6s]" />
                 <span className="text-sm font-semibold text-golden-dark dark:text-white">
-                    {activeLang.label}
+                    {currentLang.label}
                 </span>
             </motion.button>
 
-            {/* 🌐 Dropdown */}
             <AnimatePresence>
                 {open && (
                     <motion.div
@@ -168,13 +185,12 @@ const LanguageSwitcher = () => {
                         className="absolute right-0 mt-2 w-40 rounded-lg bg-white dark:bg-neutral-900 shadow-lg border border-neutral-200 dark:border-neutral-700 overflow-hidden z-50"
                     >
                         {languages.map((lang) => {
-                            const isActive = currentLang === lang.code;
-
+                            const isActive = currentLang.code === lang.code;
                             return (
                                 <button
                                     key={lang.code}
                                     onClick={() => changeLanguage(lang.code)}
-                                    className={cn(
+                                    className={clsx(
                                         "w-full px-4 py-2 text-left text-sm transition",
                                         isActive
                                             ? "bg-gray-100 dark:bg-neutral-800 font-semibold text-golden-dark"
@@ -192,8 +208,6 @@ const LanguageSwitcher = () => {
     );
 };
 
-
-
 export const NavItems = ({ items, className, onItemClick }: NavItemsProps) => {
     const [hovered, setHovered] = useState<number | null>(null);
     const pathname = usePathname();
@@ -202,47 +216,84 @@ export const NavItems = ({ items, className, onItemClick }: NavItemsProps) => {
         <motion.div
             onMouseLeave={() => setHovered(null)}
             className={cn(
-                "absolute inset-0 hidden flex-1 flex-row items-center justify-end space-x-2 px-4 text-sm font-medium lg:flex",
-                className,
+                "absolute inset-0 hidden flex-1 items-center justify-end space-x-2 px-4 text-sm font-medium lg:flex",
+                className
             )}
         >
             {items.map((item, idx) => {
-                const isActive = pathname === item.link;
-                return (
-                    <a
-                        key={`link-${idx}`}
-                        href={item.link}
-                        onClick={onItemClick}
-                        onMouseEnter={() => setHovered(idx)}
-                        className={cn(
-                            "relative px-4 py-2 transition-colors",
-                            isActive
-                                ? "text-golden-dark dark:text-white font-semibold"
-                                : "text-neutral-600 dark:text-neutral-300"
-                        )}
-                    >
-                        {(hovered === idx || isActive) && (
-                            <motion.div
-                                layoutId="hovered"
-                                className={cn(
-                                    "absolute inset-0 rounded-full",
-                                    isActive
-                                        ? "bg-gray-200 dark:bg-neutral-700"
-                                        : "bg-gray-100 dark:bg-neutral-800"
-                                )}
-                            />
-                        )}
+                const isActive = item.link
+                    ? item.link === "/"
+                        ? pathname === "/"
+                        : pathname.startsWith(item.link)
+                    : false;
 
-                        <span className="relative z-20">
-                            {item.name}
-                        </span>
-                    </a>
+                return (
+                    <div
+                        key={idx}
+                        className="relative"
+                        onMouseEnter={() => setHovered(idx)}
+                    >
+                        {/* Top-level item */}
+                        <div
+                            className={cn(
+                                "relative px-4 py-2 cursor-pointer transition-colors",
+                                isActive
+                                    ? "text-golden-dark dark:text-white font-semibold"
+                                    : "text-neutral-600 dark:text-neutral-300"
+                            )}
+                        >
+                            <div className="flex items-center gap-1">
+                                {item.link ? (
+                                    <Link href={item.link} onClick={onItemClick}>
+                                        {item.name}
+                                    </Link>
+                                ) : (
+                                    <span>{item.name}</span>
+                                )}
+
+                                {item.children && (
+                                    <ChevronDown
+                                        className={cn(
+                                            "text-neutral-400 group-hover:text-neutral-600 dark:text-neutral-400 h-4 w-4 transition-transform duration-200",
+                                            hovered === idx ? "rotate-180" : "rotate-0"
+                                        )}
+                                    />
+                                )}
+                            </div>
+
+                            {(hovered === idx || isActive) && (
+                                <motion.div
+                                    layoutId="hovered"
+                                    className="absolute inset-0 rounded-full bg-gray-100 dark:bg-neutral-800 -z-10"
+                                />
+                            )}
+                        </div>
+
+                        {/* 🔽 Dropdown */}
+                        {item.children && hovered === idx && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 8 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: 8 }}
+                                className="absolute left-0 mt-2 min-w-[180px] rounded-xl bg-white dark:bg-neutral-900 shadow-lg border border-neutral-200 dark:border-neutral-700 overflow-hidden z-50"
+                            >
+                                {item.children.map((child, cIdx) => (
+                                    <Link
+                                        key={cIdx}
+                                        href={child.link!}
+                                        onClick={onItemClick}
+                                        className="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-neutral-800 transition"
+                                    >
+                                        {child.name}
+                                    </Link>
+                                ))}
+                            </motion.div>
+                        )}
+                    </div>
                 );
             })}
 
-            <div className="flex items-center gap-2">
-                <LanguageSwitcher />
-            </div>
+            <LanguageSwitcher />
         </motion.div>
     );
 };
@@ -252,15 +303,12 @@ export const MobileNav = ({ children, className, visible }: MobileNavProps) => {
     return (
         <motion.div
             animate={{
-                backdropFilter: visible ? "blur(10px)" : "none",
-                boxShadow: visible
-                    ? "0 0 24px rgba(34, 42, 53, 0.06), 0 1px 1px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(34, 42, 53, 0.04), 0 0 4px rgba(34, 42, 53, 0.08), 0 16px 68px rgba(47, 48, 55, 0.05), 0 1px 0 rgba(255, 255, 255, 0.1) inset"
-                    : "none",
-                width: visible ? "90%" : "100%",
-                paddingRight: visible ? "12px" : "0px",
-                paddingLeft: visible ? "12px" : "0px",
-                borderRadius: visible ? "4px" : "2rem",
-                y: visible ? 20 : 0,
+                backdropFilter: "none",
+                boxShadow: "none",
+                width: visible ? "100%" : "100%",
+                paddingRight: visible ? "12px" : "12px",
+                paddingLeft: visible ? "12px" : "12px",
+                y: visible ? 0 : 0,
             }}
             transition={{
                 type: "spring",
@@ -268,9 +316,8 @@ export const MobileNav = ({ children, className, visible }: MobileNavProps) => {
                 damping: 50,
             }}
             className={cn(
-                "relative z-50 mx-auto flex w-full max-w-[calc(100vw-2rem)] flex-col items-center justify-between bg-transparent px-0 py-2 lg:hidden",
-                visible && "bg-white/80 dark:bg-neutral-950/80",
-                className,
+                "relative z-50 mx-auto flex w-full flex-col items-center justify-between bg-white dark:bg-neutral-950 px-0 py-2 lg:hidden",
+                className
             )}
         >
             {children}
@@ -293,7 +340,6 @@ export const MobileNavHeader = ({
         </div>
     );
 };
-
 export const MobileNavMenu = ({
     children,
     className,
@@ -303,21 +349,36 @@ export const MobileNavMenu = ({
     return (
         <AnimatePresence>
             {isOpen && (
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className={cn(
-                        "absolute inset-x-0 top-16 z-50 flex w-full flex-col items-start justify-start gap-4 rounded-lg bg-white px-4 py-8 shadow-[0_0_24px_rgba(34,_42,_53,_0.06),_0_1px_1px_rgba(0,_0,_0,_0.05),_0_0_0_1px_rgba(34,_42,_53,_0.04),_0_0_4px_rgba(34,_42,_53,_0.08),_0_16px_68px_rgba(47,_48,_55,_0.05),_0_1px_0_rgba(255,_255,_255,_0.1)_inset] dark:bg-neutral-950",
-                        className,
-                    )}
-                >
-                    {children}
-                </motion.div>
+                <>
+                    {/* Backdrop */}
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 0.5 }}
+                        exit={{ opacity: 0 }}
+                        onClick={onClose}
+                        className="fixed inset-0 z-40 bg-black"
+                    />
+
+                    {/* Drawer */}
+                    <motion.div
+                        initial={{ x: "-100%" }}   // 👉 start off-screen left
+                        animate={{ x: 0 }}         // 👉 slide to center
+                        exit={{ x: "-100%" }}      // 👉 exit to left
+                        transition={{ type: "spring", stiffness: 260, damping: 30 }}
+                        className={cn(
+                            "fixed top-0 left-0 z-50 h-full w-[100%] max-w-sm bg-white dark:bg-neutral-950 px-6 py-5 shadow-xl flex flex-col gap-6",
+                            className
+                        )}
+                    >
+                        {children}
+                    </motion.div>
+                </>
             )}
         </AnimatePresence>
     );
 };
+
+
 
 export const MobileNavToggle = ({
     isOpen,
@@ -392,3 +453,4 @@ export const NavbarButton = ({
         </Tag>
     );
 };
+
