@@ -57,11 +57,9 @@ export const sampleSectorNodes = [
 
 export default function SectorHierarchyPage() {
     return (
-        <div className="p-6">
-            <HierarchyD3Tree
-                data={sampleSectorNodes}
-                isLoading={false}
-            />
-        </div>
+        <HierarchyD3Tree
+            data={sampleSectorNodes}
+            isLoading={false}
+        />
     );
 }
