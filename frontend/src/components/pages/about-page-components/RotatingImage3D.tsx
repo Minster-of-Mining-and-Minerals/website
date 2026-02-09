@@ -66,20 +66,13 @@ function ShadowPlane() {
     );
 }
 
-// export default function GlobeTwoSided({ frontUrl, backUrl }: { frontUrl: string; backUrl: string }) {
-//     return (
-//         <Canvas camera={{ position: [0, 0, 6], fov: 50 }} shadows className="w-full min-h-[1500px] bg-red-500">
-//             <ambientLight intensity={0.5} />
-//             <directionalLight position={[5, 5, 5]} intensity={1.2} castShadow shadow-mapSize-width={1024} shadow-mapSize-height={1024} />
-//             <TwoSidedGlobe frontUrl={frontUrl} backUrl={backUrl} />
-//             <ShadowPlane />
-//         </Canvas>
-//     );
-// }
 
 export default function GlobeTwoSided({ frontUrl, backUrl }: { frontUrl: string; backUrl: string }) {
     return (
-        <div className="w-full min-h-[10vh] flex items-center justify-center">
+        <div style={{
+            width: "40vw",
+            height: "40vh"
+        }} className="w-full min-h-[10vh] flex items-center justify-center">
             <Canvas
                 camera={{ position: [0, 0, 10], fov: 50 }}
                 shadows
