@@ -117,3 +117,13 @@
   border: 1px solid #f5b5b5;
   font-weight: 500;
 }
+
+/* Hide scrollbar for all browsers */
+.hide-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}

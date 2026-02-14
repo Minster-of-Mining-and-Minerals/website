@@ -47,20 +47,27 @@ export default function Layout({
                     <div className="pt-5 pb-10 w-full bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden space-y-6 px-7">
                         <h1 className="text-2xl font-bold text-golden-dark text-center">More On Mining</h1>
 
-                        <div className={`bg-white flex items-center justify-around gap-4`}>
-                            {items.map((item) => {
-                                const active = normalizedPathname === item.slug;
-                                return (
-                                    <Button
-                                        key={item.slug}
-                                        onClick={() => router.push(item.slug)}
-                                        className={`p-6 cursor-pointer transition-colors bg-gray-100 border border-gray-200  ${active ? "bg-golden-dark text-white font-semibold border-l-4 border-golden-dark shadow-xl hover:bg-golden" : "text-gray-700 hover:bg-gray-50"
-                                            }`}
-                                    >
-                                        {item.label}
-                                    </Button>
-                                );
-                            })}
+
+                        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-7xl z-[999]">
+                            <div className="pt-5 pb-10 w-full bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden space-y-6 px-7">
+                                <h1 className="text-2xl font-bold text-golden-dark text-center">More On Mining</h1>
+
+                                <div className="bg-white flex gap-4 overflow-x-auto whitespace-nowrap px-2 hide-scrollbar">
+                                    {items.map((item) => {
+                                        const active = normalizedPathname === item.slug;
+                                        return (
+                                            <Button
+                                                key={item.slug}
+                                                onClick={() => router.push(item.slug)}
+                                                className={`p-6 cursor-pointer transition-colors bg-gray-100 border border-gray-200  ${active ? "bg-golden-dark text-white font-semibold border-l-4 border-golden-dark shadow-xl hover:bg-golden" : "text-gray-700 hover:bg-gray-50"
+                                                    }`}
+                                            >
+                                                {item.label}
+                                            </Button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
