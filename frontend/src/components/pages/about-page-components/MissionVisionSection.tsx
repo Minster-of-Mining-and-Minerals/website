@@ -31,13 +31,13 @@ const coreValues = {
 
 export default function VisionMissionValues() {
     return (
-        <div className="flex flex-col bg-[#09e32d] p-6">
+        <div className="flex flex-col mt-20 mb-20 p-6">
             <div className="max-w-7xl mx-auto">
 
                 {/* Page Header */}
                 <div className="text-center mb-12">
-                    <h1 className="text-4xl font-bold text-golden-dark">
-                        Vision, Mission & Core Values
+                    <h1 className="text-2xl md:text-4xl font-bold text-teal-900">
+                        <span className="text-golden-dark">Vision, Mission </span> &  Core Values
                     </h1>
                     <p className="text-gray-600 mt-3 max-w-3xl mx-auto">
                         Guiding principles that shape the strategic direction and operational

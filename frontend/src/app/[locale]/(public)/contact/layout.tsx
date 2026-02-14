@@ -24,8 +24,10 @@ export default function Layout({
     const pathname = usePathname();
     const router = useRouter();
 
-    const [activeTab, setActiveTab] = React.useState("federal");
+    const normalizedPathname = pathname.replace(/^\/(en|am)/, "");
 
+    // Determine active tab based on current route
+    const activeTab = tabs.find(tab => tab.slug === normalizedPathname)?.key || "federal";
     // Check if we're on mobile
     useEffect(() => {
         const checkMobile = () => {
@@ -47,8 +49,6 @@ export default function Layout({
 
 
 
-    // remove locale prefix: /en/about -> /about
-    const normalizedPathname = pathname.replace(/^\/(en|am)/, "");
 
     // Find active item for title & breadcrumb
     const activeItem = tabs.find((item) => item.slug === normalizedPathname);
@@ -74,7 +74,6 @@ export default function Layout({
                                     <Link href={tab.slug} >
                                         <Button
                                             key={tab.key}
-                                            onClick={() => setActiveTab(tab.key)}
                                             className={`px-5 py-3 rounded-md text-sm font-medium bg-white transition
                     ${activeTab === tab.key
                                                     ? "border bg-golden-dark text-white hover:bg-golden-dark border-golden-dark"

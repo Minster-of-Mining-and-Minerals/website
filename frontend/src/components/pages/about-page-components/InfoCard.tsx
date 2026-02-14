@@ -32,7 +32,7 @@ export default function InfoCard({
                         className="object-cover md:w-28 w-24"
                         priority={true}
                     />
-                    <h2 className="text-xl font-bold text-golden-dark">{title}</h2>
+                    <h2 className="text-2xl font-bold text-teal-900">{title}</h2>
                 </div>
 
             </div>

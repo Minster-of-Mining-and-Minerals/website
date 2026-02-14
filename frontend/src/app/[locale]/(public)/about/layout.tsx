@@ -11,6 +11,7 @@ const items = [
     { label: "Minister of Mines", slug: "/about/minister" },
     { label: "Mission, Vision and Values", slug: "/about/mission-vision-and-values" },
     { label: "Organizational Structure", slug: "/about/organizational-structure" },
+
 ];
 const sidebarVariants = {
     closed: {
@@ -78,15 +79,6 @@ export default function Layout({
             <section className="mx-auto">
                 {/* RIGHT MAIN CONTENT (route content) */}
                 <div className="w-full">
-                    <div className="flex">
-                        <div>
-                            <h1 className="text-2xl flex gap-1 flex-col font-serif text-teal-800 leading-tight">
-                                {title}
-                                <span className="text-golden-dark h-1 w-1/2 bg-teal-800"></span>
-                            </h1>
-                        </div>
-                    </div>
-
                     {/* Route-specific content renders here */}
                     <div className="prose max-w-none">{children}</div>
                 </div>
