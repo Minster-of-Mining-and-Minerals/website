@@ -15,9 +15,8 @@ type NewsCardProps = {
     readingTime: (text: string) => number;
 };
 
-const NewsCard = ({ id, title, excerpt, image, date, category, tags, readingTime }: NewsCardProps) => {
+const AdminNewsCard = ({ id, title, excerpt, image, date, category, tags, readingTime }: NewsCardProps) => {
     return (
-
         <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -26,7 +25,7 @@ const NewsCard = ({ id, title, excerpt, image, date, category, tags, readingTime
             className="group bg-white rounded-2xl shadow-md overflow-hidden"
         >
             <Link
-                href={`/news/${id}`}
+                href={`/admin/news/${id}`}
             >
                 {/* Image */}
                 <div className="relative h-52 w-full overflow-hidden">
@@ -63,7 +62,7 @@ const NewsCard = ({ id, title, excerpt, image, date, category, tags, readingTime
                         href={`/news/${id}`}
                         className="inline-flex items-center text-sm font-semibold text-golden-dark hover:gap-2 transition-all"
                     >
-                        Read More
+                        Edit News
                         <span className="ml-1">→</span>
                     </Link>
                 </div>
@@ -72,4 +71,4 @@ const NewsCard = ({ id, title, excerpt, image, date, category, tags, readingTime
     );
 };
 
-export default NewsCard;
+export default AdminNewsCard;
