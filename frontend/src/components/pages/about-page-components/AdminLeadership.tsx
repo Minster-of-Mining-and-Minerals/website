@@ -146,14 +146,7 @@ export default function LeadershipAdminPage() {
 
     return (
         <div className="py-6 mx-auto">
-            <div className="mb-8">
-                <h1 className="text-2xl font-bold text-[#073954]">
-                    Leadership Tree
-                </h1>
-                <p className="text-gray-500">
-                    Manage the organizational structure and leadership profiles
-                </p>
-            </div>
+
 
             <NodeEditor
                 node={tree}
