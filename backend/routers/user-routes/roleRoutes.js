@@ -14,7 +14,7 @@ const {
   getRoleById,
   updateRole,
   deleteRole,
-} = require("../controllers/roleController");
+} = require("../../controllers/user/roleController");
 
 router.post("/", validateCreateRole, createRole);
 router.get("/", getRoles);
@@ -28,6 +28,7 @@ router.delete("/:id", deleteRole);
  *   name: Roles
  *   description: Manage system roles and their permissions
  */
+
 
 /**
  * @swagger

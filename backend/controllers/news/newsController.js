@@ -10,7 +10,7 @@ const {
     Tag,
     Attachment,
     sequelize,
-} = require("../models");
+} = require("../../models");
 const { v4: uuidv4, validate: isUuid } = require("uuid");
 const { Op } = require("sequelize");
 

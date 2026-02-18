@@ -1,7 +1,7 @@
 // controllers/tagController.js
 "use strict";
 
-const { Tag, NewsTag, sequelize } = require("../models");
+const { Tag, NewsTag, sequelize } = require("../../models");
 const { v4: uuidv4, validate: isUuid } = require("uuid");
 
 // ===========================
