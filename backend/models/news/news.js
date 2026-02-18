@@ -31,13 +31,6 @@ module.exports = (sequelize, DataTypes) => {
                 as: "tag_links",
             });
 
-            News.belongsToMany(models.Tag, {
-                through: models.NewsTag,
-                foreignKey: "news_id",
-                otherKey: "tag_id",
-                as: "tags",
-            });
-
         }
     }
 

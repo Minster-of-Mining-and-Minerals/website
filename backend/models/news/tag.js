@@ -24,11 +24,6 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull: false,
                 unique: true,
             },
-            slug: {
-                type: DataTypes.STRING(120),
-                allowNull: false,
-                unique: true,
-            },
             created_at: {
                 type: DataTypes.DATE,
                 defaultValue: DataTypes.NOW,
