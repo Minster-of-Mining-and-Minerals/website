@@ -16,16 +16,16 @@ export const leadershipTree = {
       title: "Director General – Geological Survey",
       image: "/habtamu-tegegn-profile.jpg",
       fullDescription: "Dr. Aisha Mohammed is the Director General of the Geological Survey of Ethiopia. She is a distinguished geologist with extensive experience in mineral exploration, geological mapping, and resource assessment. Dr. Mohammed leads the national geological survey, overseeing critical research and data collection activities that support Ethiopia’s mining sector development.",
-    //   children: [
-    //     {
-    //       id: "sub-director-a1",
-    //       level: 2,
-    //       name: "Mr. Tesfaye Alemu",
-    //       title: "Deputy Director – Exploration",
-    //       image: "/habtamu-tegegn-profile.jpg",
-    //       fullDescription: "Mr. Tesfaye Alemu is the Deputy Director of Exploration at the Geological Survey of Ethiopia. He plays a crucial role in managing and coordinating mineral exploration programs across the country. With his expertise in geology and exploration techniques, Mr. Alemu oversees field investigations, data analysis, and project planning to identify and evaluate mineral potential.",
-    //     },
-    //   ],
+      //   children: [
+      //     {
+      //       id: "sub-director-a1",
+      //       level: 2,
+      //       name: "Mr. Tesfaye Alemu",
+      //       title: "Deputy Director – Exploration",
+      //       image: "/habtamu-tegegn-profile.jpg",
+      //       fullDescription: "Mr. Tesfaye Alemu is the Deputy Director of Exploration at the Geological Survey of Ethiopia. He plays a crucial role in managing and coordinating mineral exploration programs across the country. With his expertise in geology and exploration techniques, Mr. Alemu oversees field investigations, data analysis, and project planning to identify and evaluate mineral potential.",
+      //     },
+      //   ],
     },
     {
       id: "director-b",
