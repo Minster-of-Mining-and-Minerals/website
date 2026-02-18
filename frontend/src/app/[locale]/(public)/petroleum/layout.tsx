@@ -7,12 +7,9 @@ import PageHeader from "@/components/pages/home-page-components/PageHeader";
 import { Button } from "@/components/ui/button";
 
 const items = [
-    { label: "Snapshot of mining sector", slug: "/mining", description: "Overview of Ethiopia's mining sector" },
-    { label: "Licensing and Legislations", slug: "/mining/licensing-and-legislation", description: "Overview of Ethiopia's mining sector" },
-    { label: "Legislation & Regulations", slug: "/mining/regional-legislation", description: "Overview of Ethiopia's mining sector" },
-    { label: "Application Portal", slug: "/mining/application-portal", description: "Digital gateway for transparent and efficient mining license applications with the Ministry of Mines" },
-    { label: "Mining Data", slug: "/mining/data", description: "Overview of Ethiopia's mining sector" },
-    { label: "Gemstones", slug: "/mining/gemstones", description: "Overview of Ethiopia's mining sector" },
+    { label: "Opportunities in Petroleum", slug: "/petroleum", description: "Overview of Ethiopia's petroleum sector" },
+    { label: "Applying for Petroleum", slug: "/petroleum/applying-for-petroleum", description: "Overview of Ethiopia's petroleum sector" },
+    { label: "Legislation and Regulation", slug: "/petroleum/legislation-and-regulation", description: "Overview of Ethiopia's petroleum sector" },
 ];
 
 export default function Layout({
@@ -29,15 +26,15 @@ export default function Layout({
     // Find active item for title & breadcrumb
     const activeItem = items.find((item) => item.slug === normalizedPathname);
     const title = activeItem?.label ?? "Background of MoM";
-    const description = activeItem?.description ?? "Overview of Ethiopia's mining sector";
+    const description = activeItem?.description ?? "Overview of Ethiopia's petroleum sector";
 
     return (
         <>
             {/* Hero / Page Header (shared across all administration pages) */}
             <PageHeader
-                title="Overview of Ethiopia's mining sector"
+                title="Overview of Ethiopia's petroleum sector"
                 icon={<Quote />}
-                description="Overview of Ethiopia's mining sector"
+                description="Overview of Ethiopia's petroleum sector"
             />
 
             {/* Main container with relative positioning for overlay */}
@@ -53,7 +50,7 @@ export default function Layout({
                                 <h1 className="text-2xl font-bold text-golden-dark text-center">More On Mining</h1>
 
 
-                                <div className="bg-white flex gap-4 overflow-x-auto whitespace-nowrap px-2 hide-scrollbar">
+                                <div className="bg-white justify-center items-center flex gap-4 overflow-x-auto whitespace-nowrap px-2 hide-scrollbar">
                                     {items.map((item) => {
                                         const active = normalizedPathname === item.slug;
                                         return (

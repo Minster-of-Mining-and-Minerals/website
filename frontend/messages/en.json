@@ -3,9 +3,10 @@
         "home": "Home",
         "sector": "Sector",
         "mining": "Mining",
-        "gie": "GIE",
-        "midi": "MIDI",
+        "geology": "Geology",
+        "petroleum": "Petroleum",
         "about": "About",
+        "asm": "ASM",
         "services": "Services",
         "news": "News",
         "contact": "Contact"
@@ -14,5 +15,75 @@
         "button": "Explore Opportunities",
         "button2": "Learn More",
         "badge": "Minister of Mines"
+    },
+    "services_page": {
+        "title": "Our Services",
+        "subtitle": "The Ministry of Mines and Petroleum provides a range of services to support mineral and petroleum resource development in Ethiopia.",
+        "items": {
+            "licensing": {
+                "title": "Mineral Licensing",
+                "description": "Facilitating the issuance of exploration and mining licenses for investors."
+            },
+            "geology": {
+                "title": "Geological Information",
+                "description": "Providing access to reliable geological and geochemical data and maps."
+            },
+            "laboratory": {
+                "title": "Laboratory Services",
+                "description": "Conducting mineral analysis, physical tests, and chemical evaluations."
+            },
+            "petroleum": {
+                "title": "Petroleum Support",
+                "description": "Overseeing and supporting oil and gas exploration activities across the country."
+            },
+            "investment": {
+                "title": "Investment Promotion",
+                "description": "Promoting Ethiopia's vast mineral potential to global and local investors."
+            },
+            "regulation": {
+                "title": "Environmental Regulation",
+                "description": "Ensuring resource extraction adheres to strict environmental and safety standards."
+            }
+        },
+        "process": {
+            "title": "How to Access Our Services",
+            "subtitle": "We've simplified our processes to make it easier for investors and stakeholders to engage with the Ministry.",
+            "steps": [
+                {
+                    "title": "Inquiry",
+                    "description": "Submit your initial request or inquiry through our digital portal or at our physical offices."
+                },
+                {
+                    "title": "Verification",
+                    "description": "Our experts review your application and documents to ensure compliance with regulations."
+                },
+                {
+                    "title": "Processing",
+                    "description": "We process your request, coordinating with relevant departments for technical evaluations."
+                },
+                {
+                    "title": "Approval & Delivery",
+                    "description": "Receive your license, data, or technical report once all requirements are met."
+                }
+            ]
+        },
+        "excellence": {
+            "title": "Commitment to Excellence",
+            "subtitle": "Our service delivery is guided by international standards and a commitment to Ethiopia's growth.",
+            "features": [
+                {
+                    "title": "Transparency",
+                    "description": "Clear guidelines and open communication throughout the service lifecycle."
+                },
+                {
+                    "title": "Efficiency",
+                    "description": "Streamlined workflows to ensure timely delivery of permits and information."
+                },
+                {
+                    "title": "Technical Expertise",
+                    "description": "Support from highly qualified geologists, engineers, and legal experts."
+                }
+            ]
+        }
     }
 }

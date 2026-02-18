@@ -28,14 +28,18 @@ export interface FilterField {
 }
 
 export interface PageLayoutProps {
-  title?: string
-  description?: string
-  actions?: ActionButton[]
-  filters?: FilterField[]
-  children?: ReactNode
-  filterColumnsPerRow?: number
-}
+  title?: string;
+  description?: string;
+  actions?: ActionButton[];
+  filters?: FilterField[];
+  children?: ReactNode;
+  filterColumnsPerRow?: number;
 
+  /** New optional props for view toggle */
+  viewMode?: "table" | "card";
+  viewModeOptions?: Array<"table" | "card">;
+  onViewModeChange?: (mode: "table" | "card") => void;
+}
 export interface DetailPageLayoutProps {
   title: string
   description?: string

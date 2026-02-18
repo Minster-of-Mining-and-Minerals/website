@@ -1,4 +1,6 @@
-import React, { useCallback } from "react";
+"use client";
+
+import { useCallback, useState } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -13,11 +15,12 @@ export const TableLayout: React.FC<PageLayoutProps> = ({
   filters = [],
   children,
   filterColumnsPerRow = 1,
+  viewModeOptions = ["table", "card"], // added prop for view toggle
+  viewMode = "table",
+  onViewModeChange,
 }) => {
-  // Get URL state for search
   const searchParams = useSearchParams();
   const router = useRouter();
-
   const searchQuery = searchParams.get("search") || "";
 
   const handleSearchChange = useCallback(
@@ -31,11 +34,10 @@ export const TableLayout: React.FC<PageLayoutProps> = ({
   );
 
   return (
-    <div className=" p-6 border rounded-lg bg-white shadow">
+    <div className="p-6 border rounded-lg bg-white shadow">
       <div className="space-y-6">
-        {/* Page Header - Single Line Layout */}
+        {/* Page Header - Title & Description */}
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-          {/* Left side - Title and Description */}
           <div>
             {title && (
               <h1 className="text-2xl font-semibold text-[#073954]">{title}</h1>
@@ -45,7 +47,7 @@ export const TableLayout: React.FC<PageLayoutProps> = ({
             )}
           </div>
 
-          {/* Right side - Search, Filters, and Actions in one line */}
+          {/* Search, Filters, Actions, and View Toggle */}
           <div className="flex flex-wrap items-center gap-3">
             {/* Search */}
             <div className="relative">
@@ -66,6 +68,21 @@ export const TableLayout: React.FC<PageLayoutProps> = ({
               />
             )}
 
+            {/* View Mode Selector */}
+            {viewModeOptions.length > 0 && onViewModeChange && (
+              <select
+                value={viewMode}
+                onChange={(e) =>
+                  onViewModeChange(e.target.value as "table" | "card")
+                }
+                className="border rounded-lg px-3 py-2"
+              >
+                {viewModeOptions.includes("table") && <option value="table">Table View</option>}
+                {viewModeOptions.includes("card") && <option value="card">Card View</option>}
+              </select>
+            )}
+
+            {/* Actions */}
             {actions.length > 0 && (
               <div className="flex items-center space-x-2">
                 {actions.map((action, index) => (
@@ -80,9 +97,7 @@ export const TableLayout: React.FC<PageLayoutProps> = ({
                     {action.loading ? (
                       <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
                     ) : (
-                      action.icon && (
-                        <span className="h-4 w-4">{action.icon}</span>
-                      )
+                      action.icon && <span className="h-4 w-4">{action.icon}</span>
                     )}
                     <span>{action.label}</span>
                   </Button>
