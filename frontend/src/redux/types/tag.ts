@@ -13,7 +13,6 @@ export interface Tag {
 // Payloads
 export interface CreateTagPayload {
     name: string;
-    slug: string;
 }
 
 export interface UpdateTagPayload {

@@ -24,11 +24,18 @@ export interface News {
     metadata?: any;
 }
 
+type QuillDelta = {
+    ops: any[];
+};
+
+
 // Payloads
 export interface CreateNewsPayload {
-    description: string;
-    attachment_ids?: string[];
-    tag_ids?: string[];
+    title: string;
+    author?: string;
+    content: QuillDelta;
+    attachments?: string[];
+    tags?: string[];
 }
 
 export interface UpdateNewsPayload {

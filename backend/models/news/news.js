@@ -41,9 +41,17 @@ module.exports = (sequelize, DataTypes) => {
                 defaultValue: DataTypes.UUIDV4,
                 primaryKey: true,
             },
-            description: {
+            title: {
                 type: DataTypes.TEXT,
                 allowNull: false,
+            },
+            content: {
+                type: DataTypes.JSONB,
+                allowNull: false,
+            },
+            author: {
+                type: DataTypes.TEXT,
+                allowNull: true,
             },
             created_at: {
                 type: DataTypes.DATE,

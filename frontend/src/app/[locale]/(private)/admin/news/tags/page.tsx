@@ -1,9 +1,11 @@
-import React from 'react'
+import NewsTagList from "@/features/news/NewsTagList";
 
-const NewsTags = () => {
+function NewsTags() {
     return (
-        <div>NewsTags</div>
-    )
+        <div>
+            <NewsTagList />
+        </div>
+    );
 }
 
 export default NewsTags

@@ -4,7 +4,7 @@ import { useCallback, useState } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { PageLayoutProps } from "@/types/tableLayout";
+import { ActionButton, PageLayoutProps } from "@/types/tableLayout";
 import { FilterPopover } from "./FilterDrawer";
 import { useSearchParams, useRouter } from "next/navigation";
 
@@ -13,6 +13,7 @@ export const TableLayout: React.FC<PageLayoutProps> = ({
   description,
   actions = [],
   filters = [],
+  sideActions = [],
   children,
   filterColumnsPerRow = 1,
   viewModeOptions = ["table", "card"], // added prop for view toggle
@@ -33,17 +34,50 @@ export const TableLayout: React.FC<PageLayoutProps> = ({
     [searchParams, router]
   );
 
+  const filteredActions = actions.filter((action) => {
+    if (!action.permissions || action.permissions.length === 0) {
+      return true; // no permission required
+    }
+    // return hasAnyPermission(userPermissions, action.permissions);
+    return true;
+  });
+
   return (
     <div className="p-6 border rounded-lg bg-white shadow">
       <div className="space-y-6">
         {/* Page Header - Title & Description */}
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-          <div>
-            {title && (
-              <h1 className="text-2xl font-semibold text-[#073954]">{title}</h1>
-            )}
-            {description && (
-              <p className="text-gray-500 text-lg">{description}</p>
+          {title && description && (
+            <div>
+              {title && (
+                <h1 className="text-xl font-semibold text-[#073954]">
+                  {title}
+                </h1>
+              )}
+              {description && (
+                <p className="text-gray-500 text-base">{description}</p>
+              )}
+            </div>
+          )}
+          <div className="flex w-fit">
+            {sideActions && sideActions.length > 0 && (
+              <div className="flex flex-wrap items-center gap-3">
+                {sideActions.map((action: ActionButton, index: number) => (
+                  <Button
+                    key={index}
+                    variant={action.variant || "default"}
+                    size={action.size || "default"}
+                    onClick={action.onClick}
+                    disabled={action.disabled || action.loading}
+                    className="flex items-center space-x-2"
+                  >
+                    {action.icon && (
+                      <span className="h-4 w-4">{action.icon}</span>
+                    )}
+                    <span>{action.label}</span>
+                  </Button>
+                ))}
+              </div>
             )}
           </div>
 
@@ -83,9 +117,9 @@ export const TableLayout: React.FC<PageLayoutProps> = ({
             )}
 
             {/* Actions */}
-            {actions.length > 0 && (
+            {filteredActions.length > 0 && (
               <div className="flex items-center space-x-2">
-                {actions.map((action, index) => (
+                {filteredActions.map((action, index) => (
                   <Button
                     key={index}
                     variant={action.variant || "default"}

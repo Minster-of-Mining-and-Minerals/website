@@ -8,16 +8,11 @@ const createTagSchema = Joi.object({
         "string.empty": "Tag name is required.",
         "string.min": "Tag name must be at least 2 characters long.",
     }),
-    slug: Joi.string().min(2).max(100).required().messages({
-        "string.empty": "Slug is required.",
-        "string.min": "Slug must be at least 2 characters long.",
-    }),
 });
 
 // =================== Update Tag Schema ===================
 const updateTagSchema = Joi.object({
     name: Joi.string().min(2).max(100).optional(),
-    slug: Joi.string().min(2).max(100).optional(),
 });
 
 // =================== Validators ===================

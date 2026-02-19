@@ -24,7 +24,7 @@ module.exports = (sequelize, DataTypes) => {
             category: {
                 type: DataTypes.ENUM("headline", "body", "footer"),
                 allowNull: false,
-                defaultValue: "headline",
+                defaultValue: "body",
             },
             news_attachment_id: {
                 type: DataTypes.UUID,

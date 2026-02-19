@@ -26,7 +26,7 @@ module.exports = {
       category: {
         type: Sequelize.ENUM("headline", "body", "footer"),
         allowNull: false,
-        defaultValue: "headline",
+        defaultValue: "body",
       },
       created_at: {
         type: Sequelize.DATE,

@@ -10,23 +10,23 @@ const { v4: uuidv4, validate: isUuid } = require("uuid");
 const createTag = async (req, res) => {
     const t = await sequelize.transaction();
     try {
-        const { name, slug } = req.body;
+        const { name } = req.body;
 
-        if (!name || !slug) {
+        if (!name) {
             await t.rollback();
             return res.status(400).json({
                 success: false,
-                message: "Both name and slug are required.",
+                message: "name is required.",
             });
         }
 
         // Check if tag already exists
-        const existingTag = await Tag.findOne({ where: { slug } });
+        const existingTag = await Tag.findOne({ where: { name } });
         if (existingTag) {
             await t.rollback();
             return res.status(409).json({
                 success: false,
-                message: "Tag with this slug already exists.",
+                message: "Tag already exists.",
             });
         }
 
@@ -34,7 +34,6 @@ const createTag = async (req, res) => {
             {
                 tag_id: uuidv4(),
                 name,
-                slug,
                 created_at: new Date(),
             },
             { transaction: t }
@@ -134,7 +133,7 @@ const updateTag = async (req, res) => {
     const t = await sequelize.transaction();
     try {
         const { id } = req.params;
-        const { name, slug } = req.body;
+        const { name } = req.body;
 
         if (!isUuid(id)) {
             await t.rollback();
@@ -147,16 +146,8 @@ const updateTag = async (req, res) => {
             return res.status(404).json({ success: false, message: "Tag not found." });
         }
 
-        if (slug && slug !== tag.slug) {
-            const existingSlug = await Tag.findOne({ where: { slug } });
-            if (existingSlug) {
-                await t.rollback();
-                return res.status(409).json({ success: false, message: "Slug already in use." });
-            }
-        }
-
         await tag.update(
-            { name: name || tag.name, slug: slug || tag.slug },
+            { name: name || tag.name },
             { transaction: t }
         );
 

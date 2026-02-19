@@ -9,9 +9,17 @@ module.exports = {
         primaryKey: true,
         defaultValue: Sequelize.UUIDV4,
       },
-      description: {
+      title: {
         type: Sequelize.TEXT,
         allowNull: false,
+      },
+      content: {
+        type: Sequelize.JSON,
+        allowNull: false,
+      },
+      author: {
+        type: Sequelize.TEXT,
+        allowNull: true,
       },
       created_at: {
         type: Sequelize.DATE,

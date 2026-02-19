@@ -31,6 +31,7 @@ export interface PageLayoutProps {
   title?: string;
   description?: string;
   actions?: ActionButton[];
+  sideActions?: ActionButton[];
   filters?: FilterField[];
   children?: ReactNode;
   filterColumnsPerRow?: number;

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Eye, FileIcon, Trash2, Upload, X } from "lucide-react";
+import { ChevronDown, Eye, FileIcon, Trash2, Upload, X, XIcon } from "lucide-react";
 import { toast } from "sonner";
 import { useCreateNewsMutation } from "@/redux/api/newsApi";
 import {
@@ -13,7 +13,9 @@ import {
 } from "@/redux/api/attachementApi";
 import { getFileType as getFileTypeUtil, getFileUrl } from "@/utils/fileUrl";
 import "quill/dist/quill.snow.css";
-
+import { Label } from "@/components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { useGetTagsQuery } from "@/redux/api/tagApi";
 // Dynamic import for Quill
 const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
 
@@ -286,12 +288,19 @@ const FileUploadField: React.FC<FileUploadFieldProps> = ({
     );
 };
 
+type QuillDelta = {
+    ops: any[];
+};
+
 /** CreateNews Component */
 const CreateNews = () => {
     const [title, setTitle] = useState("");
     const [author, setAuthor] = useState("");
     const [tags, setTags] = useState("");
+    const [selectedTags, setSelectedTags] = useState<string[]>([]);
     const [content, setContent] = useState("");
+    const [contentDelta, setContentDelta] = useState<QuillDelta | null>(null);
+    const [contentHtml, setContentHtml] = useState("")
 
     const [newsAttachments, setNewsAttachments] = useState<NewsAttachmentInput[]>([]);
     const [headlineFiles, setHeadlineFiles] = useState<UploadedFileInfo[]>([]);
@@ -299,6 +308,7 @@ const CreateNews = () => {
     const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
 
     const [createNews] = useCreateNewsMutation();
+    const { data = [], isLoading, isError } = useGetTagsQuery()
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -310,13 +320,14 @@ const CreateNews = () => {
             await createNews({
                 title,
                 author,
-                tags: tags.split(",").map(t => t.trim()).filter(Boolean),
-                content,
+                tags: selectedTags,
+                content: contentDelta, // ✅ JSONB
                 attachments: newsAttachments,
             }).unwrap();
             alert("News Created Successfully!");
             // Reset form
-            setTitle(""); setAuthor(""); setTags(""); setContent("");
+            setTitle(""); setAuthor(""); setTags(""); setContent(""); setContentDelta(null);
+            setContentHtml("");
             setNewsAttachments([]); setHeadlineFiles([]); setFooterFiles([]); setCurrentMediaIndex(0);
         } catch (error) {
             console.error(error);
@@ -359,7 +370,91 @@ const CreateNews = () => {
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <Input value={title} onChange={e => setTitle(e.target.value)} placeholder="Title *" />
                     <Input value={author} onChange={e => setAuthor(e.target.value)} placeholder="Author *" />
-                    <Input value={tags} onChange={e => setTags(e.target.value)} placeholder="Tags (comma-separated)" />
+                    <div className="w-full space-y-2">
+                        <Label className="text-sm font-medium text-[#094C81]">
+                            Tags <span className="text-red-500">*</span>
+                        </Label>
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <button
+                                    type="button"
+                                    className="w-full max-h-28 min-h-12 h-fit border border-gray-300 p-2 rounded-md mt-1 text-[#094C81] bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#094C81] focus:ring-offset-2 transition-all duration-200"
+                                >
+                                    <div className="flex flex-wrap items-center gap-2 w-full">
+                                        {selectedTags.length === 0 && (
+                                            <span className="text-sm w-full justify-between text-gray-400 flex items-center gap-2">
+                                                Select Tags
+                                                <ChevronDown className="h-4 w-4 ml-auto" />
+                                            </span>
+                                        )}
+
+                                        {selectedTags.map((tagId) => {
+                                            const r = data.find(
+                                                (rr: any) => rr.tag_id === tagId
+                                            );
+                                            if (!r) return null;
+
+                                            return (
+                                                <span
+                                                    key={tagId}
+                                                    className="inline-flex items-center gap-1 rounded-md justify-center bg-[#094C81]/10 text-[#094C81] px-2 py-1 text-xs"
+                                                >
+                                                    <span className="truncate max-w-[120px]">
+                                                        {r.name}
+                                                    </span>
+                                                    <button
+                                                        type="button"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            setSelectedTags((prev) =>
+                                                                prev.filter((id) => id !== tagId)
+                                                            );
+                                                        }}
+                                                        className="flex h-4 w-4 items-center justify-center rounded-full hover:bg-[#094C81]/20 transition-colors"
+                                                        aria-label={`Remove ${r.name}`}
+                                                    >
+                                                        <XIcon className="h-3 w-3" />
+                                                    </button>
+                                                </span>
+                                            );
+                                        })}
+                                        {selectedTags.length > 0 && (
+                                            <ChevronDown className="h-4 w-4 ml-auto text-gray-400" />
+                                        )}
+                                    </div>
+                                </button>
+                            </PopoverTrigger>
+                            <PopoverContent
+                                className="w-[300px] p-2 bg-white"
+                                align="start"
+                            >
+                                <div className="max-h-64 overflow-y-auto">
+                                    {data
+                                        .filter((r: any) => !selectedTags.includes(r.tag_id))
+                                        .map((r: any) => (
+                                            <button
+                                                key={r.tag_id}
+                                                type="button"
+                                                onClick={() => {
+                                                    setSelectedTags((prev) => [...prev, r.tag_id]);
+                                                }}
+                                                className="w-full text-left px-3 py-2 text-sm text-[#094C81] hover:bg-[#094C81]/10 rounded-md cursor-pointer transition-colors"
+                                            >
+                                                <span className="block truncate">{r.name}</span>
+                                            </button>
+                                        ))}
+                                    {data.filter(
+                                        (r: any) => !selectedTags.includes(r.role_id)
+                                    ).length === 0 && (
+                                            <div className="px-3 py-2 text-sm text-gray-400 text-center">
+                                                All tags selected
+                                            </div>
+                                        )}
+                                </div>
+                            </PopoverContent>
+                        </Popover>
+                    </div>
+
 
                     {/* Headline Media */}
                     <FileUploadField
@@ -398,104 +493,125 @@ const CreateNews = () => {
                         category="footer"
                     />
 
-                    <ReactQuill value={content} onChange={setContent} modules={modules} />
+                    {/* <ReactQuill value={content} onChange={setContent} modules={modules} /> */}
+                    <ReactQuill
+                        value={contentHtml}
+                        modules={modules}
+                        onChange={(html, delta, source, editor) => {
+                            setContentHtml(html);                 // for preview
+                            setContentDelta(editor.getContents()); // JSON for DB
+                        }}
+                    />
+
                     <Button type="submit">Create News</Button>
                 </form>
-            </div>
+            </div >
 
             {/* Preview */}
-            <div className="bg-white p-6 rounded-lg shadow overflow-y-auto">
+            < div className="bg-white p-6 rounded-lg shadow overflow-y-auto" >
                 <h2 className="text-xl font-semibold mb-4 border-b pb-2">Live Preview</h2>
                 <h1 className="text-3xl font-bold mb-3">{title || "News Title Preview"}</h1>
                 <div className="text-sm text-gray-500 mb-4">{author ? `By ${author}` : "By Author"} • {new Date().toLocaleDateString()}</div>
 
                 {/* Media Preview */}
-                {headlineFiles.length > 0 && currentMedia && (
-                    <div className="relative w-full mb-4">
-                        {currentMedia.file_type === "image" && (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img
-                                src={getMediaUrl(currentMedia)}
-                                alt={currentMedia.file_name}
-                                className="w-full h-72 object-cover rounded-lg"
-                                onError={(e) => {
-                                    // Fallback for broken images
-                                    e.currentTarget.src = '/placeholder-image.jpg';
-                                }}
-                            />
-                        )}
-                        {currentMedia.file_type === "video" && (
-                            <video
-                                controls
-                                className="w-full h-72 rounded-lg bg-black"
-                                key={currentMedia.attachment_id} // Force re-render when video changes
-                            >
-                                <source src={getMediaUrl(currentMedia)} type="video/mp4" />
-                                <source src={getMediaUrl(currentMedia)} type="video/mov" />
-                                <source src={getMediaUrl(currentMedia)} type="video/avi" />
-                                Your browser does not support the video tag.
-                            </video>
-                        )}
+                {
+                    headlineFiles.length > 0 && currentMedia && (
+                        <div className="relative w-full mb-4">
+                            {currentMedia.file_type === "image" && (
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img
+                                    src={getMediaUrl(currentMedia)}
+                                    alt={currentMedia.file_name}
+                                    className="w-full h-72 object-cover rounded-lg"
+                                    onError={(e) => {
+                                        // Fallback for broken images
+                                        e.currentTarget.src = '/placeholder-image.jpg';
+                                    }}
+                                />
+                            )}
+                            {currentMedia.file_type === "video" && (
+                                <video
+                                    controls
+                                    className="w-full h-72 rounded-lg bg-black"
+                                    key={currentMedia.attachment_id} // Force re-render when video changes
+                                >
+                                    <source src={getMediaUrl(currentMedia)} type="video/mp4" />
+                                    <source src={getMediaUrl(currentMedia)} type="video/mov" />
+                                    <source src={getMediaUrl(currentMedia)} type="video/avi" />
+                                    Your browser does not support the video tag.
+                                </video>
+                            )}
 
-                        {headlineFiles.length > 1 && (
-                            <>
-                                <button
-                                    type="button"
-                                    onClick={() => setCurrentMediaIndex(prev => (prev === 0 ? headlineFiles.length - 1 : prev - 1))}
-                                    className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-gray-700 text-white rounded-full p-2 hover:bg-gray-800"
-                                >
-                                    &#8592;
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => setCurrentMediaIndex(prev => (prev === headlineFiles.length - 1 ? 0 : prev + 1))}
-                                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gray-700 text-white rounded-full p-2 hover:bg-gray-800"
-                                >
-                                    &#8594;
-                                </button>
-                                <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 bg-black/50 text-white px-3 py-1 rounded-full text-sm">
-                                    {currentMediaIndex + 1} / {headlineFiles.length}
-                                </div>
-                            </>
-                        )}
-                    </div>
-                )}
+                            {headlineFiles.length > 1 && (
+                                <>
+                                    <button
+                                        type="button"
+                                        onClick={() => setCurrentMediaIndex(prev => (prev === 0 ? headlineFiles.length - 1 : prev - 1))}
+                                        className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-gray-700 text-white rounded-full p-2 hover:bg-gray-800"
+                                    >
+                                        &#8592;
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setCurrentMediaIndex(prev => (prev === headlineFiles.length - 1 ? 0 : prev + 1))}
+                                        className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gray-700 text-white rounded-full p-2 hover:bg-gray-800"
+                                    >
+                                        &#8594;
+                                    </button>
+                                    <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 bg-black/50 text-white px-3 py-1 rounded-full text-sm">
+                                        {currentMediaIndex + 1} / {headlineFiles.length}
+                                    </div>
+                                </>
+                            )}
+                        </div>
+                    )
+                }
 
                 {/* Tags Preview */}
-                {tags && (
-                    <div className="flex flex-wrap gap-2 mb-4">
-                        {tags.split(",").map(tag => tag.trim()).filter(Boolean).map((tag, i) => (
-                            <span key={i} className="text-xs bg-gray-200 px-3 py-1 rounded-full">{tag}</span>
-                        ))}
-                    </div>
-                )}
+                {
+                    tags && (
+                        <div className="flex flex-wrap gap-2 mb-4">
+                            {tags.split(",").map(tag => tag.trim()).filter(Boolean).map((tag, i) => (
+                                <span key={i} className="text-xs bg-gray-200 px-3 py-1 rounded-full">{tag}</span>
+                            ))}
+                        </div>
+                    )
+                }
 
                 {/* Content Preview */}
-                <div className="prose max-w-full break-words whitespace-pre-wrap mb-4" dangerouslySetInnerHTML={{ __html: content || "<p>News content preview will appear here...</p>" }} />
+                {/* <div className="prose max-w-full break-words whitespace-pre-wrap mb-4" dangerouslySetInnerHTML={{ __html: content || "<p>News content preview will appear here...</p>" }} /> */}
+                <div
+                    className="prose max-w-full break-words"
+                    dangerouslySetInnerHTML={{
+                        __html: contentHtml || "<p>News content preview will appear here...</p>",
+                    }}
+                />
 
                 {/* Footer Files */}
-                {footerFiles.length > 0 && (
-                    <div className="mt-4">
-                        <h3 className="font-semibold mb-2">Attached Documents:</h3>
-                        <ul className="space-y-2">
-                            {footerFiles.map(doc => (
-                                <li key={doc.attachment_id} className="border w-fit py-2 px-3 rounded-lg flex items-center gap-2">
-                                    <FileIcon className="w-4 h-4" />
-                                    <a
-                                        href={doc.isBlob ? doc.previewUrl! : getFileUrl(doc.file_path!)}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="hover:text-blue-600 hover:underline"
-                                    >
-                                        {doc.file_name}
-                                    </a>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                )}
-            </div>
-        </div>
+                {
+                    footerFiles.length > 0 && (
+                        <div className="mt-4">
+                            <h3 className="font-semibold mb-2">Attached Documents:</h3>
+                            <ul className="space-y-2">
+                                {footerFiles.map(doc => (
+                                    <li key={doc.attachment_id} className="border w-fit py-2 px-3 rounded-lg flex items-center gap-2">
+                                        <FileIcon className="w-4 h-4" />
+                                        <a
+                                            href={doc.isBlob ? doc.previewUrl! : getFileUrl(doc.file_path!)}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="hover:text-blue-600 hover:underline"
+                                        >
+                                            {doc.file_name}
+                                        </a>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    )
+                }
+            </div >
+        </div >
     );
 };
 
