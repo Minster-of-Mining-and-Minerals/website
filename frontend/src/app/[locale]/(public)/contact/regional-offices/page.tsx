@@ -112,10 +112,23 @@ const regionalOffices = [
 ];
 
 const RegionalOfficesPage = () => {
+    const [offices, setOffices] = React.useState(regionalOffices);
+
+    React.useEffect(() => {
+        const saved = localStorage.getItem("regionalOffices");
+        if (saved) {
+            try {
+                setOffices(JSON.parse(saved));
+            } catch (e) {
+                console.error("Failed to parse regional offices", e);
+            }
+        }
+    }, []);
+
     return (
         <section className="container max-w-7xl mx-auto px-4 py-12">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {regionalOffices.map((office, index) => (
+                {offices.map((office, index) => (
                     <div
                         key={index}
                         className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm hover:shadow-md transition"
