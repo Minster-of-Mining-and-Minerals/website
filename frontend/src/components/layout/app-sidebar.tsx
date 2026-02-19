@@ -5,12 +5,15 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   Users,
-  ClipboardCheck,
-  Car,
-  FileText,
   ChevronRight,
   Shield,
   Key,
+  Phone,
+  Briefcase,
+  Building2,
+  Megaphone,
+  Tag,
+  Newspaper,
 } from "lucide-react";
 
 import {
@@ -26,76 +29,98 @@ import {
   SidebarMenuSubItem,
   SidebarMenuSubButton,
 } from "@/components/ui/sidebar";
+
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/components/ui/collapsible"
+} from "@/components/ui/collapsible";
 
-// Navigation items - update these based on your app's needs
+import Image from "next/image";
+
+/* ---------------- LOCALE STRIPPER ---------------- */
+const stripLocale = (pathname: string) => {
+  const segments = pathname.split("/");
+  if (segments.length > 1 && ["en", "am"].includes(segments[1])) {
+    return "/" + segments.slice(2).join("/");
+  }
+  return pathname;
+};
+
+/* ---------------- NAVIGATION ---------------- */
 const navigationItems = [
   {
     title: "Dashboard",
-    url: "/dashboard",
+    url: "/admin/dashboard",
     icon: LayoutDashboard,
   },
   {
-    title: "Evaluations",
-    url: "/evaluations",
-    icon: ClipboardCheck,
+    title: "About",
+    url: "/admin/about",
+    icon: Building2,
   },
   {
-    title: "Students",
-    url: "/students",
-    icon: Users,
+    title: "Services",
+    url: "/admin/services",
+    icon: Briefcase,
   },
   {
-    title: "Vehicles",
-    url: "/vehicles",
-    icon: Car,
-  },
-  {
-    title: "Reports",
-    url: "/reports",
-    icon: FileText,
+    title: "Contacts",
+    url: "/admin/contacts",
+    icon: Phone,
   },
 ];
 
-// Nested menu for User Management
 const userManagementItems = [
   {
     title: "Role Management",
-    url: "/users/roles",
+    url: "/admin/users/roles",
     icon: Shield,
   },
   {
     title: "Permission Management",
-    url: "/users/permissions",
+    url: "/admin/users/permissions",
     icon: Key,
   },
 ];
 
+const newsManagementItems = [
+  {
+    title: "News",
+    url: "/admin/news",
+    icon: Megaphone,
+  },
+  {
+    title: "News Tag",
+    url: "/admin/news/tags",
+    icon: Tag,
+  },
+];
+
 export function AppSidebar() {
-  const pathname = usePathname();
+  const rawPathname = usePathname();
+  const pathname = stripLocale(rawPathname);
 
   return (
-    <Sidebar collapsible="icon" variant="floating" className="">
+    <Sidebar collapsible="icon" variant="floating">
+      {/* ---------- HEADER ---------- */}
       <SidebarHeader className="py-10">
         <SidebarMenu>
           <SidebarMenuItem>
-            <Link
-              href="/dashboard"
-              className="flex items-center flex-col gap-2"
-            >
-              <div className="flex aspect-square p-3 group-data-[collapsible=icon]:aspect-square group-data-[collapsible=icon]:size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                LOGO
-              </div>
-              <div className="grid flex-1 group-data-[collapsible=icon]:opacity-0 text-center gap-1 text-sm leading-tight">
-                <span className="truncate font-semibold">
-                  Driving Evaluation
+            <Link href="/admin/dashboard" className="flex flex-col items-center">
+              <Image
+                src="/logo-only.png"
+                alt="Minister of Mining Logo"
+                width={100}
+                height={100}
+                className="mx-auto mb-1 rounded-xl p-2"
+              />
+              <div className="grid flex-1 text-center gap-1 text-sm leading-tight group-data-[collapsible=icon]:opacity-0">
+                <span className="truncate font-semibold text-golden-dark">
+                  Minister of Mining
                 </span>
-                <span className="truncate text-muted-foreground">
-                  Management System
+                <span className="truncate text-golden-dark">
+                  Portal Admin
                 </span>
               </div>
             </Link>
@@ -103,10 +128,13 @@ export function AppSidebar() {
         </SidebarMenu>
       </SidebarHeader>
 
+      {/* ---------- CONTENT ---------- */}
       <SidebarContent>
         <SidebarGroup className="px-5 group-data-[collapsible=icon]:px-0">
           <SidebarGroupContent>
             <SidebarMenu className="gap-2 group-data-[collapsible=icon]:items-center">
+
+              {/* MAIN NAV */}
               {navigationItems.map((item) => (
                 <SidebarMenuItem
                   key={item.title}
@@ -114,9 +142,14 @@ export function AppSidebar() {
                 >
                   <SidebarMenuButton
                     asChild
-                    isActive={pathname === item.url}
+                    isActive={pathname.startsWith(item.url)}
                     tooltip={item.title}
-                    className="text-primary px-5 py-5 group-data-[collapsible=icon]:px-2 group-data-[collapsible=icon]:justify-center data-[active=true]:bg-primary data-[active=true]:text-primary-foreground"
+                    className="text-primary hover:bg-golden-dark20 px-5 py-5
+                      group-data-[collapsible=icon]:px-2
+                      group-data-[collapsible=icon]:justify-center
+                      data-[active=true]:bg-golden-dark
+                      data-[active=true]:text-primary-foreground
+                      "
                   >
                     <Link
                       href={item.url}
@@ -131,27 +164,46 @@ export function AppSidebar() {
                 </SidebarMenuItem>
               ))}
 
-              {/* Users with nested menu */}
-              <Collapsible asChild defaultOpen={pathname.startsWith("/users")} className="group/collapsible">
+              {/* NEWS WITH NESTED MENU */}
+              <Collapsible
+                asChild
+                defaultOpen={pathname.startsWith("/admin/news")}
+                className="group/collapsible"
+              >
                 <SidebarMenuItem className="group-data-[collapsible=icon]:w-fit">
                   <CollapsibleTrigger asChild>
                     <SidebarMenuButton
-                      tooltip="Users"
-                      isActive={pathname.startsWith("/users")}
-                      className="text-primary px-5 py-5 group-data-[collapsible=icon]:px-2 group-data-[collapsible=icon]:justify-center data-[active=true]:bg-primary data-[active=true]:text-primary-foreground"
+                      tooltip="News"
+                      isActive={pathname.startsWith("/admin/news")}
+                      className="text-primary hover:bg-golden-metallic px-5 py-5
+                        group-data-[collapsible=icon]:px-2
+                        group-data-[collapsible=icon]:justify-center
+                        data-[active=true]:bg-golden-dark
+                        data-[active=true]:text-primary-foreground"
                     >
-                      <Users className="group-data-[collapsible=icon]:size-5" />
-                      <span className="text-base group-data-[collapsible=icon]:hidden">Users</span>
-                      <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90 group-data-[collapsible=icon]:hidden" />
+                      <Newspaper className="group-data-[collapsible=icon]:size-5" />
+                      <span className="text-base group-data-[collapsible=icon]:hidden">
+                        News
+                      </span>
+                      <ChevronRight
+                        className="ml-auto transition-transform duration-200
+                          group-data-[state=open]/collapsible:rotate-90
+                          group-data-[collapsible=icon]:hidden"
+                      />
                     </SidebarMenuButton>
                   </CollapsibleTrigger>
+
                   <CollapsibleContent>
-                    <SidebarMenuSub>
-                      {userManagementItems.map((subItem) => (
-                        <SidebarMenuSubItem key={subItem.title}>
+                    <SidebarMenuSub className="pt-1">
+                      {newsManagementItems.map((subItem) => (
+                        <SidebarMenuSubItem key={subItem.url}>
                           <SidebarMenuSubButton
                             asChild
                             isActive={pathname === subItem.url}
+                            className="text-primary hover:bg-golden-metallic
+                              group-data-[collapsible=icon]:justify-center
+                              data-[active=true]:bg-golden-metallic
+                              data-[active=true]:text-primary"
                           >
                             <Link href={subItem.url}>
                               <subItem.icon className="h-4 w-4" />
@@ -164,6 +216,60 @@ export function AppSidebar() {
                   </CollapsibleContent>
                 </SidebarMenuItem>
               </Collapsible>
+
+              {/* USERS WITH NESTED MENU */}
+              <Collapsible
+                asChild
+                defaultOpen={pathname.startsWith("/admin/users")}
+                className="group/collapsible"
+              >
+                <SidebarMenuItem className="group-data-[collapsible=icon]:w-fit">
+                  <CollapsibleTrigger asChild>
+                    <SidebarMenuButton
+                      tooltip="Users"
+                      isActive={pathname.startsWith("/admin/users")}
+                      className="text-primary hover:bg-golden-metallic px-5 py-5
+                        group-data-[collapsible=icon]:px-2
+                        group-data-[collapsible=icon]:justify-center
+                        data-[active=true]:bg-golden-dark
+                        data-[active=true]:text-primary-foreground"
+                    >
+                      <Users className="group-data-[collapsible=icon]:size-5" />
+                      <span className="text-base group-data-[collapsible=icon]:hidden">
+                        Users
+                      </span>
+                      <ChevronRight
+                        className="ml-auto transition-transform duration-200
+                          group-data-[state=open]/collapsible:rotate-90
+                          group-data-[collapsible=icon]:hidden"
+                      />
+                    </SidebarMenuButton>
+                  </CollapsibleTrigger>
+
+                  <CollapsibleContent>
+                    <SidebarMenuSub className="pt-1">
+                      {userManagementItems.map((subItem) => (
+                        <SidebarMenuSubItem key={subItem.url}>
+                          <SidebarMenuSubButton
+                            asChild
+                            isActive={pathname === subItem.url}
+                            className="text-primary hover:bg-golden-metallic
+                              group-data-[collapsible=icon]:justify-center
+                              data-[active=true]:bg-golden-metallic
+                              data-[active=true]:text-primary"
+                          >
+                            <Link href={subItem.url}>
+                              <subItem.icon className="h-4 w-4" />
+                              <span>{subItem.title}</span>
+                            </Link>
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                      ))}
+                    </SidebarMenuSub>
+                  </CollapsibleContent>
+                </SidebarMenuItem>
+              </Collapsible>
+
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

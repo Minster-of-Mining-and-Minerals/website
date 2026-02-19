@@ -20,6 +20,14 @@ const authRoute = require("./routers/user-routes/authRoutes");
 const permissionRoute = require("./routers/user-routes/permissionRoutes");
 const changePasswordRoutes = require("./routers/user-routes/passwordChangeRoutes");
 
+// ================== News Routes ==========================
+const newsRoute = require("./routers/news/newsRoutes");
+const tagRoute = require("./routers/news/tagRoutes");
+
+// ================== Attachment Routes ==========================
+const attachmentRoute = require("./routers/attachement/attachementRoutes");
+
+
 const app = express();
 const appServer = http.createServer(app);
 
@@ -96,12 +104,20 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // ================== API Routes go here ==================
 
+// ================== User Routes ==========================
 app.use("/api/users", userRoute);
 app.use("/api/roles", roleRoute);
 app.use("/api/user-roles", userRoleRoute);
 app.use("/api/auth", authRoute);
 app.use("/api/change-password", changePasswordRoutes);
 app.use("/api/permissions", permissionRoute);
+
+// ================== News Routes ==========================
+app.use("/api/news", newsRoute);
+app.use("/api/tags", tagRoute);
+
+// ================== Api Attachment Routes =====================
+app.use("/api/attachments", attachmentRoute);
 
 // ================== Root Endpoint ==================
 app.get("/", (req, res) => {

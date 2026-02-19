@@ -1,0 +1,79 @@
+import { baseApi } from "../baseApi";
+import { News, CreateNewsPayload, UpdateNewsPayload, NewsReactionPayload, NewsReadPayload } from "../types/news";
+
+export const newsApi = baseApi.injectEndpoints({
+    endpoints: (builder) => ({
+        /** ---------------------------
+         * GET ALL NEWS
+         * --------------------------- */
+        getNews: builder.query<News[], { search?: string; tag?: string } | void>({
+            query: (params) => (params ? { url: "/news", params } : { url: "/news" }),
+            transformResponse: (response: any): News[] => response.data ?? [],
+            providesTags: ["News"],
+        }),
+
+        /** ---------------------------
+         * GET NEWS BY ID
+         * --------------------------- */
+        getNewsById: builder.query<News, string>({
+            query: (id) => `/news/${id}`,
+            transformResponse: (response: any): News => response.data,
+            providesTags: (_r, _e, id) => [{ type: "News", id }],
+        }),
+
+        /** ---------------------------
+         * CREATE NEWS
+         * --------------------------- */
+        createNews: builder.mutation<News, CreateNewsPayload>({
+            query: (body) => ({ url: "/news", method: "POST", body }),
+            transformResponse: (response: any): News => response.data,
+            invalidatesTags: ["News"],
+        }),
+
+        /** ---------------------------
+         * UPDATE NEWS
+         * --------------------------- */
+        updateNews: builder.mutation<News, { id: string; data: UpdateNewsPayload }>({
+            query: ({ id, data }) => ({ url: `/news/${id}`, method: "PUT", body: data }),
+            transformResponse: (response: any): News => response.data,
+            invalidatesTags: (_r, _e, { id }) => [{ type: "News", id }, "News"],
+        }),
+
+        /** ---------------------------
+         * DELETE NEWS (soft delete)
+         * --------------------------- */
+        deleteNews: builder.mutation<{ message: string }, string>({
+            query: (id) => ({ url: `/news/${id}`, method: "DELETE" }),
+            transformResponse: (response: any) => response,
+            invalidatesTags: ["News"],
+        }),
+
+        /** ---------------------------
+         * REACT TO NEWS
+         * --------------------------- */
+        reactToNews: builder.mutation<any, NewsReactionPayload>({
+            query: (body) => ({ url: "/news/react", method: "POST", body }),
+            transformResponse: (response: any) => response.data,
+            invalidatesTags: ["News"],
+        }),
+
+        /** ---------------------------
+         * RECORD NEWS READ
+         * --------------------------- */
+        recordNewsRead: builder.mutation<any, NewsReadPayload>({
+            query: (body) => ({ url: "/news/read", method: "POST", body }),
+            transformResponse: (response: any) => response.data,
+            invalidatesTags: ["News"],
+        }),
+    }),
+});
+
+export const {
+    useGetNewsQuery,
+    useGetNewsByIdQuery,
+    useCreateNewsMutation,
+    useUpdateNewsMutation,
+    useDeleteNewsMutation,
+    useReactToNewsMutation,
+    useRecordNewsReadMutation,
+} = newsApi;
