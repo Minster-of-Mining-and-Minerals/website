@@ -1,81 +1,329 @@
 "use client";
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
-import "quill/dist/quill.snow.css";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
-import { FileIcon } from "lucide-react";
+import { Eye, FileIcon, Trash2, Upload, X } from "lucide-react";
+import { toast } from "sonner";
+import { useCreateNewsMutation } from "@/redux/api/newsApi";
+import {
+    useUploadAttachmentsMutation,
+    useDeleteAttachmentMutation,
+    useGetAttachmentsQuery,
+} from "@/redux/api/attachementApi";
+import { getFileType as getFileTypeUtil, getFileUrl } from "@/utils/fileUrl";
+import "quill/dist/quill.snow.css";
 
-// Dynamic import for Next.js
+// Dynamic import for Quill
 const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
 
+/** Types */
+type NewsAttachmentInput = {
+    attachment_id: string;
+    category: "headline" | "footer";
+};
+
+export type UploadedFileInfo = {
+    attachment_id: string;
+    file_name: string;
+    file_path?: string;
+    previewUrl?: string | null;
+    category?: "headline" | "footer";
+    isBlob?: boolean;
+    file_type?: 'image' | 'video' | 'pdf' | 'document';
+};
+
+interface FileUploadFieldProps {
+    id: string;
+    label: string;
+    value: string[];
+    onChange: (value: string[], files?: UploadedFileInfo[]) => void;
+    required?: boolean;
+    accept?: string;
+    multiple?: boolean;
+    showPreview?: boolean;
+    category?: "headline" | "footer";
+}
+
+// Enhanced file type detection
+const getFileType = (fileName: string): 'image' | 'video' | 'pdf' | 'document' => {
+    const extension = fileName.split('.').pop()?.toLowerCase() || '';
+
+    // Image extensions
+    if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp'].includes(extension)) {
+        return 'image';
+    }
+    // Video extensions
+    if (['mp4', 'mov', 'avi', 'mkv', 'webm', 'flv', 'wmv', 'm4v', '3gp'].includes(extension)) {
+        return 'video';
+    }
+    // PDF
+    if (extension === 'pdf') {
+        return 'pdf';
+    }
+    // Default to document
+    return 'document';
+};
+
+/** File Upload Component */
+const FileUploadField: React.FC<FileUploadFieldProps> = ({
+    id,
+    label,
+    value = [],
+    onChange,
+    required = false,
+    accept = "image/*,.pdf",
+    multiple = true,
+    showPreview = true,
+    category,
+}) => {
+    const [uploadAttachments] = useUploadAttachmentsMutation();
+    const [deleteAttachment] = useDeleteAttachmentMutation();
+    const { data: attachmentsResponse } = useGetAttachmentsQuery();
+    const [files, setFiles] = useState<UploadedFileInfo[]>([]);
+    const [previewFile, setPreviewFile] = useState<UploadedFileInfo | null>(null);
+
+    // Initialize existing attachments
+    useEffect(() => {
+        if (!attachmentsResponse || value.length === 0) return;
+
+        const all = attachmentsResponse.attachments || [];
+        const mapped = value
+            .map((id) => {
+                const found = all.find((a) => a.attachment_id === id);
+                if (found) {
+                    return {
+                        attachment_id: found.attachment_id,
+                        file_name: found.file_name,
+                        file_path: found.file_path,
+                        previewUrl: getFileUrl(found.file_path),
+                        category,
+                        isBlob: false,
+                        file_type: getFileType(found.file_name),
+                    };
+                }
+                return null;
+            })
+            .filter(Boolean) as UploadedFileInfo[];
+
+        if (mapped.length) {
+            // Merge with existing files, preserving blob URLs
+            setFiles(prev => {
+                const existingIds = new Set(prev.map(f => f.attachment_id));
+                const newFiles = mapped.filter(f => !existingIds.has(f.attachment_id));
+                return [...prev, ...newFiles];
+            });
+        }
+    }, [attachmentsResponse, value, category]);
+
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const selectedFiles = e.target.files;
+        if (!selectedFiles || selectedFiles.length === 0) return;
+
+        const uploadPromises = Array.from(selectedFiles).map(async (file) => {
+            try {
+                const result = await uploadAttachments({ files: [file] }).unwrap();
+                if (result.attachments.length > 0) {
+                    const uploaded = result.attachments[0];
+                    return {
+                        attachment_id: uploaded.attachment_id,
+                        file_name: uploaded.file_name,
+                        file_path: uploaded.file_path,
+                        previewUrl: URL.createObjectURL(file),
+                        category,
+                        isBlob: true,
+                        file_type: getFileType(uploaded.file_name),
+                    };
+                }
+            } catch {
+                toast.error(`Failed to upload ${file.name}`);
+                return null;
+            }
+        });
+
+        const uploadedFiles = (await Promise.all(uploadPromises)).filter(
+            Boolean
+        ) as UploadedFileInfo[];
+
+        if (uploadedFiles.length > 0) {
+            const updatedFiles = [...files, ...uploadedFiles];
+            setFiles(updatedFiles);
+            onChange(updatedFiles.map((f) => f.attachment_id), updatedFiles);
+            uploadedFiles.forEach((f) => toast.success(`${f.file_name} uploaded`));
+        }
+
+        // Clear the input
+        e.target.value = '';
+    };
+
+    const handleDelete = async (attachment_id: string) => {
+        try {
+            const fileToDelete = files.find(f => f.attachment_id === attachment_id);
+
+            // Only call API for non-blob files (already uploaded to server)
+            if (!fileToDelete?.isBlob) {
+                await deleteAttachment(attachment_id).unwrap();
+            }
+
+            // Clean up blob URL if it exists
+            if (fileToDelete?.previewUrl && fileToDelete.isBlob) {
+                URL.revokeObjectURL(fileToDelete.previewUrl);
+            }
+
+            const updatedFiles = files.filter((f) => f.attachment_id !== attachment_id);
+            setFiles(updatedFiles);
+            onChange(updatedFiles.map((f) => f.attachment_id), updatedFiles);
+            toast.success("File removed successfully");
+        } catch {
+            toast.error("Failed to delete file");
+        }
+    };
+
+    // Cleanup object URLs on unmount
+    useEffect(() => {
+        return () => {
+            files.forEach((f) => {
+                if (f.isBlob && f.previewUrl) {
+                    URL.revokeObjectURL(f.previewUrl);
+                }
+            });
+        };
+    }, []);
+
+    return (
+        <div className="space-y-2">
+            <label className="block text-sm font-medium cursor-pointer">
+                {label} {required && <span className="text-red-500">*</span>}
+            </label>
+
+            <div className="relative flex flex-col items-center justify-center border border-[#B1C9E3] rounded-md border-dashed p-3 hover:bg-gray-50 cursor-pointer">
+                <input
+                    id={id}
+                    type="file"
+                    accept={accept}
+                    multiple={multiple}
+                    onChange={handleFileChange}
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                />
+                <div className="flex flex-col items-center justify-center space-y-2">
+                    <Upload className="w-6 h-6 text-gray-500" />
+                    <p className="text-sm text-gray-600">Click or drag to upload</p>
+                </div>
+            </div>
+
+            {showPreview && files.length > 0 && (
+                <div className="grid grid-cols-1 gap-2 mt-2">
+                    {files.map((file) => (
+                        <div
+                            key={file.attachment_id}
+                            className="flex items-center justify-between border border-gray-200 rounded-md p-2 bg-gray-50"
+                        >
+                            <div className="flex items-center gap-2">
+                                {file.previewUrl && file.file_type === "image" && (
+                                    // eslint-disable-next-line @next/next/no-img-element
+                                    <img
+                                        src={file.previewUrl}
+                                        alt={file.file_name}
+                                        className="w-10 h-10 object-cover rounded"
+                                    />
+                                )}
+                                {file.file_type === "video" && (
+                                    <div className="w-10 h-10 bg-gray-200 rounded flex items-center justify-center">
+                                        <video className="w-8 h-8 object-cover" muted>
+                                            <source src={file.previewUrl} type="video/mp4" />
+                                        </video>
+                                    </div>
+                                )}
+                                <span className="text-sm text-gray-700 truncate max-w-[100px]">{file.file_name}</span>
+                            </div>
+                            <div className="flex gap-1">
+                                <Button type="button" variant="ghost" size="icon" onClick={() => setPreviewFile(file)}>
+                                    <Eye className="w-5 h-5 text-[#094C81]" />
+                                </Button>
+                                <Button type="button" variant="ghost" size="icon" onClick={() => handleDelete(file.attachment_id)}>
+                                    <Trash2 className="w-5 h-5 text-red-600" />
+                                </Button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
+
+            {/* Preview Modal */}
+            {previewFile && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg max-w-3xl w-full max-h-[90vh] p-4 relative overflow-auto">
+                        <button
+                            className="absolute top-2 right-2 p-2 rounded-full hover:bg-gray-200"
+                            onClick={() => setPreviewFile(null)}
+                        >
+                            <X className="w-5 h-5" />
+                        </button>
+                        <h3 className="text-lg font-semibold mb-4">{previewFile.file_name}</h3>
+
+                        {previewFile.file_type === "image" && previewFile.previewUrl && (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={previewFile.previewUrl} alt={previewFile.file_name} className="w-full h-auto max-h-[70vh] object-contain" />
+                        )}
+                        {previewFile.file_type === "video" && previewFile.previewUrl && (
+                            <video controls className="w-full h-auto max-h-[70vh]">
+                                <source src={previewFile.previewUrl} type="video/mp4" />
+                                Your browser does not support the video tag.
+                            </video>
+                        )}
+                        {previewFile.file_type === "pdf" && previewFile.previewUrl && (
+                            <iframe
+                                src={previewFile.previewUrl}
+                                className="w-full h-[70vh]"
+                                title={previewFile.file_name}
+                            />
+                        )}
+                        {!previewFile.previewUrl && <p className="text-gray-600">Cannot preview this file type.</p>}
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
+
+/** CreateNews Component */
 const CreateNews = () => {
     const [title, setTitle] = useState("");
     const [author, setAuthor] = useState("");
     const [tags, setTags] = useState("");
     const [content, setContent] = useState("");
 
-    const [imagePreviews, setImagePreviews] = useState<string[]>([]);
-    const [videoPreviews, setVideoPreviews] = useState<string[]>([]);
-    const [documentFiles, setDocumentFiles] = useState<File[]>([]);
+    const [newsAttachments, setNewsAttachments] = useState<NewsAttachmentInput[]>([]);
+    const [headlineFiles, setHeadlineFiles] = useState<UploadedFileInfo[]>([]);
+    const [footerFiles, setFooterFiles] = useState<UploadedFileInfo[]>([]);
     const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
 
-    const totalMedia = imagePreviews.length + videoPreviews.length;
+    const [createNews] = useCreateNewsMutation();
 
-    // Handle image uploads
-    const handleImagesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const files = e.target.files;
-        if (files) {
-            const urls = Array.from(files).map((file) => URL.createObjectURL(file));
-            setImagePreviews(urls);
-            setCurrentMediaIndex(0);
-        }
-    };
-
-    // Handle video uploads
-    const handleVideosChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const files = e.target.files;
-        if (files) {
-            const urls = Array.from(files).map((file) => URL.createObjectURL(file));
-            setVideoPreviews(urls);
-            setCurrentMediaIndex(0);
-        }
-    };
-
-    // Handle document uploads
-    const handleDocumentsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const files = e.target.files;
-        if (files) {
-            setDocumentFiles(Array.from(files));
-        }
-    };
-
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
         if (!title || !author || !content) {
             alert("Please fill required fields");
             return;
         }
-
-        const newsData = {
-            title,
-            author,
-            tags: tags.split(",").map((tag) => tag.trim()).filter(Boolean),
-            content,
-            images: imagePreviews,
-            videos: videoPreviews,
-            documents: documentFiles,
-            date: new Date().toISOString(),
-        };
-
-        console.log(newsData);
-        alert("News Created!");
+        try {
+            await createNews({
+                title,
+                author,
+                tags: tags.split(",").map(t => t.trim()).filter(Boolean),
+                content,
+                attachments: newsAttachments,
+            }).unwrap();
+            alert("News Created Successfully!");
+            // Reset form
+            setTitle(""); setAuthor(""); setTags(""); setContent("");
+            setNewsAttachments([]); setHeadlineFiles([]); setFooterFiles([]); setCurrentMediaIndex(0);
+        } catch (error) {
+            console.error(error);
+            alert("Failed to create news");
+        }
     };
 
-    // Quill toolbar configuration
     const modules = {
         toolbar: [
             [{ font: [] }],
@@ -93,215 +341,154 @@ const CreateNews = () => {
         ],
     };
 
-    // Determine current media type for carousel
-    const getCurrentMedia = () => {
-        if (currentMediaIndex < imagePreviews.length) {
-            return { type: "image", url: imagePreviews[currentMediaIndex] };
-        } else {
-            const videoIndex = currentMediaIndex - imagePreviews.length;
-            return { type: "video", url: videoPreviews[videoIndex] };
-        }
-    };
+    const getCurrentMedia = () => (headlineFiles.length ? headlineFiles[currentMediaIndex] : null);
+    const currentMedia = getCurrentMedia();
 
-    const currentMedia = totalMedia > 0 ? getCurrentMedia() : null;
+    // Helper to get the correct URL for preview
+    const getMediaUrl = (file: UploadedFileInfo) => {
+        if (file.isBlob) return file.previewUrl; // Blob URL for new uploads
+        if (file.file_path) return getFileUrl(file.file_path); // Server URL for existing files
+        return file.previewUrl;
+    };
 
     return (
         <div className="min-h-screen w-full grid grid-cols-2 gap-10">
-            {/* Form Section */}
-            <div className="bg-white p-6 rounded-lg shadow overflow-y-auto">
+            {/* Form */}
+            <div className="bg-white p-6 rounded-lg shadow overflow-y-auto space-y-6">
                 <h1 className="text-2xl font-bold mb-6 text-[#073954]">Create News</h1>
+                <form onSubmit={handleSubmit} className="space-y-6">
+                    <Input value={title} onChange={e => setTitle(e.target.value)} placeholder="Title *" />
+                    <Input value={author} onChange={e => setAuthor(e.target.value)} placeholder="Author *" />
+                    <Input value={tags} onChange={e => setTags(e.target.value)} placeholder="Tags (comma-separated)" />
 
-                <form className="space-y-6" onSubmit={handleSubmit}>
-                    {/* Title */}
-                    <div>
-                        <label className="block mb-2">Title *</label>
-                        <Input
-                            value={title}
-                            onChange={(e) => setTitle(e.target.value)}
-                            placeholder="News title"
-                        />
-                    </div>
+                    {/* Headline Media */}
+                    <FileUploadField
+                        id="headline-media"
+                        label="Media (Images & Videos)"
+                        accept="image/*,video/*"
+                        value={newsAttachments.filter(a => a.category === "headline").map(a => a.attachment_id)}
+                        onChange={(ids, files) => {
+                            setNewsAttachments(prev => [
+                                ...prev.filter(a => a.category !== "headline"),
+                                ...ids.map(id => ({ attachment_id: id, category: "headline" })),
+                            ]);
+                            if (files) setHeadlineFiles(files);
+                            setCurrentMediaIndex(0);
+                        }}
+                        multiple
+                        showPreview
+                        category="headline"
+                    />
 
-                    {/* Author */}
-                    <div>
-                        <label className="block mb-2">Author *</label>
-                        <Input
-                            value={author}
-                            onChange={(e) => setAuthor(e.target.value)}
-                            placeholder="Author name"
-                        />
-                    </div>
+                    {/* Footer Documents */}
+                    <FileUploadField
+                        id="footer-documents"
+                        label="Documents (PDF, DOCX)"
+                        accept=".pdf,.doc,.docx"
+                        value={newsAttachments.filter(a => a.category === "footer").map(a => a.attachment_id)}
+                        onChange={(ids, files) => {
+                            setNewsAttachments(prev => [
+                                ...prev.filter(a => a.category !== "footer"),
+                                ...ids.map(id => ({ attachment_id: id, category: "footer" })),
+                            ]);
+                            if (files) setFooterFiles(files);
+                        }}
+                        multiple
+                        showPreview
+                        category="footer"
+                    />
 
-                    {/* Tags */}
-                    <div>
-                        <label className="block mb-2">Tags</label>
-                        <Input
-                            value={tags}
-                            onChange={(e) => setTags(e.target.value)}
-                            placeholder="mining, Ethiopia, policy"
-                        />
-                    </div>
-
-                    {/* Images Upload */}
-                    <div>
-                        <label className="block mb-2">Images</label>
-                        <input
-                            type="file"
-                            accept="image/*"
-                            multiple
-                            onChange={handleImagesChange}
-                        />
-                    </div>
-
-                    {/* Videos Upload */}
-                    <div>
-                        <label className="block mb-2">Videos</label>
-                        <input
-                            type="file"
-                            accept="video/*"
-                            multiple
-                            onChange={handleVideosChange}
-                        />
-                    </div>
-
-                    {/* Documents Upload */}
-                    <div>
-                        <label className="block mb-2">Documents (PDF, DOCX)</label>
-                        <input
-                            type="file"
-                            accept=".pdf,.doc,.docx"
-                            multiple
-                            onChange={handleDocumentsChange}
-                        />
-                    </div>
-
-                    {/* Quill Editor */}
-                    <div>
-                        <label className="block mb-2">Content *</label>
-                        <ReactQuill
-                            theme="snow"
-                            value={content}
-                            onChange={setContent}
-                            modules={modules}
-                            className="bg-white"
-                        />
-                    </div>
-
+                    <ReactQuill value={content} onChange={setContent} modules={modules} />
                     <Button type="submit">Create News</Button>
                 </form>
             </div>
 
-            {/* Preview Section */}
+            {/* Preview */}
             <div className="bg-white p-6 rounded-lg shadow overflow-y-auto">
                 <h2 className="text-xl font-semibold mb-4 border-b pb-2">Live Preview</h2>
+                <h1 className="text-3xl font-bold mb-3">{title || "News Title Preview"}</h1>
+                <div className="text-sm text-gray-500 mb-4">{author ? `By ${author}` : "By Author"} • {new Date().toLocaleDateString()}</div>
 
-                {/* Title */}
-                <h1 className="text-3xl font-bold mb-3">
-                    {title || "News Title Preview"}
-                </h1>
-
-                {/* Author & Date */}
-                <div className="text-sm text-gray-500 mb-4">
-                    {author ? `By ${author}` : "By Author Name"} •{" "}
-                    {new Date().toLocaleDateString()}
-                </div>
-
-                {/* Media Carousel */}
-                {currentMedia && (
+                {/* Media Preview */}
+                {headlineFiles.length > 0 && currentMedia && (
                     <div className="relative w-full mb-4">
-                        {currentMedia.type === "image" && (
-                            <div className="relative w-full h-72">
-                                <Image
-                                    src={currentMedia.url}
-                                    alt="Preview Media"
-                                    fill
-                                    className="object-cover rounded-lg"
-                                />
-                            </div>
+                        {currentMedia.file_type === "image" && (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                                src={getMediaUrl(currentMedia)}
+                                alt={currentMedia.file_name}
+                                className="w-full h-72 object-cover rounded-lg"
+                                onError={(e) => {
+                                    // Fallback for broken images
+                                    e.currentTarget.src = '/placeholder-image.jpg';
+                                }}
+                            />
                         )}
-
-                        {currentMedia.type === "video" && (
-                            <video controls className="w-full h-72 rounded-lg">
-                                <source src={currentMedia.url} type="video/mp4" />
+                        {currentMedia.file_type === "video" && (
+                            <video
+                                controls
+                                className="w-full h-72 rounded-lg bg-black"
+                                key={currentMedia.attachment_id} // Force re-render when video changes
+                            >
+                                <source src={getMediaUrl(currentMedia)} type="video/mp4" />
+                                <source src={getMediaUrl(currentMedia)} type="video/mov" />
+                                <source src={getMediaUrl(currentMedia)} type="video/avi" />
                                 Your browser does not support the video tag.
                             </video>
                         )}
 
-                        {/* Navigation buttons */}
-                        {totalMedia > 1 && (
+                        {headlineFiles.length > 1 && (
                             <>
                                 <button
                                     type="button"
-                                    onClick={() =>
-                                        setCurrentMediaIndex(
-                                            (prev) => (prev === 0 ? totalMedia - 1 : prev - 1)
-                                        )
-                                    }
-                                    className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-gray-700 text-white rounded-full p-2"
+                                    onClick={() => setCurrentMediaIndex(prev => (prev === 0 ? headlineFiles.length - 1 : prev - 1))}
+                                    className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-gray-700 text-white rounded-full p-2 hover:bg-gray-800"
                                 >
                                     &#8592;
                                 </button>
                                 <button
                                     type="button"
-                                    onClick={() =>
-                                        setCurrentMediaIndex(
-                                            (prev) => (prev === totalMedia - 1 ? 0 : prev + 1)
-                                        )
-                                    }
-                                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gray-700 text-white rounded-full p-2"
+                                    onClick={() => setCurrentMediaIndex(prev => (prev === headlineFiles.length - 1 ? 0 : prev + 1))}
+                                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gray-700 text-white rounded-full p-2 hover:bg-gray-800"
                                 >
                                     &#8594;
                                 </button>
+                                <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 bg-black/50 text-white px-3 py-1 rounded-full text-sm">
+                                    {currentMediaIndex + 1} / {headlineFiles.length}
+                                </div>
                             </>
                         )}
                     </div>
                 )}
 
-                {/* Tags */}
+                {/* Tags Preview */}
                 {tags && (
                     <div className="flex flex-wrap gap-2 mb-4">
-                        {tags
-                            .split(",")
-                            .map((tag) => tag.trim())
-                            .filter(Boolean)
-                            .map((tag, index) => (
-                                <span
-                                    key={index}
-                                    className="text-xs bg-gray-200 px-3 py-1 rounded-full"
-                                >
-                                    {tag}
-                                </span>
-                            ))}
+                        {tags.split(",").map(tag => tag.trim()).filter(Boolean).map((tag, i) => (
+                            <span key={i} className="text-xs bg-gray-200 px-3 py-1 rounded-full">{tag}</span>
+                        ))}
                     </div>
                 )}
 
                 {/* Content Preview */}
-                <div
-                    className="prose max-w-full break-words whitespace-pre-wrap mb-4"
-                    dangerouslySetInnerHTML={{
-                        __html:
-                            content || "<p>News content preview will appear here...</p>",
-                    }}
-                />
+                <div className="prose max-w-full break-words whitespace-pre-wrap mb-4" dangerouslySetInnerHTML={{ __html: content || "<p>News content preview will appear here...</p>" }} />
 
-                {/* Documents Preview */}
-                {documentFiles.length > 0 && (
+                {/* Footer Files */}
+                {footerFiles.length > 0 && (
                     <div className="mt-4">
                         <h3 className="font-semibold mb-2">Attached Documents:</h3>
-                        <ul className="list-disc list-inside">
-                            {documentFiles.map((doc, idx) => (
-                                <li key={idx} className="border w-fit list-none py-2 px-3 rounded-lg">
-                                    <div className="flex items-center gap-2">
-                                        <FileIcon className="w-4 h-4" />
-                                        <a
-                                            href={URL.createObjectURL(doc)}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className=" "
-                                        >
-                                            {doc.name}
-                                        </a>
-                                    </div>
+                        <ul className="space-y-2">
+                            {footerFiles.map(doc => (
+                                <li key={doc.attachment_id} className="border w-fit py-2 px-3 rounded-lg flex items-center gap-2">
+                                    <FileIcon className="w-4 h-4" />
+                                    <a
+                                        href={doc.isBlob ? doc.previewUrl! : getFileUrl(doc.file_path!)}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="hover:text-blue-600 hover:underline"
+                                    >
+                                        {doc.file_name}
+                                    </a>
                                 </li>
                             ))}
                         </ul>

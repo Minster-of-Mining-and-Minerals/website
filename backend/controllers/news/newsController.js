@@ -42,10 +42,10 @@ const createNews = async (req, res) => {
 
         // Link attachments if provided
         if (Array.isArray(attachment_ids) && attachment_ids.length > 0) {
-            const attachments = attachment_ids.map((attachment_id) => ({
+            const attachments = attachment_ids.map(({ attachment_id, category }) => ({
                 news_id: news.news_id,
                 attachment_id,
-                category: "body", // default category
+                category: category || "body", // default category
             }));
             await NewsAttachment.bulkCreate(attachments, { transaction: t });
         }
@@ -216,10 +216,10 @@ const updateNews = async (req, res) => {
         // Update attachments if provided
         if (Array.isArray(attachment_ids)) {
             await NewsAttachment.destroy({ where: { news_id: id }, transaction: t });
-            const attachments = attachment_ids.map((attachment_id) => ({
+            const attachments = attachment_ids.map(({ attachment_id, category }) => ({
                 news_id: id,
                 attachment_id,
-                category: "body",
+                category: category || "body",
             }));
             await NewsAttachment.bulkCreate(attachments, { transaction: t });
         }

@@ -33,10 +33,22 @@ const storage = multer.diskStorage({
   },
 });
 
+// const fileFilter = (req, file, cb) => {
+//   if (allowedTypes.includes(file.mimetype)) cb(null, true);
+//   else cb(new Error(`Unsupported file format: ${file.originalname}`), false);
+// };
+
 const fileFilter = (req, file, cb) => {
-  if (allowedTypes.includes(file.mimetype)) cb(null, true);
-  else cb(new Error(`Unsupported file format: ${file.originalname}`), false);
+  if (
+    allowedTypes.includes(file.mimetype) ||
+    file.mimetype.startsWith("video/")
+  ) {
+    cb(null, true);
+  } else {
+    cb(new Error(`Unsupported file format: ${file.originalname}`), false);
+  }
 };
+
 
 const upload = multer({
   storage,

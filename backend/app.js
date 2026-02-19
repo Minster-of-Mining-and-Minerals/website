@@ -24,6 +24,9 @@ const changePasswordRoutes = require("./routers/user-routes/passwordChangeRoutes
 const newsRoute = require("./routers/news/newsRoutes");
 const tagRoute = require("./routers/news/tagRoutes");
 
+// ================== Attachment Routes ==========================
+const attachmentRoute = require("./routers/attachement/attachementRoutes");
+
 
 const app = express();
 const appServer = http.createServer(app);
@@ -112,6 +115,9 @@ app.use("/api/permissions", permissionRoute);
 // ================== News Routes ==========================
 app.use("/api/news", newsRoute);
 app.use("/api/tags", tagRoute);
+
+// ================== Api Attachment Routes =====================
+app.use("/api/attachments", attachmentRoute);
 
 // ================== Root Endpoint ==================
 app.get("/", (req, res) => {
