@@ -4,18 +4,33 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 
+type Media =
+    | { url: string; type: "image" }
+    | { url: string; type: "video" }
+    | null;
+
 type NewsCardProps = {
-    id: number;
+    id: string;
     title: string;
     excerpt: string;
-    image: string;
+    media: Media;
     date: string;
     category: string;
     tags: string[];
     readingTime: (text: string) => number;
 };
 
-const AdminNewsCard = ({ id, title, excerpt, image, date, category, tags, readingTime }: NewsCardProps) => {
+const AdminNewsCard = ({
+    id,
+    title,
+    excerpt,
+    media,
+    date,
+    category,
+    tags,
+    readingTime,
+}: NewsCardProps) => {
+    console.log("media: ", media);
     return (
         <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -24,13 +39,40 @@ const AdminNewsCard = ({ id, title, excerpt, image, date, category, tags, readin
             transition={{ duration: 0.5, ease: "easeOut" }}
             className="group bg-white rounded-2xl shadow-md overflow-hidden"
         >
-            <Link
-                href={`/admin/news/${id}`}
-            >
-                {/* Image */}
-                <div className="relative h-52 w-full overflow-hidden">
-                    <motion.div whileHover={{ scale: 1.05 }} className="relative h-full w-full">
-                        <Image src={image} alt={title} fill className="object-cover" />
+            <Link href={`/admin/news/${id}`}>
+                {/* Media */}
+                <div className="relative h-52 w-full overflow-hidden bg-gray-100">
+                    <motion.div
+                        whileHover={{ scale: 1.05 }}
+                        className="relative h-full w-full"
+                    >
+                        {/* IMAGE */}
+                        {media?.type === "image" && (
+                            <img
+                                src={media.url}
+                                alt={title}
+                                className="object-cover h-full w-full"
+                                sizes="(max-width: 768px) 100vw, 33vw"
+                            />
+                        )}
+
+                        {/* VIDEO */}
+                        {media?.type === "video" && (
+                            <video
+                                src={media.url}
+                                className="h-full w-full object-cover"
+                                muted
+                                loop
+                                playsInline
+                            />
+                        )}
+
+                        {/* FALLBACK */}
+                        {!media && (
+                            <div className="flex h-full w-full items-center justify-center text-sm text-gray-400">
+                                No media
+                            </div>
+                        )}
                     </motion.div>
 
                     {/* Date badge */}
@@ -45,26 +87,29 @@ const AdminNewsCard = ({ id, title, excerpt, image, date, category, tags, readin
                         {category} • {readingTime(excerpt)} min read
                     </p>
 
-                    <h3 className="font-bold text-base text-gray-900 mb-2 line-clamp-2">{title}</h3>
+                    <h3 className="font-bold text-base text-gray-900 mb-2 line-clamp-2">
+                        {title}
+                    </h3>
 
-                    <p className="text-sm text-gray-600 line-clamp-3 mb-3">{excerpt}</p>
+                    <p className="text-sm text-gray-600 line-clamp-3 mb-3">
+                        {excerpt}
+                    </p>
 
                     {/* Tags */}
                     <div className="flex flex-wrap gap-2 mb-3">
                         {tags.map((tag) => (
-                            <span key={tag} className="text-xs bg-gray-200 dark:bg-neutral-800 px-2 py-1 rounded-full">
+                            <span
+                                key={tag}
+                                className="text-xs bg-gray-200 px-2 py-1 rounded-full"
+                            >
                                 {tag}
                             </span>
                         ))}
                     </div>
 
-                    <Link
-                        href={`/news/${id}`}
-                        className="inline-flex items-center text-sm font-semibold text-golden-dark hover:gap-2 transition-all"
-                    >
-                        Edit News
-                        <span className="ml-1">→</span>
-                    </Link>
+                    <span className="inline-flex items-center text-sm font-semibold text-golden-dark group-hover:gap-2 transition-all">
+                        Edit News <span className="ml-1">→</span>
+                    </span>
                 </div>
             </Link>
         </motion.div>

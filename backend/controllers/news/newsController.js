@@ -13,6 +13,7 @@ const {
 } = require("../../models");
 const { v4: uuidv4, validate: isUuid } = require("uuid");
 const { Op } = require("sequelize");
+const { getRelatedNews } = require("../../utils/relatedNews");
 
 // ===========================
 // CREATE NEWS
@@ -20,46 +21,52 @@ const { Op } = require("sequelize");
 const createNews = async (req, res) => {
     const t = await sequelize.transaction();
     try {
-        const { description, attachment_ids, tag_ids } = req.body;
+        const { title, author, content, attachments, tags } = req.body;
 
-        if (!description) {
+        if (!content) {
             await t.rollback();
             return res.status(400).json({
                 success: false,
-                message: "Description is required.",
+                message: "Content is required.",
             });
         }
 
         const news = await News.create(
             {
                 news_id: uuidv4(),
-                description,
+                title,
+                author,
+                content,
                 created_at: new Date(),
                 updated_at: new Date(),
             },
             { transaction: t }
         );
 
-        // Link attachments if provided
-        if (Array.isArray(attachment_ids) && attachment_ids.length > 0) {
-            const attachments = attachment_ids.map(({ attachment_id, category }) => ({
+        /* ================= ATTACHMENTS ================= */
+        if (Array.isArray(attachments) && attachments.length > 0) {
+            const attachmentRows = attachments.map(({ attachment_id, category }) => ({
+                news_attachment_id: uuidv4(),
                 news_id: news.news_id,
                 attachment_id,
-                category: category || "body", // default category
+                category: category || "body",
+                created_at: new Date(),
             }));
-            await NewsAttachment.bulkCreate(attachments, { transaction: t });
+
+            await NewsAttachment.bulkCreate(attachmentRows, { transaction: t });
         }
 
-        // Link tags if provided
-        if (Array.isArray(tag_ids) && tag_ids.length > 0) {
-            const tagLinks = tag_ids.map((tag_id) => ({
+        /* ================= TAGS ================= */
+        if (Array.isArray(tags) && tags.length > 0) {
+            const tagLinks = tags.map((tag_id) => ({
                 news_id: news.news_id,
                 tag_id,
             }));
+
             await NewsTag.bulkCreate(tagLinks, { transaction: t });
         }
 
-        // Initialize metadata
+        /* ================= METADATA ================= */
         await NewsMetadata.create(
             {
                 news_metadata_id: uuidv4(),
@@ -85,9 +92,9 @@ const createNews = async (req, res) => {
     }
 };
 
-// ===========================
+/* ===========================
 // GET ALL NEWS
-// ===========================
+// =========================== */
 const getAllNews = async (req, res) => {
     try {
         const { search, tag } = req.query;
@@ -181,10 +188,12 @@ const getNewsById = async (req, res) => {
             return res.status(404).json({ success: false, message: "News not found." });
         }
 
+        const relatedNews = await getRelatedNews(id, 10);
+
         return res.status(200).json({
             success: true,
             message: "News fetched successfully",
-            data: news,
+            data: { ...news.toJSON(), relatedNews },
         });
     } catch (error) {
         console.error("Get News Error:", error);
@@ -203,7 +212,7 @@ const updateNews = async (req, res) => {
     const t = await sequelize.transaction();
     try {
         const { id } = req.params;
-        const { description, attachment_ids, tag_ids } = req.body;
+        const { title, author, content, attachment_ids, tag_ids } = req.body;
 
         const news = await News.findByPk(id, { transaction: t });
         if (!news) {
@@ -211,7 +220,7 @@ const updateNews = async (req, res) => {
             return res.status(404).json({ success: false, message: "News not found." });
         }
 
-        await news.update({ description, updated_at: new Date() }, { transaction: t });
+        await news.update({ title, author, content, updated_at: new Date() }, { transaction: t });
 
         // Update attachments if provided
         if (Array.isArray(attachment_ids)) {

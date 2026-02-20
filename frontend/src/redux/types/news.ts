@@ -39,8 +39,13 @@ export interface CreateNewsPayload {
 }
 
 export interface UpdateNewsPayload {
-    description?: string;
-    attachment_ids?: string[];
+    title: string;
+    author: string;
+    content: any; // Your Quill Delta content
+    attachment_ids?: Array<{
+        attachment_id: string;
+        category: "headline" | "footer" | "body";
+    }>;
     tag_ids?: string[];
 }
 

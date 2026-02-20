@@ -1,9 +1,11 @@
+"use client"
+import EditNews from '@/features/news/EditNews'
 import React from 'react'
 
-const EditNews = () => {
+const EditNewsPage = () => {
     return (
-        <div>EditNews</div>
+        <EditNews />
     )
 }
 
-export default EditNews
+export default EditNewsPage
