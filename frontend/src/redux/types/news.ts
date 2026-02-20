@@ -58,3 +58,21 @@ export interface NewsReadPayload {
     news_id: string;
     read_time: number; // in seconds
 }
+
+// ===========================
+// NEWS FEEDBACK TYPES
+// ===========================
+
+export interface NewsFeedback {
+    news_feedback_id: string;
+    news_id: string;
+    fullname: string;
+    thought: string;
+    created_at: string;
+}
+
+export interface CreateNewsFeedbackPayload {
+    news_id: string;
+    fullname: string;
+    thought: string;
+}

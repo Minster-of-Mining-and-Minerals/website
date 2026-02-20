@@ -11,6 +11,7 @@ import { mapRelatedNews } from "@/utils/mapRelatedNews";
 import NewsMediaGallery from "../components/NewsMediaGallery";
 import NewsContentRenderer from "../components/NewsContentRenderer";
 import NewsDocuments from "../components/NewsDocuments";
+import NewsFeedback from "../components/NewsFeedback";
 
 const NewsDetail = () => {
     const params = useParams();
@@ -99,6 +100,10 @@ const NewsDetail = () => {
                             <NewsMediaGallery
                                 attachments={newsItem.attachments || []}
                                 title={newsItem.title}
+                                news_id={newsId}
+                                initialLikes={newsItem.metadata?.like_count || 0}
+                                initialDislikes={newsItem.metadata?.dislike_count || 0}
+                            // userReaction={newsItem?.reactions?.length > 0 ? newsItem.reactions[0].reaction : null}
                             />
 
                             {/* Content */}
@@ -129,51 +134,7 @@ const NewsDetail = () => {
                         </article>
 
                         {/* Feedback Section */}
-                        <div className="bg-white rounded-lg shadow-sm p-6">
-                            <div className="flex items-center justify-between mb-6">
-                                <h2 className="text-xl font-bold text-gray-900">Article Feedback</h2>
-                                <div className="flex items-center gap-2 text-gray-600">
-                                    <MessageSquare size={18} />
-                                    <span>{comments.length} Comments</span>
-                                </div>
-                            </div>
-
-                            {/* Comment Form */}
-                            <form onSubmit={handleSubmitFeedback} className="space-y-4 mb-8">
-                                <Input
-                                    placeholder="Full Name"
-                                    value={fullName}
-                                    onChange={(e) => setFullName(e.target.value)}
-                                />
-                                <Textarea
-                                    placeholder="Your Thoughts"
-                                    value={comment}
-                                    onChange={(e) => setComment(e.target.value)}
-                                    rows={4}
-                                />
-                                <Button type="submit" className="px-6 py-3 bg-golden-dark hover:bg-golden-darkHover">
-                                    Submit Comment
-                                </Button>
-                            </form>
-
-                            {/* Comments List */}
-                            <div className="space-y-6">
-                                {comments.map((item, idx) => (
-                                    <div key={idx} className="border-b pb-6 last:border-0">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                                                <span className="text-blue-600 font-semibold">{item.name.charAt(0)}</span>
-                                            </div>
-                                            <div>
-                                                <h4 className="font-semibold text-gray-900">{item.name}</h4>
-                                                <p className="text-sm text-gray-500">{item.date}</p>
-                                            </div>
-                                        </div>
-                                        <p className="text-gray-700 mt-3">{item.comment}</p>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
+                        <NewsFeedback newsId={newsId} />
                     </div>
 
                     {/* Sidebar */}

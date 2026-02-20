@@ -16,6 +16,9 @@ const {
     deleteNews,
     reactToNews,
     recordNewsRead,
+    recordNewsFeedback,
+    getNewsFeedbacks,
+    getNewsFeedbackCount,
 } = require("../../controllers/news/newsController");
 
 // ===========================
@@ -32,6 +35,9 @@ router.delete("/:id", authenticateToken, deleteNews);
 // ===========================
 router.post("/react", authenticateToken, reactToNews);
 router.post("/read", authenticateToken, recordNewsRead);
+router.post("/feedback", authenticateToken, recordNewsFeedback);
+router.get("/feedback/:news_id", getNewsFeedbacks);
+router.get("/feedback/count/:news_id", getNewsFeedbackCount);
 
 /**
  * @swagger
