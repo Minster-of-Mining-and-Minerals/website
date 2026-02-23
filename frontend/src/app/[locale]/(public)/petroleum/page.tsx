@@ -75,7 +75,7 @@ const PetroleumPage = () => {
 
       {/* HERO SECTION (FIRST IMAGE FULL WIDTH) */}
       <section className="space-y-8">
-         
+
 
         <div className="relative w-full h-[500px] rounded-2xl overflow-hidden ">
           <Image
