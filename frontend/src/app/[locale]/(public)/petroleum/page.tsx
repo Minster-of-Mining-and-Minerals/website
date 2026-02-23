@@ -1,61 +1,158 @@
-import React from 'react'
+import React from "react";
 import Image from "next/image";
-const petroleumData = [
+
+const petroleumData = {
+  intro: {
+    title: "Opportunities in Petroleum",
+    image:
+      "https://nomadsinn.com/momp/wp-content/uploads/2020/01/image001-1024x771.png",
+    paragraphs: [
+      "It is a particularly good time to invest in Ethiopia’s petroleum sector.",
+      "Ethiopia shares geology with the Middle East, East African Rift and Sudan region — all oil-rich.",
+      "More than 30% of Ethiopia is covered with sedimentary rocks.",
+      "Six hydrocarbon basins have been identified.",
+      "Two particularly exciting basins: Southern Rift Basin and Ogaden Basin.",
+    ],
+  },
+
+  sections: [
     {
-        title: "Petroleum",
-        heading: "Petroleum is the extraction of valuable minerals or other geological materials from the Earth.",
-        description: "Ethiopia is endowed with a wide range of mineral resources, including gold, coal, iron ore, copper, potash, industrial minerals, and gemstones. The mining sector plays a significant role in the Ethiopian economy, contributing to export earnings, job creation, and rural development. The government has been implementing reforms to improve the mining sector, including the establishment of the Ministry of Mines and Petroleum, the development of a new mining law, and the promotion of foreign investment.",
-        image: "/home-2.jpg",
+      title: "Major Petroleum Basins",
+      image:
+        "https://nomadsinn.com/momp/wp-content/uploads/2020/01/image003-1024x697.png",
     },
-]
+    {
+      title: "Facts about the Southern Rift Basin",
+      images: [
+        "https://nomadsinn.com/momp/wp-content/uploads/2020/01/image007-768x511.jpg",
+        "https://nomadsinn.com/momp/wp-content/uploads/2020/01/image009.png",
+      ],
+      facts: [
+        "Part of the East African Rift system.",
+        "Extends from Gulf of Aden to Mozambique.",
+        "Discoveries in Kenya and Uganda.",
+        "Presence of source and reservoir rocks.",
+      ],
+    },
+    {
+      title: "Facts about the Ogaden Basin",
+      images: [
+        "https://nomadsinn.com/momp/wp-content/uploads/2020/01/image011.jpg",
+        "https://nomadsinn.com/momp/wp-content/uploads/2020/02/map6-EDITED-768x656.jpg",
+      ],
+      facts: [
+        "Covers 350,000 sq km.",
+        "Divided into 21 blocks.",
+        "Geologically similar to Sudan and Yemen.",
+      ],
+    },
+    {
+      title: "Seismic Readings and Geophysics Results",
+      image:
+        "https://nomadsinn.com/momp/wp-content/uploads/2020/01/image015.png",
+      facts: [
+        "62,000 Line KM airborne geophysics.",
+        "2D seismic – 4500 km.",
+        "3D seismic – 1063 km².",
+      ],
+    },
+    {
+      title: "Recent Discoveries in the Ogaden Basin",
+      image:
+        "https://nomadsinn.com/momp/wp-content/uploads/2020/01/image018.jpg",
+      paragraphs: [
+        "Discoveries in Dohar and El Kuran.",
+        "Dohar reserve estimated at 3 TCF.",
+        "Light oil discovery in Hilala.",
+      ],
+    },
+  ],
+};
 
 const PetroleumPage = () => {
-    return (
-        <div className='w-7xl mx-auto grid grid-cols-1 md:grid-cols-7 gap-8'>
-            <div className="col-span-2 prose max-w-none flex flex-col gap-4 text-gray-500">
-                <p className='text-gray-900'>
-                    On this page, you can learn more about Ethiopia’s petroleum sector, including an overview of its natural resources, petroleum’s current economic contribution, the reforms which are taking place, and who the key actors are.
-                </p>
-                <p className='text-gray-500'>
-                    On this page, you can learn more about Ethiopia’s petroleum sector, including an overview of its natural resources, petroleum’s current economic contribution, the reforms which are taking place, and who the key actors are.
-                </p>
-            </div>
-            <div className="col-span-3 flex flex-col gap-4">
-                <Image
-                    src={petroleumData[0].image}
-                    alt={petroleumData[0].title}
-                    width={1200}
-                    height={1200}
-                    className="object-cover w-full"
-                    priority={true}
-                />
-                <p className='text-gray-900'>
-                    {petroleumData[0].heading}
-                </p>
-            </div>
-            {/* Ministry's Core Mandate */}
-            <div className="col-span-2 prose max-w-none flex flex-col gap-2 text-gray-500">
-                <div className="flex flex-col gap-2">
-                    <h2 className="text-xl font-bold text-golden-dark">• Mandate</h2>
-                    <p>
-                        Lead Ethiopia's petroleum sector through sustainable resource development and economic value addition.
-                    </p>
-                </div>
-                <div className="flex flex-col gap-2">
-                    <h2 className="text-xl font-bold text-golden-dark">• Strategic Focus</h2>
-                    <p>
-                        Ensure sustainable, transparent petroleum resource management and foster investment-friendly policies.
-                    </p>
-                </div>
-                <div className="flex flex-col gap-2">
-                    <h2 className="text-xl font-bold text-golden-dark">• Key Priority</h2>
-                    <p>
-                        Maximize petroleum's contribution to the national economy through effective governance and value chain development.
-                    </p>
-                </div>
-            </div>
-        </div>
-    )
-}
+  return (
+    <div className="max-w-7xl mx-auto px-6 py-12 space-y-20">
 
-export default PetroleumPage
+      {/* HERO SECTION (FIRST IMAGE FULL WIDTH) */}
+      <section className="space-y-8">
+
+
+        <div className="relative w-full h-[500px] rounded-2xl overflow-hidden ">
+          <Image
+            src={petroleumData.intro.image}
+            alt={petroleumData.intro.title}
+            fill
+            className="object-contain"
+          />
+        </div>
+
+        {petroleumData.intro.paragraphs.map((p, i) => (
+          <p key={i} className="text-gray-700 leading-relaxed">
+            {p}
+          </p>
+        ))}
+      </section>
+
+      {/* OTHER SECTIONS (HORIZONTAL LAYOUT) */}
+      {petroleumData.sections.map((section, index) => (
+        <section
+          key={index}
+          className="grid md:grid-cols-2 gap-12 items-center border-t pt-12"
+        >
+          {/* IMAGE SIDE */}
+          <div className="space-y-6">
+            {section.image && (
+              <div className="relative w-full h-[350px] rounded-xl overflow-hidden ">
+                <Image
+                  src={section.image}
+                  alt={section.title}
+                  fill
+                  className="object-cover"
+                />
+              </div>
+            )}
+
+            {section.images &&
+              section.images.map((img, i) => (
+                <div
+                  key={i}
+                  className="relative w-full h-[250px] rounded-xl overflow-hidden "
+                >
+                  <Image
+                    src={img}
+                    alt={section.title}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+              ))}
+          </div>
+
+          {/* CONTENT SIDE */}
+          <div className="space-y-6">
+            <h2 className="text-2xl font-semibold">
+              {section.title}
+            </h2>
+
+            {section.paragraphs &&
+              section.paragraphs.map((p, i) => (
+                <p key={i} className="text-gray-700 leading-relaxed">
+                  {p}
+                </p>
+              ))}
+
+            {section.facts && (
+              <ul className="list-disc pl-6 space-y-2">
+                {section.facts.map((fact, i) => (
+                  <li key={i}>{fact}</li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </section>
+      ))}
+    </div>
+  );
+};
+
+export default PetroleumPage;
