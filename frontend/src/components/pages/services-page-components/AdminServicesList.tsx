@@ -1,140 +1,190 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import ServiceTable from "./ServiceTable";
+import { useState } from "react";
+import { ColumnDef } from "@tanstack/react-table";
+import { Eye, Edit, Trash, Plus } from "lucide-react";
+import * as LucideIcons from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+
+import type { FilterField, ActionButton } from "@/types/tableLayout";
+import {
+    useGetServicesQuery,
+    useDeleteServiceMutation,
+} from "@/redux/api/serviceApi";
+import { Service } from "@/redux/types/service";
+
+import { TableLayout } from "@/features/template/component/TableLayout";
+import { DataTable } from "@/features/template/component/DataTable";
 import ServiceModal from "./ServiceModal";
 
-export type Service = {
-    id: string;
-    title: string;
-    description: string;
-    iconName: string;
-};
-
-export const initialServices: Service[] = [
-    {
-        id: "licensing",
-        title: "Mineral Licensing",
-        description: "Facilitating the issuance of exploration and mining licenses for investors.",
-        iconName: "licensing",
-    },
-    {
-        id: "geology",
-        title: "Geological Information",
-        description: "Providing access to reliable geological and geochemical data and maps.",
-        iconName: "geology",
-    },
-    {
-        id: "laboratory",
-        title: "Laboratory Services",
-        description: "Conducting mineral analysis, physical tests, and chemical evaluations.",
-        iconName: "laboratory",
-    },
-    {
-        id: "petroleum",
-        title: "Petroleum Support",
-        description: "Overseeing and supporting oil and gas exploration activities across the country.",
-        iconName: "petroleum",
-    },
-    {
-        id: "investment",
-        title: "Investment Promotion",
-        description: "Promoting Ethiopia's vast mineral potential to global and local investors.",
-        iconName: "investment",
-    },
-    {
-        id: "regulation",
-        title: "Environmental Regulation",
-        description: "Ensuring resource extraction adheres to strict environmental and safety standards.",
-        iconName: "regulation",
-    },
-];
-
+/* ----------------------------------
+   COMPONENT
+----------------------------------- */
 export default function AdminServicesList() {
-    const [services, setServices] = useState<Service[]>([]);
+    const router = useRouter();
+
+    /* API */
+    const { data = [], isLoading, isError } = useGetServicesQuery();
+    const [deleteService] = useDeleteServiceMutation();
+
+    /* Modal */
+    const [isModalOpen, setModalOpen] = useState(false);
+    const [currentService, setCurrentService] = useState<Service | null>(null);
+
+    /* Pagination */
     const [pageIndex, setPageIndex] = useState(0);
     const [pageSize, setPageSize] = useState(10);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [currentService, setCurrentService] = useState<Partial<Service> | null>(null);
-
-    useEffect(() => {
-        const saved = localStorage.getItem("services_data");
-        if (saved) {
-            try {
-                setServices(JSON.parse(saved));
-            } catch (e) {
-                setServices(initialServices);
-            }
-        } else {
-            setServices(initialServices);
-        }
-    }, []);
 
     const handlePagination = (index: number, size: number) => {
         setPageIndex(index);
         setPageSize(size);
     };
 
-    const handleAdd = () => {
-        setCurrentService({
-            id: Date.now().toString(),
-            title: "",
-            description: "",
-            iconName: "licensing",
-        });
-        setIsModalOpen(true);
-    };
+    /* Filters */
+    const [search, setSearch] = useState("");
 
-    const handleEdit = (service: Service) => {
-        setCurrentService(service);
-        setIsModalOpen(true);
-    };
+    const filters: FilterField[] = [
+        {
+            key: "search",
+            label: "Search",
+            type: "text",
+            placeholder: "Search service title",
+            value: search,
+            onChange: setSearch,
+        },
+    ];
 
-    const handleDelete = (id: string) => {
-        if (window.confirm("Are you sure you want to delete this service?")) {
-            const newServices = services.filter(s => s.id !== id);
-            setServices(newServices);
-            localStorage.setItem("services_data", JSON.stringify(newServices));
-        }
-    };
+    /* ----------------------------------
+       TABLE COLUMNS
+    ----------------------------------- */
+    const columns: ColumnDef<Service>[] = [
+        {
+            accessorKey: "title",
+            header: "Title",
+            cell: ({ row }) => (
+                <span className="font-medium">
+                    {row.getValue("title")}
+                </span>
+            ),
+        },
+        {
+            accessorKey: "content",
+            header: "Description",
+            cell: ({ row }) => (
+                <div
+                    className="max-w-[300px] truncate"
+                    title={row.getValue("content")}
+                >
+                    {row.getValue("content")}
+                </div>
+            ),
+        },
+        {
+            accessorKey: "icon",
+            header: "Icon",
+            cell: ({ row }) => {
+                const iconName = row.getValue("icon") as string;
+                const IconComponent = (LucideIcons as any)[iconName] || LucideIcons.File; // fallback
+                return (
+                    <div className="flex items-center gap-2">
+                        <IconComponent className="w-5 h-5 text-golden-dark" />
+                        <span className="capitalize">{iconName}</span>
+                    </div>
+                );
+            },
+        },
+        {
+            id: "actions",
+            header: "Actions",
+            cell: ({ row }) => {
+                const service = row.original;
 
-    const handleSave = () => {
-        if (!currentService?.title || !currentService?.description) return;
+                return (
+                    <div className="flex items-center gap-1">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() =>
+                                router.push(`/admin/services/${service.service_id}`)
+                            }
+                        >
+                            <Eye className="h-4 w-4" />
+                        </Button>
 
-        let newServices;
-        if (services.find(s => s.id === currentService.id)) {
-            newServices = services.map(s => s.id === currentService.id ? (currentService as Service) : s);
-        } else {
-            newServices = [...services, currentService as Service];
-        }
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => {
+                                setCurrentService(service);
+                                setModalOpen(true);
+                            }}
+                        >
+                            <Edit className="h-4 w-4" />
+                        </Button>
 
-        setServices(newServices);
-        localStorage.setItem("services_data", JSON.stringify(newServices));
-        setIsModalOpen(false);
-        setCurrentService(null);
-    };
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => deleteService(service.service_id)}
+                        >
+                            <Trash className="h-4 w-4 text-destructive" />
+                        </Button>
+                    </div>
+                );
+            },
+        },
+    ];
 
-    const isEditing = !!(currentService?.id && services.find(s => s.id === currentService.id));
+    /* Top actions */
+    const actions: ActionButton[] = [
+        {
+            label: "Add Service",
+            icon: <Plus className="h-4 w-4" />,
+            onClick: () => {
+                setCurrentService(null);
+                setModalOpen(true);
+            },
+        },
+    ];
+
+    /* Client-side filtering */
+    const filteredData = data.filter((service) =>
+        search
+            ? service.title.toLowerCase().includes(search.toLowerCase())
+            : true
+    );
+
+    /* Pagination slice */
+    const paginatedData = filteredData.slice(
+        pageIndex * pageSize,
+        pageIndex * pageSize + pageSize
+    );
 
     return (
         <>
-            <ServiceTable
-                services={services}
-                pageIndex={pageIndex}
-                pageSize={pageSize}
-                onPagination={handlePagination}
-                onAdd={handleAdd}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-            />
+            <TableLayout
+                title="Services Management"
+                description="Manage the list of services"
+                actions={actions}
+                filters={filters}
+                filterColumnsPerRow={1}
+            >
+                <DataTable
+                    columns={columns}
+                    data={paginatedData}
+                    totalPageCount={Math.ceil(filteredData.length / pageSize)}
+                    handlePagination={handlePagination}
+                    tablePageSize={pageSize}
+                    currentIndex={pageIndex}
+                />
+            </TableLayout>
 
             <ServiceModal
                 open={isModalOpen}
-                onOpenChange={setIsModalOpen}
-                onSave={handleSave}
+                onOpenChange={setModalOpen}
                 currentService={currentService}
                 setCurrentService={setCurrentService}
-                isEditing={isEditing}
             />
         </>
     );

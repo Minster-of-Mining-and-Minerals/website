@@ -1,91 +1,45 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import {
-    FileCheck,
-    Map,
-    FlaskConical,
-    Droplets,
-    TrendingUp,
-    ShieldCheck,
-    LucideIcon
-} from "lucide-react";
+import React, { useEffect, useState } from "react";
+import * as LucideIcons from "lucide-react"; // Import all icons
 import ServiceCard from "./ServiceCard";
-
-const iconMap: Record<string, LucideIcon> = {
-    licensing: FileCheck,
-    geology: Map,
-    laboratory: FlaskConical,
-    petroleum: Droplets,
-    investment: TrendingUp,
-    regulation: ShieldCheck,
-};
-
-const initialServices = [
-    {
-        id: "licensing",
-        title: "Mineral Licensing",
-        description: "Facilitating the issuance of exploration and mining licenses for investors.",
-        iconName: "licensing",
-    },
-    {
-        id: "geology",
-        title: "Geological Information",
-        description: "Providing access to reliable geological and geochemical data and maps.",
-        iconName: "geology",
-    },
-    {
-        id: "laboratory",
-        title: "Laboratory Services",
-        description: "Conducting mineral analysis, physical tests, and chemical evaluations.",
-        iconName: "laboratory",
-    },
-    {
-        id: "petroleum",
-        title: "Petroleum Support",
-        description: "Overseeing and supporting oil and gas exploration activities across the country.",
-        iconName: "petroleum",
-    },
-    {
-        id: "investment",
-        title: "Investment Promotion",
-        description: "Promoting Ethiopia's vast mineral potential to global and local investors.",
-        iconName: "investment",
-    },
-    {
-        id: "regulation",
-        title: "Environmental Regulation",
-        description: "Ensuring resource extraction adheres to strict environmental and safety standards.",
-        iconName: "regulation",
-    },
-];
+import { useGetServicesQuery } from "@/redux/api/serviceApi";
+import { Service } from "@/redux/types/service";
 
 const ServicesList = () => {
-    const [services, setServices] = useState(initialServices);
+    const { data: apiData = [], isLoading, isError } = useGetServicesQuery();
+    const [services, setServices] = useState<Service[]>([]);
 
     useEffect(() => {
-        const saved = localStorage.getItem("services_data");
-        if (saved) {
-            try {
-                setServices(JSON.parse(saved));
-            } catch (e) {
-                console.error("Error parsing services data:", e);
-                setServices(initialServices);
-            }
+        if (apiData.length > 0) {
+            setServices(apiData);
         }
-    }, []);
+    }, [apiData]);
+
+    if (isLoading) {
+        return <p className="text-center py-10">Loading services...</p>;
+    }
+
+    if (isError) {
+        return <p className="text-center py-10 text-red-500">Failed to load services.</p>;
+    }
 
     return (
         <section className="py-20 px-6 max-w-7xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {services.map((service) => (
-                    <ServiceCard
-                        key={service.id}
-                        title={service.title}
-                        description={service.description}
-                        icon={iconMap[service.iconName] || FileCheck}
-                    />
-                ))}
+                {services.map((service) => {
+                    // Dynamically map icon name to Lucide icon component
+                    const IconComponent = (LucideIcons as any)[service.icon] || LucideIcons.File;
+
+                    return (
+                        <ServiceCard
+                            key={service.service_id}
+                            title={service.title}
+                            description={service.content}
+                            icon={IconComponent}
+                        />
+                    );
+                })}
             </div>
         </section>
     );
