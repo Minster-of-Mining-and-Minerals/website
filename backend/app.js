@@ -27,6 +27,9 @@ const tagRoute = require("./routers/news/tagRoutes");
 // ================== Service Routes ==========================
 const serviceRoute = require("./routers/sevice/serviceRoutes");
 
+// ================== About Page Routes ==========================
+const backgroundRoute = require("./routers/about/backgroundRoutes");
+
 // ================== Attachment Routes ==========================
 const attachmentRoute = require("./routers/attachement/attachementRoutes");
 
@@ -121,6 +124,9 @@ app.use("/api/tags", tagRoute);
 
 // ================== Service Routes ==========================
 app.use("/api/services", serviceRoute);
+
+// ================== About Page Routes ==========================
+app.use("/api/backgrounds", backgroundRoute);
 
 // ================== Api Attachment Routes =====================
 app.use("/api/attachments", attachmentRoute);
