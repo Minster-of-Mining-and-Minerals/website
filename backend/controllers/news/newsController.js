@@ -5,6 +5,7 @@ const {
     NewsAttachment,
     NewsMetadata,
     NewsReaction,
+    NewsFeedback,
     NewsRead,
     NewsTag,
     Tag,
@@ -13,6 +14,7 @@ const {
 } = require("../../models");
 const { v4: uuidv4, validate: isUuid } = require("uuid");
 const { Op } = require("sequelize");
+const { getRelatedNews } = require("../../utils/relatedNews");
 
 // ===========================
 // CREATE NEWS
@@ -20,46 +22,52 @@ const { Op } = require("sequelize");
 const createNews = async (req, res) => {
     const t = await sequelize.transaction();
     try {
-        const { description, attachment_ids, tag_ids } = req.body;
+        const { title, author, content, attachments, tags } = req.body;
 
-        if (!description) {
+        if (!content) {
             await t.rollback();
             return res.status(400).json({
                 success: false,
-                message: "Description is required.",
+                message: "Content is required.",
             });
         }
 
         const news = await News.create(
             {
                 news_id: uuidv4(),
-                description,
+                title,
+                author,
+                content,
                 created_at: new Date(),
                 updated_at: new Date(),
             },
             { transaction: t }
         );
 
-        // Link attachments if provided
-        if (Array.isArray(attachment_ids) && attachment_ids.length > 0) {
-            const attachments = attachment_ids.map(({ attachment_id, category }) => ({
+        /* ================= ATTACHMENTS ================= */
+        if (Array.isArray(attachments) && attachments.length > 0) {
+            const attachmentRows = attachments.map(({ attachment_id, category }) => ({
+                news_attachment_id: uuidv4(),
                 news_id: news.news_id,
                 attachment_id,
-                category: category || "body", // default category
+                category: category || "body",
+                created_at: new Date(),
             }));
-            await NewsAttachment.bulkCreate(attachments, { transaction: t });
+
+            await NewsAttachment.bulkCreate(attachmentRows, { transaction: t });
         }
 
-        // Link tags if provided
-        if (Array.isArray(tag_ids) && tag_ids.length > 0) {
-            const tagLinks = tag_ids.map((tag_id) => ({
+        /* ================= TAGS ================= */
+        if (Array.isArray(tags) && tags.length > 0) {
+            const tagLinks = tags.map((tag_id) => ({
                 news_id: news.news_id,
                 tag_id,
             }));
+
             await NewsTag.bulkCreate(tagLinks, { transaction: t });
         }
 
-        // Initialize metadata
+        /* ================= METADATA ================= */
         await NewsMetadata.create(
             {
                 news_metadata_id: uuidv4(),
@@ -85,9 +93,9 @@ const createNews = async (req, res) => {
     }
 };
 
-// ===========================
+/* ===========================
 // GET ALL NEWS
-// ===========================
+// =========================== */
 const getAllNews = async (req, res) => {
     try {
         const { search, tag } = req.query;
@@ -181,10 +189,12 @@ const getNewsById = async (req, res) => {
             return res.status(404).json({ success: false, message: "News not found." });
         }
 
+        const relatedNews = await getRelatedNews(id, 10);
+
         return res.status(200).json({
             success: true,
             message: "News fetched successfully",
-            data: news,
+            data: { ...news.toJSON(), relatedNews },
         });
     } catch (error) {
         console.error("Get News Error:", error);
@@ -203,7 +213,7 @@ const updateNews = async (req, res) => {
     const t = await sequelize.transaction();
     try {
         const { id } = req.params;
-        const { description, attachment_ids, tag_ids } = req.body;
+        const { title, author, content, attachment_ids, tag_ids } = req.body;
 
         const news = await News.findByPk(id, { transaction: t });
         if (!news) {
@@ -211,7 +221,7 @@ const updateNews = async (req, res) => {
             return res.status(404).json({ success: false, message: "News not found." });
         }
 
-        await news.update({ description, updated_at: new Date() }, { transaction: t });
+        await news.update({ title, author, content, updated_at: new Date() }, { transaction: t });
 
         // Update attachments if provided
         if (Array.isArray(attachment_ids)) {
@@ -284,30 +294,102 @@ const deleteNews = async (req, res) => {
 // RECORD NEWS REACTION
 // ===========================
 const reactToNews = async (req, res) => {
+    const transaction = await sequelize.transaction();
+
     try {
         const { news_id, reaction } = req.body;
         const ip_address = req.ip;
 
         if (!["like", "dislike"].includes(reaction)) {
+            await transaction.rollback();
             return res.status(400).json({ success: false, message: "Invalid reaction type." });
         }
 
-        const [newsReaction, created] = await NewsReaction.findOrCreate({
+        // Find existing reaction for this IP
+        const existingReaction = await NewsReaction.findOne({
             where: { news_id, ip_address },
-            defaults: { news_reaction_id: uuidv4(), reaction, created_at: new Date() },
+            transaction
         });
 
-        if (!created) {
-            newsReaction.reaction = reaction;
-            await newsReaction.save();
+        let previousReaction = null;
+
+        if (existingReaction) {
+            previousReaction = existingReaction.reaction;
+
+            if (existingReaction.reaction === reaction) {
+                // User is removing their reaction (clicking same button)
+                await existingReaction.destroy({ transaction });
+
+                // Update metadata counts
+                if (reaction === 'like') {
+                    await NewsMetadata.decrement('like_count', {
+                        where: { news_id },
+                        transaction
+                    });
+                } else {
+                    await NewsMetadata.decrement('dislike_count', {
+                        where: { news_id },
+                        transaction
+                    });
+                }
+
+                await transaction.commit();
+                return res.status(200).json({
+                    success: true,
+                    message: `News ${reaction} removed successfully`,
+                    data: null,
+                });
+            } else {
+                // User is switching from like to dislike or vice versa
+                await existingReaction.update({ reaction }, { transaction });
+
+                // Update metadata counts for the switch
+                if (reaction === 'like') {
+                    // Switching from dislike to like
+                    await NewsMetadata.increment('like_count', { where: { news_id }, transaction });
+                    await NewsMetadata.decrement('dislike_count', { where: { news_id }, transaction });
+                } else {
+                    // Switching from like to dislike
+                    await NewsMetadata.increment('dislike_count', { where: { news_id }, transaction });
+                    await NewsMetadata.decrement('like_count', { where: { news_id }, transaction });
+                }
+            }
+        } else {
+            // New reaction
+            await NewsReaction.create({
+                news_reaction_id: uuidv4(),
+                news_id,
+                ip_address,
+                reaction,
+                created_at: new Date()
+            }, { transaction });
+
+            // Update metadata counts for new reaction
+            if (reaction === 'like') {
+                await NewsMetadata.increment('like_count', { where: { news_id }, transaction });
+            } else {
+                await NewsMetadata.increment('dislike_count', { where: { news_id }, transaction });
+            }
         }
+
+        await transaction.commit();
+
+        // Fetch updated metadata to return
+        const updatedMetadata = await NewsMetadata.findOne({
+            where: { news_id },
+            attributes: ['like_count', 'dislike_count']
+        });
 
         return res.status(200).json({
             success: true,
             message: `News ${reaction}d successfully`,
-            data: newsReaction,
+            data: {
+                reaction: existingReaction || await NewsReaction.findOne({ where: { news_id, ip_address } }),
+                metadata: updatedMetadata
+            },
         });
     } catch (error) {
+        await transaction.rollback();
         console.error("React News Error:", error);
         return res.status(500).json({
             success: false,
@@ -316,6 +398,7 @@ const reactToNews = async (req, res) => {
         });
     }
 };
+
 
 // ===========================
 // RECORD NEWS READ
@@ -351,6 +434,99 @@ const recordNewsRead = async (req, res) => {
     }
 };
 
+// ===========================
+// RECORD NEWS FEEDBACK
+// ===========================
+const recordNewsFeedback = async (req, res) => {
+    try {
+        const { news_id, fullname, thought } = req.body;
+
+        const news = await News.findByPk(news_id);
+        if (!news) {
+            return res.status(404).json({ success: false, message: "News not found." });
+        }
+
+        const newsFeedback = await NewsFeedback.create({ news_id, fullname, thought });
+
+        return res.status(200).json({
+            success: true,
+            message: "News feedback recorded successfully",
+            data: newsFeedback,
+        });
+    } catch (error) {
+        console.error("Record News Feedback Error:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Failed to record news feedback",
+            error: error.message,
+        });
+    }
+};
+
+// ===========================
+// GET NEWS FEEDBACKS
+// ===========================
+const getNewsFeedbacks = async (req, res) => {
+    try {
+        const { news_id } = req.params;
+
+        const newsFeedbacks = await NewsFeedback.findAll({ where: { news_id } });
+
+        return res.status(200).json({
+            success: true,
+            message: "News feedbacks fetched successfully",
+            data: newsFeedbacks,
+        });
+    } catch (error) {
+        console.error("Get News Feedbacks Error:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Failed to get news feedbacks",
+            error: error.message,
+        });
+    }
+};
+
+// ===========================
+// GET NEWS FEEDBACK COUNT
+// ===========================
+const getNewsFeedbackCount = async (req, res) => {
+    try {
+        const { news_id } = req.params;
+
+        // Check if news exists
+        const news = await News.findByPk(news_id);
+        if (!news) {
+            return res.status(404).json({
+                success: false,
+                message: "News not found.",
+            });
+        }
+
+        // Count feedback
+        const feedbackCount = await NewsFeedback.count({
+            where: { news_id },
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: "News feedback count fetched successfully",
+            data: {
+                news_id,
+                feedback_count: feedbackCount,
+            },
+        });
+    } catch (error) {
+        console.error("Get News Feedback Count Error:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Failed to fetch feedback count",
+            error: error.message,
+        });
+    }
+};
+
+
 module.exports = {
     createNews,
     getAllNews,
@@ -359,4 +535,7 @@ module.exports = {
     deleteNews,
     reactToNews,
     recordNewsRead,
+    recordNewsFeedback,
+    getNewsFeedbacks,
+    getNewsFeedbackCount,
 };

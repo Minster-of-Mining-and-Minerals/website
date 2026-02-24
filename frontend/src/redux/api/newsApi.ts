@@ -1,5 +1,5 @@
 import { baseApi } from "../baseApi";
-import { News, CreateNewsPayload, UpdateNewsPayload, NewsReactionPayload, NewsReadPayload } from "../types/news";
+import { News, CreateNewsPayload, UpdateNewsPayload, NewsReactionPayload, NewsReadPayload, NewsFeedback, CreateNewsFeedbackPayload } from "../types/news";
 
 export const newsApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
@@ -65,6 +65,37 @@ export const newsApi = baseApi.injectEndpoints({
             transformResponse: (response: any) => response.data,
             invalidatesTags: ["News"],
         }),
+
+        /** ---------------------------
+         * RECORD NEWS FEEDBACK
+         * --------------------------- */
+        recordNewsFeedback: builder.mutation<NewsFeedback, CreateNewsFeedbackPayload>({
+            query: (body) => ({
+                url: "/news/feedback",
+                method: "POST",
+                body,
+            }),
+            transformResponse: (response: any): NewsFeedback => response.data,
+            invalidatesTags: ["News"],
+        }),
+
+        /** ---------------------------
+         * GET NEWS FEEDBACKS
+         * --------------------------- */
+        getNewsFeedbacks: builder.query<NewsFeedback[], string>({
+            query: (news_id) => `/news/feedback/${news_id}`,
+            transformResponse: (response: any): NewsFeedback[] => response.data ?? [],
+            providesTags: ["News"],
+        }),
+
+        /** ---------------------------
+         * GET NEWS FEEDBACK COUNT
+         * --------------------------- */
+        getNewsFeedbackCount: builder.query<{ news_id: string; feedback_count: number }, string>({
+            query: (news_id) => `/news/feedback/count/${news_id}`,
+            transformResponse: (response: any): { news_id: string; feedback_count: number } => response.data,
+            providesTags: ["News"],
+        }),
     }),
 });
 
@@ -76,4 +107,7 @@ export const {
     useDeleteNewsMutation,
     useReactToNewsMutation,
     useRecordNewsReadMutation,
+    useRecordNewsFeedbackMutation,
+    useGetNewsFeedbackCountQuery,
+    useGetNewsFeedbacksQuery,
 } = newsApi;

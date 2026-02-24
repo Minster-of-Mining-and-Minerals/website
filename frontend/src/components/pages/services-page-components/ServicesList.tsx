@@ -1,50 +1,45 @@
 "use client";
 
-import React from "react";
-import { useTranslations } from "next-intl";
-import {
-    FileCheck,
-    Map,
-    FlaskConical,
-    Droplets,
-    TrendingUp,
-    ShieldCheck,
-    LucideIcon
-} from "lucide-react";
+import React, { useEffect, useState } from "react";
+import * as LucideIcons from "lucide-react"; // Import all icons
 import ServiceCard from "./ServiceCard";
-
-const iconMap: Record<string, LucideIcon> = {
-    licensing: FileCheck,
-    geology: Map,
-    laboratory: FlaskConical,
-    petroleum: Droplets,
-    investment: TrendingUp,
-    regulation: ShieldCheck,
-};
+import { useGetServicesQuery } from "@/redux/api/serviceApi";
+import { Service } from "@/redux/types/service";
 
 const ServicesList = () => {
-    const t = useTranslations("services_page");
+    const { data: apiData = [], isLoading, isError } = useGetServicesQuery();
+    const [services, setServices] = useState<Service[]>([]);
 
-    const serviceKeys = [
-        "licensing",
-        "geology",
-        "laboratory",
-        "petroleum",
-        "investment",
-        "regulation"
-    ];
+    useEffect(() => {
+        if (apiData.length > 0) {
+            setServices(apiData);
+        }
+    }, [apiData]);
+
+    if (isLoading) {
+        return <p className="text-center py-10">Loading services...</p>;
+    }
+
+    if (isError) {
+        return <p className="text-center py-10 text-red-500">Failed to load services.</p>;
+    }
 
     return (
         <section className="py-20 px-6 max-w-7xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {serviceKeys.map((key) => (
-                    <ServiceCard
-                        key={key}
-                        title={t(`items.${key}.title`)}
-                        description={t(`items.${key}.description`)}
-                        icon={iconMap[key]}
-                    />
-                ))}
+                {services.map((service) => {
+                    // Dynamically map icon name to Lucide icon component
+                    const IconComponent = (LucideIcons as any)[service.icon] || LucideIcons.File;
+
+                    return (
+                        <ServiceCard
+                            key={service.service_id}
+                            title={service.title}
+                            description={service.content}
+                            icon={IconComponent}
+                        />
+                    );
+                })}
             </div>
         </section>
     );

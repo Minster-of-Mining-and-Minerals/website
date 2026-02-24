@@ -1,14 +1,11 @@
 "use client";
-
-import React from "react";
-import Image from "next/image";
 import { ChevronRight } from "lucide-react";
 
 type RelatedNewsItem = {
     id: string | number;
     title: string;
     description: string;
-    image: string;
+    media: string;
     date: string;
     category: string;
 };
@@ -18,6 +15,7 @@ type NewsSidebarProps = {
 };
 
 const NewsLeftSide = ({ relatedNews }: NewsSidebarProps) => {
+    console.log("relatedNews: ", relatedNews);
     return (
         <div className="bg-white rounded-lg shadow-sm p-6">
             <h2 className="text-xl font-bold text-gray-900 mb-6 pb-3 border-b">
@@ -34,13 +32,26 @@ const NewsLeftSide = ({ relatedNews }: NewsSidebarProps) => {
                         <div className="flex gap-3 mb-3">
                             <div className="flex-shrink-0">
                                 <div className="relative w-20 h-20 rounded-lg overflow-hidden">
-                                    <Image
-                                        src={item.image}
-                                        alt={item.title}
-                                        fill
-                                        className="object-cover"
-                                        sizes="80px"
-                                    />
+                                    {/* IMAGE */}
+                                    {item?.media?.type === "image" && (
+                                        <img
+                                            src={item?.media?.url}
+                                            alt={item.title}
+                                            className="object-cover h-full w-full"
+                                            sizes="(max-width: 768px) 100vw, 33vw"
+                                        />
+                                    )}
+
+                                    {/* VIDEO */}
+                                    {item?.media?.type === "video" && (
+                                        <video
+                                            src={item?.media?.url}
+                                            className="h-full w-full object-cover"
+                                            muted
+                                            loop
+                                            playsInline
+                                        />
+                                    )}
                                 </div>
                             </div>
                             <div className="flex-1 min-w-0">

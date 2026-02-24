@@ -31,6 +31,11 @@ module.exports = (sequelize, DataTypes) => {
                 as: "tag_links",
             });
 
+            News.hasMany(models.NewsFeedback, {
+                foreignKey: "news_id",
+                as: "feedbacks",
+            });
+
         }
     }
 

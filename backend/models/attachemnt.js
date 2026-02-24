@@ -9,6 +9,16 @@ module.exports = (sequelize, DataTypes) => {
                 foreignKey: "attachment_id",
                 as: "newsAttachments",
             });
+
+            Attachment.hasMany(models.BackgroundAttachment, {
+                foreignKey: "attachment_id",
+                as: "backgroundAttachments",
+            });
+
+            Attachment.hasMany(models.LeadershipAttachment, {
+                foreignKey: "attachment_id",
+                as: "leadershipAttachments",
+            });
         }
     }
 

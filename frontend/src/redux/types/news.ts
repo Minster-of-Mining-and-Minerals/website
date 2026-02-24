@@ -39,8 +39,13 @@ export interface CreateNewsPayload {
 }
 
 export interface UpdateNewsPayload {
-    description?: string;
-    attachment_ids?: string[];
+    title: string;
+    author: string;
+    content: any; // Your Quill Delta content
+    attachment_ids?: Array<{
+        attachment_id: string;
+        category: "headline" | "footer" | "body";
+    }>;
     tag_ids?: string[];
 }
 
@@ -52,4 +57,22 @@ export interface NewsReactionPayload {
 export interface NewsReadPayload {
     news_id: string;
     read_time: number; // in seconds
+}
+
+// ===========================
+// NEWS FEEDBACK TYPES
+// ===========================
+
+export interface NewsFeedback {
+    news_feedback_id: string;
+    news_id: string;
+    fullname: string;
+    thought: string;
+    created_at: string;
+}
+
+export interface CreateNewsFeedbackPayload {
+    news_id: string;
+    fullname: string;
+    thought: string;
 }

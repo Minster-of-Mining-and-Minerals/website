@@ -312,7 +312,7 @@ const CreateNews = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!title || !author || !content) {
+        if (!title || !author || !contentDelta) {
             alert("Please fill required fields");
             return;
         }
@@ -322,7 +322,7 @@ const CreateNews = () => {
                 author,
                 tags: selectedTags,
                 content: contentDelta, // ✅ JSONB
-                attachments: newsAttachments,
+                attachments: newsAttachments || [],
             }).unwrap();
             alert("News Created Successfully!");
             // Reset form

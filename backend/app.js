@@ -24,6 +24,12 @@ const changePasswordRoutes = require("./routers/user-routes/passwordChangeRoutes
 const newsRoute = require("./routers/news/newsRoutes");
 const tagRoute = require("./routers/news/tagRoutes");
 
+// ================== Service Routes ==========================
+const serviceRoute = require("./routers/sevice/serviceRoutes");
+
+// ================== About Page Routes ==========================
+const backgroundRoute = require("./routers/about/backgroundRoutes");
+
 // ================== Attachment Routes ==========================
 const attachmentRoute = require("./routers/attachement/attachementRoutes");
 
@@ -115,6 +121,12 @@ app.use("/api/permissions", permissionRoute);
 // ================== News Routes ==========================
 app.use("/api/news", newsRoute);
 app.use("/api/tags", tagRoute);
+
+// ================== Service Routes ==========================
+app.use("/api/services", serviceRoute);
+
+// ================== About Page Routes ==========================
+app.use("/api/backgrounds", backgroundRoute);
 
 // ================== Api Attachment Routes =====================
 app.use("/api/attachments", attachmentRoute);

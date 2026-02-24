@@ -1,0 +1,56 @@
+"use strict";
+const { Model } = require("sequelize");
+
+module.exports = (sequelize, DataTypes) => {
+    class StrategySection extends Model {
+        static associate(models) {
+            StrategySection.belongsTo(models.Strategy, {
+                foreignKey: "strategy_id",
+                as: "strategy",
+            });
+
+            // For core values only
+            StrategySection.hasMany(models.CoreValue, {
+                foreignKey: "section_id",
+                as: "core_values",
+            });
+        }
+    }
+
+    StrategySection.init(
+        {
+            section_id: {
+                type: DataTypes.UUID,
+                defaultValue: DataTypes.UUIDV4,
+                primaryKey: true,
+            },
+            strategy_id: {
+                type: DataTypes.UUID,
+                allowNull: false,
+            },
+            type: { // 'mission', 'vision', 'core_values'
+                type: DataTypes.STRING(50),
+                allowNull: false,
+            },
+            title: {
+                type: DataTypes.STRING,
+                allowNull: false,
+            },
+            icon: {
+                type: DataTypes.STRING,
+            },
+            content: {
+                type: DataTypes.TEXT,
+            },
+        },
+        {
+            sequelize,
+            modelName: "StrategySection",
+            tableName: "strategy_sections",
+            timestamps: false,
+            underscored: true,
+        }
+    );
+
+    return StrategySection;
+};
