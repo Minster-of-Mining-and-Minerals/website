@@ -3,38 +3,45 @@
 import { QuillDeltaToHtmlConverter } from "quill-delta-to-html";
 
 interface Props {
-    content: any;
+    content: string | any;
 }
 
 const NewsContentRenderer = ({ content }: Props) => {
     if (!content) return null;
 
-    let delta;
+    let htmlContent = "";
 
-    // ✅ Handle both string and object from DB
+    // Check if content is a Quill Delta JSON string
     if (typeof content === "string") {
-        try {
-            delta = JSON.parse(content);
-        } catch (error) {
-            console.error("Invalid JSON content:", error);
-            return null;
+        if (content.trim().startsWith("{") && content.includes('"ops"')) {
+            try {
+                const delta = JSON.parse(content);
+                if (delta && delta.ops) {
+                    const converter = new QuillDeltaToHtmlConverter(delta.ops, {
+                        paragraphTag: "p",
+                    });
+                    htmlContent = converter.convert();
+                }
+            } catch (error) {
+                console.error("Invalid JSON content, falling back to raw string:", error);
+                htmlContent = content; // Fallback to treating it as HTML/text
+            }
+        } else {
+            // It's likely raw HTML
+            htmlContent = content;
         }
-    } else {
-        delta = content;
+    } else if (typeof content === "object" && content.ops) {
+        // It's a Delta object
+        const converter = new QuillDeltaToHtmlConverter(content.ops, {
+            paragraphTag: "p",
+        });
+        htmlContent = converter.convert();
     }
-
-    if (!delta?.ops) return null;
-
-    const converter = new QuillDeltaToHtmlConverter(delta.ops, {
-        paragraphTag: "p",
-    });
-
-    const html = converter.convert();
 
     return (
         <div
-            className="prose max-w-full break-words"
-            dangerouslySetInnerHTML={{ __html: html }}
+            className="prose prose-slate max-w-none break-words dark:prose-invert"
+            dangerouslySetInnerHTML={{ __html: htmlContent }}
         />
     );
 };

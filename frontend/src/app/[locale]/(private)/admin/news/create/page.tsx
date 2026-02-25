@@ -16,6 +16,7 @@ import "quill/dist/quill.snow.css";
 import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useGetTagsQuery } from "@/redux/api/tagApi";
+import { QuillDeltaToHtmlConverter } from "quill-delta-to-html";
 // Dynamic import for Quill
 const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
 
@@ -312,7 +313,7 @@ const CreateNews = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!title || !author || !contentDelta) {
+        if (!title || !author || !contentHtml) {
             alert("Please fill required fields");
             return;
         }
@@ -321,9 +322,10 @@ const CreateNews = () => {
                 title,
                 author,
                 tags: selectedTags,
-                content: contentDelta, // ✅ JSONB
+                content: contentHtml, // <-- send HTML instead of JSON
                 attachments: newsAttachments || [],
             }).unwrap();
+
             alert("News Created Successfully!");
             // Reset form
             setTitle(""); setAuthor(""); setTags(""); setContent(""); setContentDelta(null);
@@ -495,12 +497,10 @@ const CreateNews = () => {
 
                     {/* <ReactQuill value={content} onChange={setContent} modules={modules} /> */}
                     <ReactQuill
+                        theme="snow"
                         value={contentHtml}
                         modules={modules}
-                        onChange={(html, delta, source, editor) => {
-                            setContentHtml(html);                 // for preview
-                            setContentDelta(editor.getContents()); // JSON for DB
-                        }}
+                        onChange={(html) => setContentHtml(html)}
                     />
 
                     <Button type="submit">Create News</Button>
@@ -579,14 +579,10 @@ const CreateNews = () => {
                 }
 
                 {/* Content Preview */}
-                {/* <div className="prose max-w-full break-words whitespace-pre-wrap mb-4" dangerouslySetInnerHTML={{ __html: content || "<p>News content preview will appear here...</p>" }} /> */}
                 <div
-                    className="prose max-w-full break-words"
-                    dangerouslySetInnerHTML={{
-                        __html: contentHtml || "<p>News content preview will appear here...</p>",
-                    }}
+                    className="prose prose-slate max-w-none break-words mb-4 dark:prose-invert"
+                    dangerouslySetInnerHTML={{ __html: contentHtml || "<p>News content preview will appear here...</p>" }}
                 />
-
                 {/* Footer Files */}
                 {
                     footerFiles.length > 0 && (

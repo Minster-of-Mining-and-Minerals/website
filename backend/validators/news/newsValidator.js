@@ -42,9 +42,12 @@ const createNewsSchema = Joi.object({
 
     author: Joi.string().min(3).optional(),
 
-    content: quillDeltaSchema.messages({
-        "object.base": "Content must be a valid Quill Delta object.",
-    }),
+    content: Joi.alternatives()
+        .try(quillDeltaSchema, Joi.string().min(1))
+        .required()
+        .messages({
+            "alternatives.match": "Content must be a valid Quill Delta object or an HTML string.",
+        }),
 
     tags: Joi.array()
         .items(uuidSchema)
@@ -68,7 +71,7 @@ const updateNewsSchema = Joi.object({
 
     author: Joi.string().min(3).optional(),
 
-    content: quillDeltaSchema.optional(),
+    content: Joi.alternatives().try(quillDeltaSchema, Joi.string().min(1)).optional(),
 
     tag_ids: Joi.array()
         .items(uuidSchema)

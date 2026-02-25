@@ -252,7 +252,7 @@ const NewsMediaGallery: React.FC<NewsMediaGalleryProps> = ({
 
             {/* Thumbnails */}
             {headlineMedia.length > 1 && (
-                <div className="flex gap-2 overflow-x-auto pb-2">
+                <div className="flex gap-2 overflow-x-auto p-3">
                     {headlineMedia.map((media, idx) => (
                         <button
                             key={media.id}
