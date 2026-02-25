@@ -11,177 +11,215 @@ import {
     CollapsibleContent,
     CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { Plus, Trash2, ChevronDown, ChevronUp, Upload, Image as ImageIcon } from "lucide-react";
 import {
-    Plus,
-    Trash2,
-    ChevronDown,
-    ChevronUp,
-    Upload,
-    Image as ImageIcon,
-} from "lucide-react";
-
-/* =====================================================
-   TYPES
-===================================================== */
+    useGetLeadershipsQuery,
+    useCreateLeadershipMutation,
+    useUpdateLeadershipMutation,
+    useDeleteLeadershipMutation,
+} from "@/redux/api/leadershipApi";
+import { ImageUploadField, UploadedFileInfo } from "@/components/common/ImageUploadField";
 
 export type LeaderNode = {
     id: string;
     level: number;
     name: string;
     title: string;
-    image: string;
-    shortDescription?: string;
     fullDescription: string;
+    header?: string;
     children?: LeaderNode[];
+    parent_id?: string | null;
+    leadership_id?: string;
+    attachment_id?: string; // store uploaded image ID
+    image?: string;         // store previewUrl
 };
-
-/* =====================================================
-   DEFAULT DATA
-===================================================== */
-
-const defaultTree: LeaderNode = {
-    id: "minister-habtamu",
-    level: 0,
-    name: "H.E. Engineer Habtamu Tegegn",
-    title: "Minister of Mines",
-    image: "/habtamu-tegegn-profile.jpg",
-    shortDescription:
-        "Senior public servant with extensive leadership experience.",
-    fullDescription:
-        "H.E. Engineer Habtamu Tegegn is the current Minister of Mines...",
-    children: [],
-};
-
-/* =====================================================
-   MAIN PAGE COMPONENT
-===================================================== */
 
 export default function LeadershipAdminPage() {
+    const { data: leaderships, isLoading } = useGetLeadershipsQuery();
+    const [createLeadership] = useCreateLeadershipMutation();
+    const [updateLeadership] = useUpdateLeadershipMutation();
+    const [deleteLeadership] = useDeleteLeadershipMutation();
+
     const [tree, setTree] = useState<LeaderNode | null>(null);
+    const [editingNodeId, setEditingNodeId] = useState<string | null>(null);
+    const [draftNode, setDraftNode] = useState<LeaderNode | null>(null);
 
-    const generateId = () =>
-        `leader-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
+    const generateId = () => `leader-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
 
-    /* LOAD */
     useEffect(() => {
-        const saved = localStorage.getItem("leadershipTree");
-        if (saved) {
-            try {
-                setTree(JSON.parse(saved));
-            } catch {
-                setTree(defaultTree);
-            }
-        } else {
-            setTree(defaultTree);
-        }
-    }, []);
-
-    /* SAVE */
-    useEffect(() => {
-        if (tree) {
-            localStorage.setItem("leadershipTree", JSON.stringify(tree));
-        }
-    }, [tree]);
-
-    if (!tree) return null;
-
-    /* UPDATE NODE */
-    const updateNode = (
-        node: LeaderNode,
-        id: string,
-        updatedFields: Partial<LeaderNode>
-    ): LeaderNode => {
-        if (node.id === id) {
-            return { ...node, ...updatedFields };
-        }
-
-        return {
-            ...node,
-            children: node.children?.map((child) =>
-                updateNode(child, id, updatedFields)
-            ),
-        };
-    };
-
-    /* ADD CHILD */
-    const addChild = (parentId: string) => {
-        const addRecursively = (node: LeaderNode): LeaderNode => {
-            if (node.id === parentId) {
-                const newNode: LeaderNode = {
+        if (!isLoading && leaderships) {
+            if (leaderships.length === 0) {
+                setTree({
                     id: generateId(),
-                    level: node.level + 1,
-                    name: "New Leader",
-                    title: "New Title",
+                    level: 1,
+                    name: "",
+                    title: "",
                     image: "",
                     fullDescription: "",
                     children: [],
+                });
+            } else {
+                const mapNode = (item: any): LeaderNode => {
+                    const attachment = item.attachments?.attachment;
+
+                    return {
+                        id: item.leadership_id,
+                        leadership_id: item.leadership_id,
+                        parent_id: item.parent_id,
+                        level: item.level,
+                        name: item.name,
+                        title: item.title,
+                        fullDescription: item.description || "",
+                        header: item.header,
+                        children: [],
+
+                        // ✅ THIS IS THE FIX
+                        attachment_id: attachment?.attachment_id || undefined,
+                    };
                 };
 
-                return {
-                    ...node,
-                    children: [...(node.children || []), newNode],
-                };
+                const nodeMap: Record<string, LeaderNode> = {};
+                leaderships.forEach((l: any) => { nodeMap[l.leadership_id] = mapNode(l); });
+
+                const roots: LeaderNode[] = [];
+                leaderships.forEach((l: any) => {
+                    if (l.parent_id && nodeMap[l.parent_id]) {
+                        nodeMap[l.parent_id].children = nodeMap[l.parent_id].children || [];
+                        nodeMap[l.parent_id].children.push(nodeMap[l.leadership_id]);
+                    } else {
+                        roots.push(nodeMap[l.leadership_id]);
+                    }
+                });
+
+                setTree(roots[0] || null);
             }
+        }
+    }, [leaderships, isLoading]);
 
-            return {
-                ...node,
-                children: node.children?.map(addRecursively),
-            };
-        };
+    if (!tree) return <div>Loading...</div>;
 
-        setTree(addRecursively(tree));
+    const findNodeById = (node: LeaderNode, id: string): LeaderNode | null => {
+        if (node.id === id) return node;
+        for (const child of node.children || []) {
+            const found = findNodeById(child, id);
+            if (found) return found;
+        }
+        return null;
     };
 
-    /* DELETE NODE */
-    const deleteNode = (id: string) => {
-        const deleteRecursively = (node: LeaderNode): LeaderNode => ({
+    const addChildNode = (parentId: string) => {
+        const parent = findNodeById(tree!, parentId);
+        if (!parent) return;
+
+        const newNode: LeaderNode = {
+            id: generateId(),
+            level: parent.level + 1,
+            name: "",
+            title: "",
+            fullDescription: "",
+            parent_id: parentId,
+            children: [],
+        };
+
+        setTree(prev => addNodeRecursively(prev!, parentId, newNode));
+    };
+
+    const addNodeRecursively = (node: LeaderNode, parentId: string, newNode: LeaderNode): LeaderNode => {
+        if (node.id === parentId) {
+            return { ...node, children: [...(node.children || []), newNode] };
+        }
+        return {
             ...node,
-            children: node.children
-                ?.filter((child) => child.id !== id)
-                .map(deleteRecursively),
+            children: node.children?.map(child => addNodeRecursively(child, parentId, newNode)),
+        };
+    };
+
+    const deleteNode = async (nodeId: string) => {
+        const nodeToDelete = findNodeById(tree!, nodeId);
+
+        if (nodeToDelete?.leadership_id) {
+            await deleteLeadership(nodeToDelete.leadership_id);
+        }
+
+        setTree(prev => deleteNodeRecursively(prev!, nodeId));
+    };
+
+    const deleteNodeRecursively = (node: LeaderNode, nodeId: string): LeaderNode | null => {
+        if (node.id === nodeId) return null;
+        return {
+            ...node,
+            children: node.children?.map(child => deleteNodeRecursively(child, nodeId)).filter(Boolean) as LeaderNode[],
+        };
+    };
+
+    const createNode = async (node: LeaderNode) => {
+        const created = await createLeadership({
+            name: node.name,
+            title: node.title,
+            description: node.fullDescription,
+            parent_id: node.parent_id || null,
+            header: node.header || "Minister of Mines",
+            level: node.level,
+            attachments: node.attachment_id ? [{ attachment_id: node.attachment_id }] : [],
         });
 
-        setTree(deleteRecursively(tree));
+        const updatedNode: LeaderNode = { ...node, leadership_id: created.leadership_id };
+        setTree(prev => updateNodeRecursively(prev!, node.id, { leadership_id: updatedNode.leadership_id }));
+    };
+
+    const updateNode = async (node: LeaderNode, updatedFields: Partial<LeaderNode>) => {
+        const updatedNode = { ...node, ...updatedFields };
+
+        setTree(prev => updateNodeRecursively(prev!, node.id, updatedFields));
+        if (!node.leadership_id) return;
+
+        await updateLeadership({
+            id: node.leadership_id,
+            data: {
+                name: updatedNode.name,
+                title: updatedNode.title,
+                description: updatedNode.fullDescription,
+                parent_id: updatedNode.parent_id,
+                header: updatedNode.header,
+                attachments: updatedNode.attachment_id
+                    ? [{ attachment_id: updatedNode.attachment_id }]
+                    : [],
+            },
+        });
+    };
+
+    const updateNodeRecursively = (node: LeaderNode, nodeId: string, updatedFields: Partial<LeaderNode>): LeaderNode => {
+        if (node.id === nodeId) return { ...node, ...updatedFields };
+        return { ...node, children: node.children?.map(child => updateNodeRecursively(child, nodeId, updatedFields)) };
     };
 
     return (
         <div className="py-6 mx-auto">
-
-
             <NodeEditor
                 node={tree}
-                tree={tree}
-                setTree={setTree}
-                updateNode={updateNode}
-                addChild={addChild}
+                addChildNode={addChildNode}
                 deleteNode={deleteNode}
+                updateNode={updateNode}
+                createNode={createNode}
             />
         </div>
     );
 }
 
 /* =====================================================
-   NODE EDITOR (Recursive)
+   NODE EDITOR
 ===================================================== */
-
 type NodeEditorProps = {
     node: LeaderNode;
-    tree: LeaderNode;
-    setTree: React.Dispatch<React.SetStateAction<LeaderNode | null>>;
-    updateNode: any;
-    addChild: (id: string) => void;
+    addChildNode: (id: string) => void;
     deleteNode: (id: string) => void;
+    updateNode: (node: LeaderNode, fields: Partial<LeaderNode>) => void;
+    createNode: (node: LeaderNode) => void;
 };
 
-function NodeEditor({
-    node,
-    tree,
-    setTree,
-    updateNode,
-    addChild,
-    deleteNode,
-}: NodeEditorProps) {
+function NodeEditor({ node, addChildNode, deleteNode, updateNode, createNode }: NodeEditorProps) {
     const [isOpen, setIsOpen] = useState(true);
+    const isNew = !node.leadership_id;
 
     return (
         <div className="w-full">
@@ -190,47 +228,37 @@ function NodeEditor({
                     <NodeHeader
                         node={node}
                         isOpen={isOpen}
-                        addChild={addChild}
+                        addChildNode={addChildNode}
                         deleteNode={deleteNode}
+                        createNode={createNode}
+                        isNew={isNew}
                     />
-
                     <CollapsibleContent>
                         <CardContent className="px-4 space-y-6 bg-white py-6">
-                            <NodeBasicInfo
-                                node={node}
-                                tree={tree}
-                                setTree={setTree}
-                                updateNode={updateNode}
-                            />
-
+                            <NodeBasicInfo node={node} updateNode={updateNode} />
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                <NodeImageUpload
-                                    node={node}
-                                    tree={tree}
-                                    setTree={setTree}
-                                    updateNode={updateNode}
-                                />
-
-                                <NodeDescription
-                                    node={node}
-                                    tree={tree}
-                                    setTree={setTree}
-                                    updateNode={updateNode}
-                                />
+                                <NodeImageUpload node={node} updateNode={updateNode} />
+                                <NodeDescription node={node} updateNode={updateNode} />
                             </div>
                         </CardContent>
                     </CollapsibleContent>
                 </Collapsible>
             </Card>
 
-            <TreeChildren
-                node={node}
-                tree={tree}
-                setTree={setTree}
-                updateNode={updateNode}
-                addChild={addChild}
-                deleteNode={deleteNode}
-            />
+            {node.children?.length > 0 && (
+                <div className="ml-8 mt-4 border-l-2 border-gray-100 pl-6">
+                    {node.children.map(child => (
+                        <NodeEditor
+                            key={child.id}
+                            node={child}
+                            addChildNode={addChildNode}
+                            deleteNode={deleteNode}
+                            updateNode={updateNode}
+                            createNode={createNode}
+                        />
+                    ))}
+                </div>
+            )}
         </div>
     );
 }
@@ -238,52 +266,61 @@ function NodeEditor({
 /* =====================================================
    NODE HEADER
 ===================================================== */
-
-function NodeHeader({ node, isOpen, addChild, deleteNode }: any) {
+function NodeHeader({ node, isOpen, addChildNode, deleteNode, createNode, isNew }: any) {
     return (
         <CardHeader className="bg-golden-dark20 py-3">
             <div className="flex justify-between items-center">
                 <div className="flex items-center gap-3">
                     <CollapsibleTrigger asChild>
                         <Button variant="ghost" size="sm" className="p-0 h-8 w-8">
-                            {isOpen ? (
-                                <ChevronUp className="h-4 w-4" />
-                            ) : (
-                                <ChevronDown className="h-4 w-4" />
-                            )}
+                            {isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                         </Button>
                     </CollapsibleTrigger>
 
                     <div>
                         <CardTitle className="text-base font-semibold text-[#073954]">
-                            {node.name || "Unnamed Leader"}
+                            {node.name || "New Leader"}
                         </CardTitle>
-                        <p className="text-xs text-gray-500">
-                            {node.title || "No Title"}
-                        </p>
+                        <p className="text-xs text-gray-500">{node.title || "No Title"}</p>
                     </div>
                 </div>
 
                 <div className="flex items-center gap-2">
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        className="h-8 bg-golden-dark text-white hover:bg-golden-darkHover hover:text-white"
-                        onClick={() => addChild(node.id)}
-                    >
-                        <Plus className="h-3.5 w-3.5 mr-1" />
-                        Add Child
-                    </Button>
+                    {isNew ? (
+                        <>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => createNode(node)}
+                            >
+                                Create
+                            </Button>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => deleteNode(node.id)}
+                            >
+                                Cancel
+                            </Button></>
 
-                    {node.level !== 0 && (
-                        <Button
-                            variant="destructive"
-                            size="sm"
-                            onClick={() => deleteNode(node.id)}
-                        >
-                            <Trash2 className="h-3.5 w-3.5 mr-1" />
-                            Delete
-                        </Button>
+                    ) : (
+                        <>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="h-8 bg-golden-dark text-white hover:bg-golden-darkHover hover:text-white"
+                                onClick={() => addChildNode(node.id)}
+                            >
+                                <Plus className="h-3.5 w-3.5 mr-1" />
+                                Add Child
+                            </Button>
+                            {node.level !== 0 && (
+                                <Button variant="destructive" size="sm" onClick={() => deleteNode(node.id)}>
+                                    <Trash2 className="h-3.5 w-3.5 mr-1" />
+                                    Delete
+                                </Button>
+                            )}
+                        </>
                     )}
                 </div>
             </div>
@@ -292,30 +329,18 @@ function NodeHeader({ node, isOpen, addChild, deleteNode }: any) {
 }
 
 /* =====================================================
-   BASIC INFO
+   BASIC INFO / IMAGE / DESCRIPTION
 ===================================================== */
-
-function NodeBasicInfo({ node, tree, setTree, updateNode }: any) {
+function NodeBasicInfo({ node, updateNode }: any) {
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex flex-col gap-2">
                 <Label>Name</Label>
-                <Input
-                    value={node.name}
-                    onChange={(e) =>
-                        setTree(updateNode(tree, node.id, { name: e.target.value }))
-                    }
-                />
+                <Input value={node.name} onChange={(e) => updateNode(node, { name: e.target.value })} />
             </div>
-
             <div className="flex flex-col gap-2">
                 <Label>Title</Label>
-                <Input
-                    value={node.title}
-                    onChange={(e) =>
-                        setTree(updateNode(tree, node.id, { title: e.target.value }))
-                    }
-                />
+                <Input value={node.title} onChange={(e) => updateNode(node, { title: e.target.value })} />
             </div>
         </div>
     );
@@ -324,138 +349,32 @@ function NodeBasicInfo({ node, tree, setTree, updateNode }: any) {
 /* =====================================================
    IMAGE UPLOAD
 ===================================================== */
-
-function NodeImageUpload({ node, tree, setTree, updateNode }: any) {
-    const handleImageUpload = (file: File) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            setTree(updateNode(tree, node.id, { image: reader.result }));
-        };
-        reader.readAsDataURL(file);
+function NodeImageUpload({ node, updateNode }: any) {
+    const handleChange = (ids: string[], files?: UploadedFileInfo[]) => {
+        const fileInfo = files?.[0]; // single image only
+        updateNode(node, {
+            attachment_id: fileInfo?.attachment_id || undefined,
+        });
     };
 
     return (
-        <div className="md:col-span-1 space-y-2">
-            <Label>Profile Image</Label>
-
-            <div className="flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-lg p-4 bg-gray-50 group hover:border-gray-300 transition-colors">
-
-                {/* IMAGE PREVIEW */}
-                {node.image ? (
-                    <div className="relative w-full aspect-square max-w-[150px] overflow-hidden rounded-md border shadow-sm">
-                        <img
-                            src={node.image}
-                            alt={node.name}
-                            className="w-full h-full object-cover"
-                        />
-
-                        {/* Hover Overlay */}
-                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                            <Button
-                                variant="secondary"
-                                size="sm"
-                                className="h-8 text-xs"
-                                onClick={() =>
-                                    document
-                                        .getElementById(`file-${node.id}`)
-                                        ?.click()
-                                }
-                            >
-                                Change
-                            </Button>
-                        </div>
-                    </div>
-                ) : (
-                    <div className="flex flex-col items-center gap-2 py-4">
-                        <ImageIcon className="h-10 w-10 text-gray-400" />
-                        <p className="text-xs text-gray-500">
-                            No image uploaded
-                        </p>
-                    </div>
-                )}
-
-                {/* Hidden File Input */}
-                <input
-                    id={`file-${node.id}`}
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(e) => {
-                        if (e.target.files?.[0]) {
-                            handleImageUpload(e.target.files[0]);
-                        }
-                    }}
-                />
-
-                {/* Upload Button */}
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    className="mt-2 h-8 text-xs gap-1"
-                    onClick={() =>
-                        document
-                            .getElementById(`file-${node.id}`)
-                            ?.click()
-                    }
-                >
-                    <Upload className="h-3.5 w-3.5" />
-                    Upload Image
-                </Button>
-            </div>
-        </div>
-    );
-}
-
-/* =====================================================
-   DESCRIPTION
-===================================================== */
-
-function NodeDescription({ node, tree, setTree, updateNode }: any) {
-    return (
-        <div className="md:col-span-2 space-y-2">
-            <Label>Full Description</Label>
-            <Textarea
-                value={node.fullDescription}
-                onChange={(e) =>
-                    setTree(
-                        updateNode(tree, node.id, {
-                            fullDescription: e.target.value,
-                        })
-                    )
-                }
-                className="min-h-[160px]"
+        <div className="md:col-span-1">
+            <ImageUploadField
+                id={`node-image-${node.id}`}
+                label="Profile Image"
+                value={node.attachment_id ? [node.attachment_id] : []}
+                onChange={handleChange}
+                category="profile"
             />
         </div>
     );
 }
 
-/* =====================================================
-   CHILDREN (Recursive Renderer)
-===================================================== */
-
-function TreeChildren({
-    node,
-    tree,
-    setTree,
-    updateNode,
-    addChild,
-    deleteNode,
-}: any) {
-    if (!node.children || node.children.length === 0) return null;
-
+function NodeDescription({ node, updateNode }: any) {
     return (
-        <div className="ml-8 mt-4 border-l-2 border-gray-100 pl-6">
-            {node.children.map((child: LeaderNode) => (
-                <NodeEditor
-                    key={child.id}
-                    node={child}
-                    tree={tree}
-                    setTree={setTree}
-                    updateNode={updateNode}
-                    addChild={addChild}
-                    deleteNode={deleteNode}
-                />
-            ))}
+        <div className="md:col-span-2 space-y-2">
+            <Label>Full Description</Label>
+            <Textarea value={node.fullDescription} onChange={(e) => updateNode(node, { fullDescription: e.target.value })} className="min-h-[160px]" />
         </div>
     );
 }
