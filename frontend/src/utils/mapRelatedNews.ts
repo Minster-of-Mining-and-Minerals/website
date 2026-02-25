@@ -1,17 +1,14 @@
-import { extractHeadlineImage } from "./newsMapper";
+import { extractExcerpt, extractHeadlineImage } from "./newsMapper";
 
 export const mapRelatedNews = (relatedNews) => {
-    return relatedNews.map((item) => {
+    return (relatedNews || []).map((item) => {
         // extract first headline image
         console.log("item", item)
         const headlineMedia = extractHeadlineImage(item.attachments);
 
         console.log("headlineMedia", headlineMedia)
-        // extract description from content.ops
-        const description = item.content?.ops
-            ?.map(op => op.insert)
-            .join(" ")
-            .slice(0, 150) || "";
+        // extract description from content using utility
+        const description = extractExcerpt(item.content, 150);
 
         // extract first tag or fallback
         const category = item.tag_links?.[0]?.tag?.name || "General";

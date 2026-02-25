@@ -1,13 +1,33 @@
 // utils/newsMapper.ts
 const API_BASE_URL = process.env.NEXT_PUBLIC_BASE;
 export const extractExcerpt = (content: any, maxLength = 160) => {
-    if (!content?.ops) return "";
+    if (!content) return "";
 
-    const text = content.ops
-        .map((op: any) => (typeof op.insert === "string" ? op.insert : ""))
-        .join(" ")
-        .replace(/\s+/g, " ")
-        .trim();
+    let text = "";
+
+    // Handle Quill Delta
+    if (content?.ops) {
+        text = content.ops
+            .map((op: any) => (typeof op.insert === "string" ? op.insert : ""))
+            .join(" ")
+            .replace(/\s+/g, " ")
+            .trim();
+    }
+    // Handle HTML or plain text string
+    else if (typeof content === "string") {
+        text = content
+            .replace(/<[^>]*>/g, " ") // Strip HTML tags
+            .replace(/&nbsp;/g, " ")  // Replace non-breaking spaces
+            .replace(/&amp;/g, "&")   // Replace ampersands
+            .replace(/&lt;/g, "<")    // Replace less-than
+            .replace(/&gt;/g, ">")    // Replace greater-than
+            .replace(/&quot;/g, '"')  // Replace quotes
+            .replace(/&#39;/g, "'")   // Replace single quotes
+            .replace(/\s+/g, " ")     // Normalize whitespace
+            .trim();
+    }
+
+    if (!text) return "";
 
     return text.slice(0, maxLength) + (text.length > maxLength ? "..." : "");
 };
