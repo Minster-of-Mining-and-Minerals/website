@@ -5,7 +5,7 @@ import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 
 export default function HierarchyNode({ node }: any) {
-    const [expanded, setExpanded] = useState(true);
+    const [expanded] = useState(true);
 
     return (
         <div className="flex flex-col items-center">

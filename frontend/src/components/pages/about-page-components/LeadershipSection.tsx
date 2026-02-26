@@ -1,7 +1,26 @@
-import { leadershipTree } from "@/datas/leadership";
+"use client";
+
+import { useGetLeadershipsQuery } from "@/redux/api/leadershipApi";
 import HierarchyNode from "./HierarchyNode";
+import { buildLeadershipTree } from "@/utils/buildLeadershipTree";
 
 export default function LeadershipSection() {
+    const { data, isLoading, isError } = useGetLeadershipsQuery();
+
+    if (isLoading) {
+        return <div className="text-center py-20">Loading leadership...</div>;
+    }
+
+    if (isError || !data) {
+        return <div className="text-center py-20 text-red-600">Failed to load leadership</div>;
+    }
+
+    const leadershipTree = buildLeadershipTree(data);
+
+    if (!leadershipTree) {
+        return <div className="text-center py-20">No leadership data</div>;
+    }
+
     return (
         <div className="min-h-screen bg-gray-200 py-12 md:px-4 space-y-4">
             <div className="max-w-7xl mx-auto text-center">

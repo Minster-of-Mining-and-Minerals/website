@@ -49,13 +49,13 @@ const BackgroundPage = () => {
                 {/* Hero Header */}
                 <div className="text-center mb-12">
                     <div className="inline-flex items-center md:gap-4 mb-4">
-                        <div className="bg-golden-dark/10 p-3 rounded-2xl">
+                        <div className="bg-golden-dark/10 pt-2 pb-1 rounded-2xl">
                             <IconComponent className="w-8 h-8 text-golden-dark" />
                         </div>
-                        <h1 className="text-2xl md:text-4xl font-bold text-teal-900">
+                        <div className="text-2xl md:text-4xl font-bold text-teal-900">
                             <span>{titleFirst}</span>{" "}
                             {titleSecond && <span className="text-golden-dark">{titleSecond}</span>}
-                        </h1>
+                        </div>
                     </div>
                     <p className="text-gray-600 text-lg max-w-3xl mx-auto">{bg.description}</p>
                 </div>
