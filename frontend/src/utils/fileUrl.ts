@@ -24,3 +24,5 @@ export const getFileType = (fileName: string): string => {
         return "other";
     }
 };
+
+

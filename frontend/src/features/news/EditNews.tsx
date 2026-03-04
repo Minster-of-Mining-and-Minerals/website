@@ -73,36 +73,45 @@ const EditNews = () => {
             setSelectedTags(tagIds);
         }
 
-        // Set content - convert Delta to HTML for the editor
+        // Set content - handle both Delta and HTML
         if (news.content) {
             console.log("Setting content:", news.content);
-            setContentDelta(news.content);
+            let htmlValue = "";
 
-            // Convert Delta to HTML using Quill
-            try {
-                // Create a temporary container
-                const tempCont = document.createElement('div');
-                // Initialize Quill with the container
-                const quill = new Quill(tempCont, {
-                    readOnly: true,
-                    theme: 'snow'
-                });
-
-                // Set the contents
-                quill.setContents(news.content);
-
-                // Get the HTML from the editor content
-                const html = tempCont.querySelector('.ql-editor')?.innerHTML || '';
-                console.log("Converted HTML:", html);
-                setContentHtml(html);
-
-                // Mark content as loaded
-                setIsContentLoaded(true);
-            } catch (error) {
-                console.error('Error converting Delta to HTML:', error);
-                setContentHtml(JSON.stringify(news.content));
-                setIsContentLoaded(true);
+            // Check if content is a Quill Delta JSON string
+            if (typeof news.content === "string") {
+                if (news.content.trim().startsWith("{") && news.content.includes('"ops"')) {
+                    try {
+                        const delta = JSON.parse(news.content);
+                        const tempCont = document.createElement('div');
+                        const quill = new Quill(tempCont);
+                        quill.setContents(delta);
+                        htmlValue = tempCont.querySelector('.ql-editor')?.innerHTML || '';
+                    } catch (error) {
+                        console.error('Error parsing Delta JSON:', error);
+                        htmlValue = news.content;
+                    }
+                } else {
+                    // It's already HTML
+                    htmlValue = news.content;
+                }
+            } else if (typeof news.content === "object" && news.content.ops) {
+                // It's a Delta object
+                try {
+                    const tempCont = document.createElement('div');
+                    const quill = new Quill(tempCont);
+                    quill.setContents(news.content);
+                    htmlValue = tempCont.querySelector('.ql-editor')?.innerHTML || '';
+                } catch (error) {
+                    console.error('Error converting Delta object:', error);
+                    htmlValue = JSON.stringify(news.content);
+                }
+            } else {
+                htmlValue = String(news.content);
             }
+
+            setContentHtml(htmlValue);
+            setIsContentLoaded(true);
         } else {
             setIsContentLoaded(true);
         }
@@ -159,7 +168,7 @@ const EditNews = () => {
             const payload = {
                 title,
                 author,
-                content: contentDelta,
+                content: contentHtml, // Send HTML instead of Delta
                 attachment_ids: newsAttachments.map(att => ({
                     attachment_id: att.attachment_id,
                     category: att.category
@@ -352,7 +361,7 @@ const EditNews = () => {
                         onChange={(ids, files) => {
                             setNewsAttachments(prev => [
                                 ...prev.filter(a => a.category !== "headline"),
-                                ...ids.map(id => ({ attachment_id: id, category: "headline" })),
+                                ...ids.map(id => ({ attachment_id: id, category: "headline" as const })),
                             ]);
                             if (files) {
                                 setHeadlineFiles(files);
@@ -374,7 +383,7 @@ const EditNews = () => {
                         onChange={(ids, files) => {
                             setNewsAttachments(prev => [
                                 ...prev.filter(a => a.category !== "footer"),
-                                ...ids.map(id => ({ attachment_id: id, category: "footer" })),
+                                ...ids.map(id => ({ attachment_id: id, category: "footer" as const })),
                             ]);
                             if (files) {
                                 setFooterFiles(files);
@@ -498,7 +507,7 @@ const EditNews = () => {
 
                 {/* Content Preview */}
                 <div
-                    className="prose max-w-full break-words mb-4"
+                    className="prose prose-slate max-w-none break-words mb-4 dark:prose-invert"
                     dangerouslySetInnerHTML={{
                         __html: contentHtml || "<p>News content preview will appear here...</p>"
                     }}
