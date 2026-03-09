@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import clsx from "clsx";
 import Image from "next/image";
-import { Activity, ArrowRight, ChevronDown, InfoIcon, ThermometerSun, WavesArrowDown, WavesIcon } from "lucide-react";
+import { Activity, ArrowRight, ChevronDown } from "lucide-react";
 import { Button } from "../../ui/button";
 import { useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
@@ -23,7 +23,7 @@ export type Slide = {
     bg: string;
 };
 
-const slides: Slide[] = [
+const DEFAULT_SLIDES: Slide[] = [
     {
         id: 1,
         title: {
@@ -80,12 +80,14 @@ const slides: Slide[] = [
 
 
 export default function HeroSection() {
+    const [slides, setSlides] = useState<Slide[]>(DEFAULT_SLIDES);
     const [current, setCurrent] = useState(0);
     const [locale, setLocale] = useState<keyof LocalizedText>("en"); // default language
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
     const t = useTranslations();
     const pathname = usePathname();
-    // Load locale from localStorage
+
+    // Load locale from pathname
     useEffect(() => {
         if (pathname.startsWith("/am")) {
             setLocale("am");
@@ -93,6 +95,18 @@ export default function HeroSection() {
             setLocale("en");
         }
     }, [pathname]);
+
+    // Load dynamic slides
+    useEffect(() => {
+        const savedData = localStorage.getItem("home_hero_slides");
+        if (savedData) {
+            try {
+                setSlides(JSON.parse(savedData));
+            } catch (e) {
+                console.error("Failed to parse hero slides", e);
+            }
+        }
+    }, []);
 
     // Go to next slide
     const next = () => setCurrent((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
@@ -106,11 +120,15 @@ export default function HeroSection() {
     };
 
     useEffect(() => {
-        startAutoSlide();
+        if (slides.length > 0) {
+            startAutoSlide();
+        }
         return () => {
             if (intervalRef.current) clearInterval(intervalRef.current);
         };
-    }, [current]);
+    }, [current, slides]);
+
+    if (slides.length === 0) return null;
 
     return (
         <div className="relative w-full h-[80vh] overflow-hidden bg-black">
@@ -136,7 +154,7 @@ export default function HeroSection() {
                         <div className={clsx("relative flex items-center justify-start w-full h-full overflow-hidden", slide.bg)}>
                             <Image
                                 src={slide.image}
-                                alt={slide.title[locale]}
+                                alt={slide.title[locale] || slide.title['en']}
                                 fill
                                 className="object-cover w-full"
                                 priority={isActive}
@@ -146,7 +164,6 @@ export default function HeroSection() {
                             <div className="relative z-10 w-full h-full flex items-center justify-center mb-20">
                                 <div className="max-w-7xl w-full px-6">
                                     <div className="inline-flex items-center gap-2   rounded-full bg-golden-dark10 text-golden-dark text-sm font-semibold mb-10">
-                                        {/* Animated ping dot */}
                                         <span className="relative flex h-2 w-2">
                                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-golden-dark opacity-75"></span>
                                             <span className="relative inline-flex rounded-full h-2 w-2 bg-golden-dark"></span>
@@ -156,10 +173,10 @@ export default function HeroSection() {
                                     </div>
 
                                     <h2 className="text-2xl sm:text-5xl font-bold mb-4 text-white">
-                                        {slide.title[locale]}
+                                        {slide.title[locale] || slide.title['en']}
                                     </h2>
                                     <p className="text-white opacity-90 text-base sm:text-lg mb-10 md:max-w-[70%]">
-                                        {slide.description[locale]}
+                                        {slide.description[locale] || slide.description['en']}
                                     </p>
                                     <div className="flex flex-col sm:flex-row gap-4 mt-4 w-fit">
                                         <Button className="bg-golden-dark z-30 w-full sm:w-fit hover:bg-golden-darkHover h-12  text-base flex items-center justify-center">
