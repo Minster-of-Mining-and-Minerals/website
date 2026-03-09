@@ -13,7 +13,6 @@ export default function VisionMissionValues() {
     const visionSection = strategy?.sections?.find(s => s.type === "vision");
     const coreValuesSection = strategy?.sections?.find(s => s.type === "core_values");
 
-    console.log("missionSection: ", missionSection)
 
     // Prepare data objects matching the existing structure
     const missionVision = {
