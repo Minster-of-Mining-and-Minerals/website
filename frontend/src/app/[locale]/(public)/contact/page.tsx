@@ -1,8 +1,5 @@
 "use client";
 
-import { MapPin, Phone, Mail, Send } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import ContactForm from "@/components/pages/contact-page-components/ContactForm";
 import MapSection from "@/components/pages/contact-page-components/MapSection";
 

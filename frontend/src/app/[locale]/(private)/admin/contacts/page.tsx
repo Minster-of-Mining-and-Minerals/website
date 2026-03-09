@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AdminContactInfo from "@/components/pages/contact-page-components/AdminContactInfo";
 import AdminContactMessages from "@/components/pages/contact-page-components/AdminContactMessages";
 import AdminContactRegionalOffices from "@/components/pages/contact-page-components/AdminContactRegionalOffices";
+import AdminRegionList from "@/components/pages/contact-page-components/AdminRegionsList";
 
 const AdminContactsPage = () => {
     return (
@@ -17,7 +18,7 @@ const AdminContactsPage = () => {
             </div>
 
             <Tabs defaultValue="messages" className="w-full">
-                <TabsList className="grid max-w-2xl grid-cols-3 mb-8 h-12 bg-golden-dark20 rounded-lg p-1">
+                <TabsList className="grid max-w-2xl grid-cols-4 mb-8 h-12 bg-golden-dark20 rounded-lg p-1">
                     <TabsTrigger
                         value="messages"
                         className="text-dark data-[state=active]:bg-golden-dark data-[state=active]:text-white rounded-md transition"
@@ -30,6 +31,12 @@ const AdminContactsPage = () => {
                         className="text-dark data-[state=active]:bg-golden-dark data-[state=active]:text-white rounded-md transition"
                     >
                         Contact Details
+                    </TabsTrigger>
+                    <TabsTrigger
+                        value="regions"
+                        className="text-dark data-[state=active]:bg-golden-dark data-[state=active]:text-white rounded-md transition"
+                    >
+                        Regions
                     </TabsTrigger>
                     <TabsTrigger
                         value="regional-offices"
@@ -46,6 +53,9 @@ const AdminContactsPage = () => {
 
                 <TabsContent value="contact-info">
                     <AdminContactInfo />
+                </TabsContent>
+                <TabsContent value="regions">
+                    <AdminRegionList />
                 </TabsContent>
                 <TabsContent value="regional-offices">
                     <AdminContactRegionalOffices />
