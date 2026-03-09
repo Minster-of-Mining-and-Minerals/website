@@ -55,6 +55,11 @@ const navigationItems = [
     icon: LayoutDashboard,
   },
   {
+    title: "Hero Section",
+    url: "/admin/hero-section",
+    icon: Building2
+  },
+  {
     title: "About",
     url: "/admin/about",
     icon: Building2,
@@ -68,6 +73,11 @@ const navigationItems = [
     title: "Contacts",
     url: "/admin/contacts",
     icon: Phone,
+  },
+  {
+    title: "Footer",
+    url: "/admin/footer",
+    icon: Building2,
   },
 ];
 
