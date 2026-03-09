@@ -30,10 +30,10 @@ const serviceRoute = require("./routers/sevice/serviceRoutes");
 // ================== About Page Routes ==========================
 const backgroundRoute = require("./routers/about/backgroundRoutes");
 const leadershipRoute = require("./routers/about/leadershipRoutes");
+const strategyRoute = require("./routers/about/strategyRoutes");
 
 // ================== Attachment Routes ==========================
 const attachmentRoute = require("./routers/attachement/attachementRoutes");
-
 
 const app = express();
 const appServer = http.createServer(app);
@@ -129,10 +129,10 @@ app.use("/api/services", serviceRoute);
 // ================== About Page Routes ==========================
 app.use("/api/backgrounds", backgroundRoute);
 app.use("/api/leadership", leadershipRoute);
+app.use("/api/strategy", strategyRoute);
 
 // ================== Api Attachment Routes =====================
 app.use("/api/attachments", attachmentRoute);
-
 
 // ================== Root Endpoint ==================
 app.get("/", (req, res) => {
