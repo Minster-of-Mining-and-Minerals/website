@@ -32,6 +32,11 @@ const backgroundRoute = require("./routers/about/backgroundRoutes");
 const leadershipRoute = require("./routers/about/leadershipRoutes");
 const strategyRoute = require("./routers/about/strategyRoutes");
 
+// ================== Contact Page Routes ==========================
+const federalOfficeRoute = require("./routers/contact/federalOfficeRoutes");
+const regionRoute = require("./routers/contact/regionRoutes");
+const regionalOfficeRoute = require("./routers/contact/regionalOfficeRoutes");
+
 // ================== Attachment Routes ==========================
 const attachmentRoute = require("./routers/attachement/attachementRoutes");
 
@@ -130,6 +135,11 @@ app.use("/api/services", serviceRoute);
 app.use("/api/backgrounds", backgroundRoute);
 app.use("/api/leadership", leadershipRoute);
 app.use("/api/strategy", strategyRoute);
+
+// ================== Contact Page Routes ==========================
+app.use("/api/federal-office", federalOfficeRoute);
+app.use("/api/region", regionRoute);
+app.use("/api/regional-offices", regionalOfficeRoute);
 
 // ================== Api Attachment Routes =====================
 app.use("/api/attachments", attachmentRoute);

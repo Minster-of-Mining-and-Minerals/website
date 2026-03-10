@@ -27,6 +27,9 @@ export const baseApi = createApi({
     "Background",
     "Leadership",
     "Strategy",
+    "Region",
+    "FederalOffice",
+    "RegionalOffice",
   ],
   endpoints: () => ({}),
 });

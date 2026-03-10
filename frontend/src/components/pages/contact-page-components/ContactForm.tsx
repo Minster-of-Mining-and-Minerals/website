@@ -1,9 +1,23 @@
-import React from 'react'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import { Mail, MapPin, Phone, Send } from 'lucide-react'
+"use client";
+
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Mail, MapPin, Phone, Send, Loader2 } from 'lucide-react';
+import { useGetFederalOfficesQuery } from '@/redux/api/federalOfficeApi';
 
 const ContactForm = () => {
+    const { data: federalOffices, isLoading, isError } = useGetFederalOfficesQuery();
+    const office = federalOffices?.[0]; // Get first office from index 0
+
+    // Loading state
+    if (isLoading) {
+        return (
+            <div className="flex justify-center items-center min-h-[400px]">
+                <Loader2 className="w-8 h-8 animate-spin text-golden-dark" />
+            </div>
+        );
+    }
+
     return (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* LEFT SIDE – CONTACT INFO */}
@@ -11,19 +25,19 @@ const ContactForm = () => {
                 <InfoCard
                     icon={<MapPin className="text-golden-dark" />}
                     title="Office Address"
-                    value="4 Kilo, Addis Ababa, Ethiopia"
+                    value={office?.office_address || "4 Kilo, Addis Ababa, Ethiopia"}
                 />
 
                 <InfoCard
                     icon={<Phone className="text-golden-dark" />}
                     title="Phone Number"
-                    value="+251 111 704 900"
+                    value={office?.phone || "+251 111 704 900"}
                 />
 
                 <InfoCard
                     icon={<Mail className="text-golden-dark" />}
                     title="Email Address"
-                    value="info@midi.gov.et"
+                    value={office?.email || "info@midi.gov.et"}
                 />
             </div>
 
@@ -35,7 +49,7 @@ const ContactForm = () => {
 
                 <form className="space-y-5">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2  ">
+                        <div className="space-y-2">
                             <label>Full Name</label>
                             <Input placeholder="Enter your name" className="h-11" />
                         </div>
@@ -66,10 +80,10 @@ const ContactForm = () => {
                 </form>
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default ContactForm
+export default ContactForm;
 
 /* ---------------- COMPONENTS ---------------- */
 
