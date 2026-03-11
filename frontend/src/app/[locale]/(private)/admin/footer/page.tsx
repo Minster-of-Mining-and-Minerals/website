@@ -4,7 +4,6 @@ import AdminFooterManager from '@/components/pages/admin-footer-components/Admin
 const FooterAdmin = () => {
     return (
         <div className="mx-auto space-y-6">
-
             <AdminFooterManager />
         </div>
     )

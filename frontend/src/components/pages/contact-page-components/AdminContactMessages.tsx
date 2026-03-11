@@ -5,8 +5,9 @@ import { DataTable } from "@/features/template/component/DataTable";
 import { TableLayout } from "@/features/template/component/TableLayout";
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
-import { Eye, Trash2, MailOpen } from "lucide-react";
+import { Eye, Trash2, MailOpen, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { useGetMessagesQuery } from "@/redux/api/messageApi";
 
 type ContactMessage = {
     id: string;
@@ -18,39 +19,22 @@ type ContactMessage = {
     status: "new" | "read";
 };
 
-const mockMessages: ContactMessage[] = [
-    {
-        id: "MSG001",
-        name: "Abebe Bikila",
-        email: "abebe@example.com",
-        subject: "Investment Inquiry",
-        message: "I am interested in gold mining permits in the southern region...",
-        date: "2026-02-15",
-        status: "new",
-    },
-    {
-        id: "MSG002",
-        name: "Samuel L. Jackson",
-        email: "samuel@hollywood.com",
-        subject: "Policy Question",
-        message: "What are the latest regulations regarding lithium extraction?",
-        date: "2026-02-14",
-        status: "read",
-    },
-    {
-        id: "MSG003",
-        name: "Tirunesh Dibaba",
-        email: "tirunesh@olympics.com",
-        subject: "Community Support",
-        message: "How can we partner for local mining community development?",
-        date: "2026-02-10",
-        status: "new",
-    },
-];
-
 export default function AdminContactMessages() {
     const [pageIndex, setPageIndex] = useState(0);
     const [pageSize, setPageSize] = useState(10);
+
+    const { data: messages = [], isLoading } = useGetMessagesQuery();
+
+    /** Map API data to UI structure */
+    const mappedMessages: ContactMessage[] = messages.map((msg: any) => ({
+        id: msg.message_id,
+        name: msg.full_name,
+        email: msg.email_address,
+        subject: msg.subject,
+        message: msg.message,
+        date: msg.created_at?.split("T")[0],
+        status: "new", // default since backend does not have status
+    }));
 
     const columns: ColumnDef<ContactMessage>[] = [
         { accessorKey: "name", header: "Name" },
@@ -81,7 +65,12 @@ export default function AdminContactMessages() {
                         <Button variant="ghost" size="icon" title="Mark as read">
                             <MailOpen className="w-4 h-4" />
                         </Button>
-                        <Button variant="ghost" size="icon" className="text-destructive" title="Delete">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="text-destructive"
+                            title="Delete"
+                        >
                             <Trash2 className="w-4 h-4" />
                         </Button>
                     </div>
@@ -95,6 +84,14 @@ export default function AdminContactMessages() {
         setPageSize(size);
     };
 
+    if (isLoading) {
+        return (
+            <div className="flex justify-center items-center h-[300px]">
+                <Loader2 className="animate-spin w-6 h-6" />
+            </div>
+        );
+    }
+
     return (
         <TableLayout
             title="Contact Messages"
@@ -102,8 +99,8 @@ export default function AdminContactMessages() {
         >
             <DataTable
                 columns={columns}
-                data={mockMessages}
-                totalPageCount={Math.ceil(mockMessages.length / pageSize)}
+                data={mappedMessages}
+                totalPageCount={Math.ceil(mappedMessages.length / pageSize)}
                 handlePagination={handlePagination}
                 tablePageSize={pageSize}
                 currentIndex={pageIndex}

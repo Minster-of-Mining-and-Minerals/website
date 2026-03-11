@@ -11,6 +11,7 @@ import {
     Trash2,
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import FooterSocialMedia from "../contact-page-components/FooterSocialMedia";
 
 interface FooterLink {
     id: string;
@@ -184,10 +185,11 @@ export default function AdminFooterManager() {
                     </div>
 
                     <Tabs defaultValue="quick-links" className="w-full">
-                        <TabsList className="grid w-full grid-cols-3 mb-6 bg-gray-100/50 p-1">
+                        <TabsList className="grid w-full grid-cols-4 mb-6 bg-gray-100/50 p-1">
                             <TabsTrigger value="quick-links">Quick Links</TabsTrigger>
                             <TabsTrigger value="resources">Resources</TabsTrigger>
                             <TabsTrigger value="contact">Contact</TabsTrigger>
+                            <TabsTrigger value="social">Social Links</TabsTrigger>
                         </TabsList>
 
                         {/* Quick Links Tab */}
@@ -221,6 +223,9 @@ export default function AdminFooterManager() {
                                 updateLink={(linkId, field, value) => updateLink("contact", linkId, field, value)}
                                 removeLink={(linkId) => removeLink("contact", linkId)}
                             />
+                        </TabsContent>
+                        <TabsContent value="social" className="space-y-4">
+                            <FooterSocialMedia />
                         </TabsContent>
                     </Tabs>
 

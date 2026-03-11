@@ -30,6 +30,7 @@ export const baseApi = createApi({
     "Region",
     "FederalOffice",
     "RegionalOffice",
+    "Message",
   ],
   endpoints: () => ({}),
 });

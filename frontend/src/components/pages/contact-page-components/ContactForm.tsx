@@ -4,12 +4,50 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Mail, MapPin, Phone, Send, Loader2 } from 'lucide-react';
 import { useGetFederalOfficesQuery } from '@/redux/api/federalOfficeApi';
+import { useCreateMessageMutation } from '@/redux/api/messageApi';
+import { useState } from "react";
 
 const ContactForm = () => {
-    const { data: federalOffices, isLoading, isError } = useGetFederalOfficesQuery();
-    const office = federalOffices?.[0]; // Get first office from index 0
+    const { data: federalOffices, isLoading } = useGetFederalOfficesQuery();
+    const office = federalOffices?.[0];
 
-    // Loading state
+    const [createMessage, { isLoading: sending }] = useCreateMessageMutation();
+
+    const [formData, setFormData] = useState({
+        full_name: "",
+        email_address: "",
+        subject: "",
+        message: "",
+    });
+
+    const [success, setSuccess] = useState("");
+
+    const handleChange = (e: any) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value,
+        });
+    };
+
+    const handleSubmit = async (e: any) => {
+        e.preventDefault();
+
+        try {
+            await createMessage(formData).unwrap();
+
+            setSuccess("Your message has been sent successfully.");
+
+            setFormData({
+                full_name: "",
+                email_address: "",
+                subject: "",
+                message: "",
+            });
+        } catch (error) {
+            console.error("Message send failed:", error);
+        }
+    };
+
     if (isLoading) {
         return (
             <div className="flex justify-center items-center min-h-[400px]">
@@ -47,24 +85,51 @@ const ContactForm = () => {
                     Send Us a Message
                 </h2>
 
-                <form className="space-y-5">
+                {success && (
+                    <p className="text-green-600 mb-4">{success}</p>
+                )}
+
+                <form className="space-y-5" onSubmit={handleSubmit}>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <label>Full Name</label>
-                            <Input placeholder="Enter your name" className="h-11" />
+                            <Input
+                                name="full_name"
+                                value={formData.full_name}
+                                onChange={handleChange}
+                                placeholder="Enter your name"
+                                className="h-11"
+                            />
                         </div>
                         <div className="space-y-2">
                             <label>Email Address</label>
-                            <Input placeholder="example@mail.com" className="h-11" />
+                            <Input
+                                name="email_address"
+                                value={formData.email_address}
+                                onChange={handleChange}
+                                placeholder="example@mail.com"
+                                className="h-11"
+                            />
                         </div>
                     </div>
+
                     <div className="space-y-2">
                         <label>Subject</label>
-                        <Input placeholder="Message subject" className="h-11" />
+                        <Input
+                            name="subject"
+                            value={formData.subject}
+                            onChange={handleChange}
+                            placeholder="Message subject"
+                            className="h-11"
+                        />
                     </div>
+
                     <div className="space-y-2">
                         <label>Message</label>
                         <Textarea
+                            name="message"
+                            value={formData.message}
+                            onChange={handleChange}
                             rows={5}
                             placeholder="Write your message here..."
                         />
@@ -72,10 +137,20 @@ const ContactForm = () => {
 
                     <button
                         type="submit"
+                        disabled={sending}
                         className="w-full bg-golden-dark hover:bg-golden-darkHover text-white py-4 rounded-xl flex items-center justify-center gap-2 transition"
                     >
-                        Send Message
-                        <Send size={18} />
+                        {sending ? (
+                            <>
+                                <Loader2 className="animate-spin" size={18} />
+                                Sending...
+                            </>
+                        ) : (
+                            <>
+                                Send Message
+                                <Send size={18} />
+                            </>
+                        )}
                     </button>
                 </form>
             </div>

@@ -36,6 +36,7 @@ const strategyRoute = require("./routers/about/strategyRoutes");
 const federalOfficeRoute = require("./routers/contact/federalOfficeRoutes");
 const regionRoute = require("./routers/contact/regionRoutes");
 const regionalOfficeRoute = require("./routers/contact/regionalOfficeRoutes");
+const messageRoute = require("./routers/contact/messageRoutes");
 
 // ================== Attachment Routes ==========================
 const attachmentRoute = require("./routers/attachement/attachementRoutes");
@@ -140,6 +141,7 @@ app.use("/api/strategy", strategyRoute);
 app.use("/api/federal-office", federalOfficeRoute);
 app.use("/api/region", regionRoute);
 app.use("/api/regional-offices", regionalOfficeRoute);
+app.use("/api/message", messageRoute);
 
 // ================== Api Attachment Routes =====================
 app.use("/api/attachments", attachmentRoute);
