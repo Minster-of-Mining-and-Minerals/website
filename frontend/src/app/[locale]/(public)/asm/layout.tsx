@@ -29,7 +29,7 @@ export default function Layout({
                 {/* RIGHT MAIN CONTENT (route content) */}
                 <div className="w-full">
                     {/* Route-specific content renders here */}
-                    <div className="prose max-w-none">{children}</div>
+                    <div className="prose max-w-none ">{children}</div>
                 </div>
             </section>
         </>

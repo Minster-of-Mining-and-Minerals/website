@@ -1,6 +1,5 @@
 import CredentialsProvider from "next-auth/providers/credentials";
 import type { NextAuthConfig } from "next-auth";
-import { Role } from "./redux/types/auth";
 
 export default {
   providers: [
@@ -19,9 +18,10 @@ export default {
           // 🔥 FIX: Use the correct backend URL for Docker
           // In Docker, backend service is accessible via service name
           // For external access, use the IP/domain
-          const backendUrl = process.env.NODE_ENV === "production"
-            ? `${process.env.NEXT_PUBLIC_BASE_URL}/auth/login`
-            : `${process.env.NEXT_PUBLIC_BASE_URL}/auth/login`;
+          const backendUrl =
+            process.env.NODE_ENV === "production"
+              ? `${process.env.NEXT_PUBLIC_BASE_URL}/auth/login`
+              : `${process.env.NEXT_PUBLIC_BASE_URL}/auth/login`;
 
           console.log("Auth attempt to:", backendUrl);
 
@@ -50,6 +50,7 @@ export default {
 
           const user = data.data.user;
           const roles = data.data?.roles ?? [];
+          const permissions = data.data?.permissions ?? [];
           const token = data.token || data.data?.token;
 
           if (!token) {
@@ -69,9 +70,7 @@ export default {
             department: user.department,
             role: roles?.[0]?.name ?? null,
             roles: roles ?? [],
-            permissions: data.roles?.flatMap((r: Role) =>
-              r.permissions.map((p: any) => p.name),
-            ),
+            permissions: permissions,
           };
         } catch (err) {
           console.error("Authorize error:", err);
@@ -83,5 +82,4 @@ export default {
 
   // 🔥 ADD BASE PATH FOR DOCKER
   basePath: "/api/auth",
-
 } satisfies NextAuthConfig;
