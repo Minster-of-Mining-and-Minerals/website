@@ -38,6 +38,10 @@ const regionRoute = require("./routers/contact/regionRoutes");
 const regionalOfficeRoute = require("./routers/contact/regionalOfficeRoutes");
 const messageRoute = require("./routers/contact/messageRoutes");
 
+// ================== Footer Page Routes ==========================
+const socialMediaRoute = require("./routers/footer/socialMediaRoutes");
+const footerRoute = require("./routers/footer/footerRoutes");
+
 // ================== Attachment Routes ==========================
 const attachmentRoute = require("./routers/attachement/attachementRoutes");
 
@@ -142,6 +146,10 @@ app.use("/api/federal-office", federalOfficeRoute);
 app.use("/api/region", regionRoute);
 app.use("/api/regional-offices", regionalOfficeRoute);
 app.use("/api/message", messageRoute);
+
+// ================== Footer Page Routes ==========================
+app.use("/api/social-media", socialMediaRoute);
+app.use("/api/footer", footerRoute);
 
 // ================== Api Attachment Routes =====================
 app.use("/api/attachments", attachmentRoute);
