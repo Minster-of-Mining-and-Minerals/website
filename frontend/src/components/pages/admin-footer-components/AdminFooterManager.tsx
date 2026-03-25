@@ -14,6 +14,7 @@ import {
     useGetFootersQuery,
     useCreateFooterMutation,
     useUpdateFooterMutation,
+    useDeleteFooterMutation,
 } from "@/redux/api/footerApi";
 import { ImageUploadField } from "@/components/common/ImageUploadField";
 
@@ -34,7 +35,7 @@ export default function AdminFooterManager() {
     const { data: footers, isLoading } = useGetFootersQuery();
     const [createFooter] = useCreateFooterMutation();
     const [updateFooter] = useUpdateFooterMutation();
-    const [deleteFooterSection] = useDeleteFooterSectionMutation(); // Add this
+    const [deleteFooterSection] = useDeleteFooterMutation(); // Add this
     const [attachmentId, setAttachmentId] = useState<string[]>([]);
 
     const [footerData, setFooterData] = useState({
@@ -43,7 +44,11 @@ export default function AdminFooterManager() {
         text: `© ${new Date().getFullYear()} Ministry of Mines – Ethiopia. All rights reserved.`,
         content: "",
         attachment_id: "",
-        sections: [] as FooterSection[],
+        sections: [
+            { id: crypto.randomUUID(), title: "Section 1", links: [] },
+            { id: crypto.randomUUID(), title: "Section 2", links: [] },
+            { id: crypto.randomUUID(), title: "Section 3", links: [] },
+        ] as FooterSection[],
     });
 
     const [activeTab, setActiveTab] = useState("");
@@ -69,21 +74,33 @@ export default function AdminFooterManager() {
                         })) ?? [],
                 })) ?? [];
 
+            // Ensure exactly 3 sections
+            const finalSections: FooterSection[] = [...mappedSections];
+            while (finalSections.length < 3) {
+                finalSections.push({
+                    id: crypto.randomUUID(),
+                    title: `Section ${finalSections.length + 1}`,
+                    links: [],
+                    footer_section_id: undefined,
+                });
+            }
+            const displayedSections = finalSections.slice(0, 3);
+
             setFooterData({
                 footer_id: f.footer_id,
                 title: f.title || "Ministry of Mines",
                 text: f.text || `© ${new Date().getFullYear()} Ministry of Mines – Ethiopia. All rights reserved.`,
                 content: f.content || "",
                 attachment_id: f.attachment_id || "",
-                sections: mappedSections,
+                sections: displayedSections,
             });
 
             if (f.attachment_id) {
                 setAttachmentId([f.attachment_id]);
             }
 
-            if (mappedSections.length > 0) {
-                setActiveTab(mappedSections[0].id);
+            if (displayedSections.length > 0) {
+                setActiveTab(displayedSections[0].id);
             }
         }
     }, [footers, isLoading]);
@@ -150,52 +167,7 @@ export default function AdminFooterManager() {
     SECTION MANAGEMENT
     --------------------------*/
 
-    const addSection = () => {
-        const newSection = {
-            id: crypto.randomUUID(),
-            title: "New Section",
-            links: [],
-            // No footer_section_id for new sections
-        };
-
-        setFooterData({
-            ...footerData,
-            sections: [...footerData.sections, newSection],
-        });
-
-        setActiveTab(newSection.id);
-    };
-
-    const removeSection = async (sectionId: string) => {
-        const section = footerData.sections.find(s => s.id === sectionId);
-
-        // If section has a footer_section_id, delete from backend
-        if (section?.footer_section_id) {
-            try {
-                await deleteFooterSection(section.footer_section_id).unwrap();
-            } catch (error) {
-                console.error("Error deleting section:", error);
-                alert("Failed to delete section from database");
-                return; // Don't remove from UI if backend delete fails
-            }
-        }
-
-        // Remove from local state
-        setFooterData({
-            ...footerData,
-            sections: footerData.sections.filter((s) => s.id !== sectionId),
-        });
-
-        // Update active tab
-        if (activeTab === sectionId) {
-            const remainingSections = footerData.sections.filter(s => s.id !== sectionId);
-            if (remainingSections.length > 0) {
-                setActiveTab(remainingSections[0].id);
-            } else {
-                setActiveTab("social");
-            }
-        }
-    };
+    // addSection and removeSection logic removed as per requirements (fixed 3 sections)
 
     const updateSectionTitle = (id: string, title: string) => {
         setFooterData({
@@ -284,15 +256,6 @@ export default function AdminFooterManager() {
 
                         <div className="flex gap-3">
                             <Button
-                                onClick={addSection}
-                                variant="outline"
-                                className="border-golden-dark text-golden-dark"
-                            >
-                                <Plus className="w-4 h-4 mr-2" />
-                                Add Section
-                            </Button>
-
-                            <Button
                                 onClick={handleSave}
                                 className="bg-golden-dark hover:bg-golden-darkHover"
                             >
@@ -359,7 +322,6 @@ export default function AdminFooterManager() {
                                         updateLink(section.id, linkId, field, value)
                                     }
                                     removeLink={(linkId) => removeLink(section.id, linkId)}
-                                    removeSection={() => removeSection(section.id)}
                                 />
                             </TabsContent>
                         ))}
@@ -369,19 +331,7 @@ export default function AdminFooterManager() {
                         </TabsContent>
                     </Tabs>
 
-                    {footerData.sections.length === 0 && (
-                        <div className="text-center py-8 border rounded-lg bg-gray-50">
-                            <p className="text-gray-500 mb-4">No sections added yet</p>
-                            <Button
-                                onClick={addSection}
-                                variant="outline"
-                                className="border-golden-dark text-golden-dark"
-                            >
-                                <Plus className="w-4 h-4 mr-2" />
-                                Add Your First Section
-                            </Button>
-                        </div>
-                    )}
+                    {/* Removed fixed empty state conditional since sections are always 3 */}
 
                     {/* COPYRIGHT TEXT */}
                     <div className="space-y-2 pt-4 border-t">
@@ -413,7 +363,6 @@ interface SectionEditorProps {
     addLink: () => void;
     updateLink: (linkId: string, field: keyof FooterLink, value: string) => void;
     removeLink: (linkId: string) => void;
-    removeSection: () => void;
 }
 
 function SectionEditor({
@@ -422,7 +371,6 @@ function SectionEditor({
     addLink,
     updateLink,
     removeLink,
-    removeSection,
 }: SectionEditorProps) {
     return (
         <div className="space-y-4">
@@ -449,15 +397,6 @@ function SectionEditor({
                     >
                         <Plus className="w-4 h-4 mr-2" />
                         Add Link
-                    </Button>
-
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={removeSection}
-                        className="text-destructive hover:text-destructive/90"
-                    >
-                        <Trash2 className="w-4 h-4" />
                     </Button>
                 </div>
             </div>

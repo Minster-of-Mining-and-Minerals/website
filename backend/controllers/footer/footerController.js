@@ -1,6 +1,6 @@
 "use strict";
 
-const { Footer, FooterSection, sequelize } = require("../../models");
+const { Footer, FooterSection, Attachment, sequelize } = require("../../models");
 const { v4: uuidv4, validate: isUuid } = require("uuid");
 
 // ===========================
@@ -73,7 +73,10 @@ const createFooter = async (req, res) => {
 const getAllFooters = async (req, res) => {
   try {
     const footers = await Footer.findAll({
-      include: [{ model: FooterSection, as: "sections" }],
+      include: [
+        { model: FooterSection, as: "sections" },
+        { model: Attachment, as: "attachment" },
+      ],
       order: [["created_at", "DESC"]],
     });
 
@@ -105,7 +108,10 @@ const getFooterById = async (req, res) => {
         .json({ success: false, message: "Invalid footer ID." });
 
     const footer = await Footer.findByPk(id, {
-      include: [{ model: FooterSection, as: "sections" }],
+      include: [
+        { model: FooterSection, as: "sections" },
+        { model: Attachment, as: "attachment" },
+      ],
     });
 
     if (!footer)

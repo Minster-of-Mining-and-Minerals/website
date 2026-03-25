@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
     Facebook,
@@ -10,28 +10,30 @@ import {
     Instagram,
     Link as LinkIcon
 } from "lucide-react";
-import Image from "next/image";
 import { IconBrandTelegram, IconBrandTiktok } from "@tabler/icons-react";
+import { useGetFootersQuery } from "@/redux/api/footerApi";
+import { useGetAttachmentsQuery } from "@/redux/api/attachementApi";
+import { useGetSocialMediasQuery } from "@/redux/api/socialMediaApi";
 
+// Map icon names to actual components
 const ICON_MAP: Record<string, any> = {
-    facebook: Facebook,
-    twitter: Twitter,
-    linkedin: Linkedin,
-    youtube: Youtube,
-    instagram: Instagram,
-    telegram: IconBrandTelegram,
-    tiktok: IconBrandTiktok,
-    other: LinkIcon,
+    Facebook: Facebook,
+    Twitter: Twitter,
+    Linkedin: Linkedin,
+    Youtube: Youtube,
+    Instagram: Instagram,
+    Telegram: IconBrandTelegram,
+    Tiktok: IconBrandTiktok,
+    // Add more mappings as needed
 };
 
-// Social links are now static/not managed via admin
-const STATIC_SOCIALS = [
-    { id: "s1", platform: "Facebook", icon: "facebook", url: "#" },
-    { id: "s2", platform: "Twitter", icon: "twitter", url: "#" },
-    { id: "s3", platform: "LinkedIn", icon: "linkedin", url: "#" },
-    { id: "s4", platform: "YouTube", icon: "youtube", url: "#" },
-    { id: "s5", platform: "Instagram", icon: "instagram", url: "#" },
-];
+// Helper function to get icon component by name
+const getIconComponent = (iconName: string) => {
+    // Remove "Lucide" prefix if present (e.g., "LucideYoutube" -> "Youtube")
+    const cleanIconName = iconName.replace(/^Lucide/, '');
+    const IconComponent = ICON_MAP[cleanIconName];
+    return IconComponent || LinkIcon; // Fallback to LinkIcon if not found
+};
 
 const DEFAULT_FOOTER_DATA = {
     about: {
@@ -75,18 +77,66 @@ const DEFAULT_FOOTER_DATA = {
 };
 
 const Footer = () => {
+    const { data: footers, isLoading: isFootersLoading } = useGetFootersQuery();
+    const { data: socialMedias = [], isLoading: isSocialLoading, isError: isSocialError } = useGetSocialMediasQuery();
+    const { data: attachmentsResponse } = useGetAttachmentsQuery();
+
+    // Fallback data structure for safety
     const [footerData, setFooterData] = useState(DEFAULT_FOOTER_DATA);
+    const [socialLinks, setSocialLinks] = useState<any[]>([]);
 
     useEffect(() => {
-        const savedData = localStorage.getItem("dynamic_footer_data");
-        if (savedData) {
-            try {
-                setFooterData(JSON.parse(savedData));
-            } catch (e) {
-                console.error("Failed to parse footer data", e);
+        if (footers && footers.length > 0) {
+            const f = footers[0]; // Assuming we're using the latest one
+
+            // Resolve Logo URL if attachment_id exists
+            let logoUrl = DEFAULT_FOOTER_DATA.about.logo;
+            if (f.attachment?.file_path) {
+                logoUrl = `${process.env.NEXT_PUBLIC_BASE}/${f.attachment.file_path.replace(/\\/g, "/")}`;
             }
+
+            // Map Sections to match existing UI structure (title, links, id)
+            const mappedSections = (f.sections || []).map((s: any) => ({
+                id: s.footer_section_id || crypto.randomUUID(),
+                title: s.section_name,
+                links: (s.links || []).map((l: any) => ({
+                    id: crypto.randomUUID(),
+                    label: l.label,
+                    href: l.url,
+                })),
+            }));
+
+            // If fewer than 3 sections, pad with defaults
+            if (mappedSections.length < 3) {
+                const defaults = DEFAULT_FOOTER_DATA.sections.slice(mappedSections.length);
+                mappedSections.push(...defaults);
+            }
+
+            setFooterData({
+                about: {
+                    logo: logoUrl,
+                    title: f.title || DEFAULT_FOOTER_DATA.about.title,
+                },
+                sections: mappedSections.slice(0, 3),
+                copyright: f.text || DEFAULT_FOOTER_DATA.copyright,
+            });
         }
-    }, []);
+    }, [footers, attachmentsResponse]);
+
+    // Transform social media data for display
+    useEffect(() => {
+        if (socialMedias && socialMedias.length > 0) {
+            const transformedLinks = socialMedias.map((social: any) => ({
+                id: social.social_media_id,
+                platform_name: social.platform_name,
+                icon: social.icon,
+                url: social.url,
+            }));
+            setSocialLinks(transformedLinks);
+        } else {
+            setSocialLinks([]);
+        }
+    }, [socialMedias]);
 
     return (
         <footer className="bg-gray-800 bg-blur-md text-gray-300">
@@ -95,7 +145,7 @@ const Footer = () => {
                 {/* About */}
                 <div className="flex justify-left items-start">
                     <div className="flex flex-col gap- justify-center items-center" >
-                        <Image src={footerData.about.logo} alt="Logo" width={100} height={100} />
+                        <img src={footerData.about.logo} alt="Logo" width={100} height={100} />
                         <h3 className="text-base font-semibold text-golden-dark mb-4 text-center">
                             {footerData.about.title}
                         </h3>
@@ -124,17 +174,46 @@ const Footer = () => {
 
             {/* Bottom bar */}
             <div className="border-t border-gray-800">
-                <div className="max-w-7xl mx-auto px-6 pb-5 flex flex-col  md:flex-row items-center justify-between text-sm pt-5">
-                    {/* Social (Static) */}
-                    <div className="flex gap-4  justify-left w-full md:w-fit mb-4 md:mb-0">
-                        {STATIC_SOCIALS.map((social) => {
-                            const Icon = ICON_MAP[social.icon] || LinkIcon;
-                            return (
-                                <a key={social.id} href={social.url} className="hover:text-golden-dark transition-colors">
-                                    <Icon className="w-5 h-5" />
+                <div className="max-w-7xl mx-auto px-6 pb-5 flex flex-col md:flex-row items-center justify-between text-sm pt-5">
+                    {/* Social Links - Dynamic from API */}
+                    <div className="flex gap-4 justify-left w-full md:w-fit mb-4 md:mb-0">
+                        {socialLinks.length > 0 ? (
+                            // Display dynamic social links from API
+                            socialLinks.map((social) => {
+                                const IconComponent = getIconComponent(social.icon);
+                                return (
+                                    <a
+                                        key={social.id}
+                                        href={social.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="hover:text-golden-dark transition-colors"
+                                        aria-label={social.platform_name}
+                                    >
+                                        <IconComponent className="w-5 h-5" />
+                                    </a>
+                                );
+                            })
+                        ) : (
+                            // Display default/static social links if no API data
+                            <>
+                                <a href="#" className="hover:text-golden-dark transition-colors">
+                                    <Facebook className="w-5 h-5" />
                                 </a>
-                            );
-                        })}
+                                <a href="#" className="hover:text-golden-dark transition-colors">
+                                    <Twitter className="w-5 h-5" />
+                                </a>
+                                <a href="#" className="hover:text-golden-dark transition-colors">
+                                    <Linkedin className="w-5 h-5" />
+                                </a>
+                                <a href="#" className="hover:text-golden-dark transition-colors">
+                                    <Youtube className="w-5 h-5" />
+                                </a>
+                                <a href="#" className="hover:text-golden-dark transition-colors">
+                                    <Instagram className="w-5 h-5" />
+                                </a>
+                            </>
+                        )}
                     </div>
 
                     <p className="text-center w-full md:w-fit opacity-80">

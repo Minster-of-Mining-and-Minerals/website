@@ -1,3 +1,4 @@
+"use client"
 import React from 'react'
 import AdminFooterManager from '@/components/pages/admin-footer-components/AdminFooterManager'
 
