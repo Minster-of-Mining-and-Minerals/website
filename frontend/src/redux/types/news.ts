@@ -24,6 +24,8 @@ export interface News {
     reactions?: any[];
     reads?: any[];
     metadata?: any;
+    status: "draft" | "published" | "archived";
+    published_at?: string;
 }
 
 type QuillDelta = {
@@ -35,9 +37,14 @@ type QuillDelta = {
 export interface CreateNewsPayload {
     title: string;
     author?: string;
-    content: QuillDelta;
-    attachments?: string[];
+    content: any; // Can be Quill Delta or HTML string
+    attachments?: Array<{
+        attachment_id: string;
+        category: "headline" | "footer" | "body";
+    }> | any[];
     tags?: string[];
+    status?: "draft" | "published" | "archived";
+    published_at?: string;
 }
 
 export interface UpdateNewsPayload {
@@ -49,6 +56,8 @@ export interface UpdateNewsPayload {
         category: "headline" | "footer" | "body";
     }>;
     tag_ids?: string[];
+    status?: "draft" | "published" | "archived";
+    published_at?: string;
 }
 
 export interface NewsReactionPayload {

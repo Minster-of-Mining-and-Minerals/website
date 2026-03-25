@@ -56,6 +56,8 @@ const EditNews = () => {
     const [headlineFiles, setHeadlineFiles] = useState<UploadedFileInfo[]>([]);
     const [footerFiles, setFooterFiles] = useState<UploadedFileInfo[]>([]);
     const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
+    const [status, setStatus] = useState<"draft" | "published" | "archived">("draft");
+    const [publishedAt, setPublishedAt] = useState("");
 
     const { data: tagsData = [] } = useGetTagsQuery();
 
@@ -64,14 +66,17 @@ const EditNews = () => {
         if (!newsResponse) return;
         const news = newsResponse;
 
-        setTitle(news.title);
-        setAuthor(news.author);
+        setTitle(news.title || "");
+        setAuthor(news.author || "");
 
         // Set tags from tag_links
         if (news.tag_links && news.tag_links.length > 0) {
             const tagIds = news.tag_links.map((link: any) => link.tag.tag_id);
             setSelectedTags(tagIds);
         }
+
+        setStatus(news.status || "draft");
+        setPublishedAt(news.published_at ? new Date(news.published_at).toISOString().slice(0, 16) : new Date().toISOString().slice(0, 16));
 
         // Set content - handle both Delta and HTML
         if (news.content) {
@@ -173,7 +178,9 @@ const EditNews = () => {
                     attachment_id: att.attachment_id,
                     category: att.category
                 })),
-                tag_ids: selectedTags
+                tag_ids: selectedTags,
+                status,
+                published_at: status === "published" ? new Date(publishedAt).toISOString() : undefined,
             };
 
             console.log("Submitting payload:", payload);
@@ -254,6 +261,32 @@ const EditNews = () => {
             <div className="bg-white p-6 rounded-lg shadow overflow-y-auto space-y-6">
                 <h1 className="text-2xl font-bold mb-6 text-[#073954]">Edit News</h1>
                 <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="status">Status</Label>
+                            <select
+                                id="status"
+                                value={status}
+                                onChange={(e) => setStatus(e.target.value as any)}
+                                className="w-full border border-gray-300 p-2 rounded-md bg-white text-sm"
+                            >
+                                <option value="draft">Draft</option>
+                                <option value="published">Published</option>
+                                <option value="archived">Archived</option>
+                            </select>
+                        </div>
+                        {status === "published" && (
+                            <div className="space-y-2">
+                                <Label htmlFor="published-at">Publish Date & Time</Label>
+                                <Input
+                                    id="published-at"
+                                    type="datetime-local"
+                                    value={publishedAt}
+                                    onChange={(e) => setPublishedAt(e.target.value)}
+                                />
+                            </div>
+                        )}
+                    </div>
                     <Input
                         value={title}
                         onChange={e => setTitle(e.target.value)}
@@ -436,7 +469,7 @@ const EditNews = () => {
                         {currentMedia.file_type === "image" && (
                             // eslint-disable-next-line @next/next/no-img-element
                             <img
-                                src={getMediaUrl(currentMedia)}
+                                src={getMediaUrl(currentMedia) || ""}
                                 alt={currentMedia.file_name}
                                 className="w-full h-72 object-cover rounded-lg"
                                 onError={(e) => {
@@ -450,7 +483,7 @@ const EditNews = () => {
                                 className="w-full h-72 rounded-lg bg-black"
                                 key={currentMedia.attachment_id}
                             >
-                                <source src={getMediaUrl(currentMedia)} type="video/mp4" />
+                                <source src={getMediaUrl(currentMedia) || ""} type="video/mp4" />
                                 Your browser does not support the video tag.
                             </video>
                         )}
@@ -461,7 +494,7 @@ const EditNews = () => {
                                 <button
                                     type="button"
                                     onClick={() => setCurrentMediaIndex(prev =>
-                                        prev === 0 ? headlineFiles.length - 1 : prev - 1
+                                        prev === 0 ? (headlineFiles.length > 0 ? headlineFiles.length - 1 : 0) : prev - 1
                                     )}
                                     className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-gray-700 text-white rounded-full p-2 hover:bg-gray-800 z-10"
                                 >
@@ -470,7 +503,7 @@ const EditNews = () => {
                                 <button
                                     type="button"
                                     onClick={() => setCurrentMediaIndex(prev =>
-                                        prev === headlineFiles.length - 1 ? 0 : prev + 1
+                                        prev === (headlineFiles.length > 0 ? headlineFiles.length - 1 : 0) ? 0 : prev + 1
                                     )}
                                     className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gray-700 text-white rounded-full p-2 hover:bg-gray-800 z-10"
                                 >

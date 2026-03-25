@@ -28,7 +28,7 @@ const deltaToPlainText = (delta: any): string => {
 };
 
 export default function LatestNewsSection() {
-    const { data: apiNews, isLoading } = useGetNewsQuery();
+    const { data: apiNews, isLoading } = useGetNewsQuery({ status: "published" });
     const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
     const [active, setActive] = useState(0);
 

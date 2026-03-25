@@ -62,6 +62,16 @@ const createNewsSchema = Joi.object({
         .items(attachmentSchema)
         .optional()
         .default([]),
+
+    status: Joi.string()
+        .valid("draft", "published", "archived")
+        .default("draft")
+        .optional(),
+
+    published_at: Joi.date()
+        .iso()
+        .allow(null)
+        .optional(),
 });
 
 /* ================= UPDATE NEWS ================= */
@@ -79,6 +89,15 @@ const updateNewsSchema = Joi.object({
 
     attachment_ids: Joi.array()
         .items(attachmentSchema)
+        .optional(),
+
+    status: Joi.string()
+        .valid("draft", "published", "archived")
+        .optional(),
+
+    published_at: Joi.date()
+        .iso()
+        .allow(null)
         .optional(),
 });
 

@@ -38,6 +38,8 @@ const createNews = async (req, res) => {
                 title,
                 author,
                 content,
+                status: req.body.status || "draft",
+                published_at: req.body.published_at || (req.body.status === "published" ? new Date() : null),
                 created_at: new Date(),
                 updated_at: new Date(),
             },
@@ -98,11 +100,25 @@ const createNews = async (req, res) => {
 // =========================== */
 const getAllNews = async (req, res) => {
     try {
-        const { search, tag } = req.query;
+        const { search, tag, status, isAdmin } = req.query;
 
-        const whereClause = {};
+        const whereClause = { deleted_at: null };
         if (search) {
-            whereClause.description = { [Op.like]: `%${search}%` };
+            whereClause.title = { [Op.like]: `%${search}%` };
+        }
+
+        // Status Filtering Logic
+        if (isAdmin === "true") {
+            if (status) {
+                whereClause.status = status;
+            }
+            // If no status is provided, admin sees everything (draft, published, archived)
+        } else {
+            // Public Side: Only Published and not scheduled for future
+            whereClause.status = "published";
+            whereClause.published_at = {
+                [Op.lte]: new Date(),
+            };
         }
 
         const includeClause = [
@@ -221,7 +237,21 @@ const updateNews = async (req, res) => {
             return res.status(404).json({ success: false, message: "News not found." });
         }
 
-        await news.update({ title, author, content, updated_at: new Date() }, { transaction: t });
+        const newsData = { title, author, content, updated_at: new Date() };
+
+        if (req.body.status) {
+            newsData.status = req.body.status;
+            // If transitioning to published and published_at is not set, set it to now
+            if (req.body.status === "published" && !news.published_at && !req.body.published_at) {
+                newsData.published_at = new Date();
+            }
+        }
+
+        if (req.body.published_at !== undefined) {
+            newsData.published_at = req.body.published_at;
+        }
+
+        await news.update(newsData, { transaction: t });
 
         // Update attachments if provided
         if (Array.isArray(attachment_ids)) {

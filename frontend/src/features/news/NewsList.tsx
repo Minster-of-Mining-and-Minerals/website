@@ -32,7 +32,7 @@ export default function NewsList() {
     const router = useRouter();
 
     /* API */
-    const { data = [], isLoading, isError } = useGetNewsQuery();
+    const { data = [], isLoading, isError } = useGetNewsQuery({ isAdmin: true });
     const [deleteNews] = useDeleteNewsMutation();
 
     /* View mode */
@@ -80,8 +80,11 @@ export default function NewsList() {
     ----------------------------------- */
     const filteredData = useMemo(() => {
         return data.filter((item: News) => {
+            const tags = extractTags(item.tag_links || []);
+            const itemCategory = tags[0] || "General";
+
             const matchesCategory =
-                !categoryFilter || item.category === categoryFilter;
+                !categoryFilter || itemCategory === categoryFilter;
 
             const matchesSearch =
                 !search ||
@@ -118,13 +121,21 @@ export default function NewsList() {
             header: "Views",
         },
         {
-            accessorKey: "published",
+            accessorKey: "status",
             header: "Status",
-            cell: ({ row }) => (
-                <Badge variant={row.getValue("published") ? "default" : "destructive"}>
-                    {row.getValue("published") ? "Published" : "Draft"}
-                </Badge>
-            ),
+            cell: ({ row }) => {
+                const status = row.getValue("status") as string;
+                let variant: "default" | "destructive" | "outline" | "secondary" = "outline";
+                if (status === "published") variant = "default";
+                if (status === "archived") variant = "secondary";
+                if (status === "draft") variant = "destructive";
+
+                return (
+                    <Badge variant={variant}>
+                        {status.charAt(0).toUpperCase() + status.slice(1)}
+                    </Badge>
+                );
+            },
         },
         {
             id: "actions",
@@ -199,8 +210,8 @@ export default function NewsList() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {paginatedData.map((item) => {
                         const excerpt = extractExcerpt(item.content);
-                        const tags = extractTags(item.tag_links);
-                        console.log("extracted images: ", extractHeadlineImage(item.attachments))
+                        const tags = extractTags(item.tag_links || []);
+                        const headlineImage = extractHeadlineImage(item.attachments || []);
 
                         return (
                             <AdminNewsCard
@@ -208,8 +219,9 @@ export default function NewsList() {
                                 id={item.news_id}
                                 title={item.title}
                                 excerpt={excerpt}
-                                media={extractHeadlineImage(item.attachments)}
-                                date={new Date(item.created_at).toLocaleDateString()}
+                                media={headlineImage as any}
+                                status={item.status}
+                                publishedAt={item.published_at}
                                 category={tags[0] || "General"}
                                 tags={tags}
                                 readingTime={() => calculateReadingTime(excerpt)}

@@ -225,7 +225,7 @@ const FileUploadField: React.FC<FileUploadFieldProps> = ({
                                 {file.previewUrl && file.file_type === "image" && (
                                     // eslint-disable-next-line @next/next/no-img-element
                                     <img
-                                        src={file.previewUrl}
+                                        src={file.previewUrl || ""}
                                         alt={file.file_name}
                                         className="w-10 h-10 object-cover rounded"
                                     />
@@ -270,13 +270,13 @@ const FileUploadField: React.FC<FileUploadFieldProps> = ({
                         )}
                         {previewFile.file_type === "video" && previewFile.previewUrl && (
                             <video controls className="w-full h-auto max-h-[70vh]">
-                                <source src={previewFile.previewUrl} type="video/mp4" />
+                                <source src={previewFile.previewUrl || ""} type="video/mp4" />
                                 Your browser does not support the video tag.
                             </video>
                         )}
                         {previewFile.file_type === "pdf" && previewFile.previewUrl && (
                             <iframe
-                                src={previewFile.previewUrl}
+                                src={previewFile.previewUrl || ""}
                                 className="w-full h-[70vh]"
                                 title={previewFile.file_name}
                             />
@@ -307,6 +307,8 @@ const CreateNews = () => {
     const [headlineFiles, setHeadlineFiles] = useState<UploadedFileInfo[]>([]);
     const [footerFiles, setFooterFiles] = useState<UploadedFileInfo[]>([]);
     const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
+    const [status, setStatus] = useState<"draft" | "published" | "archived">("draft");
+    const [publishedAt, setPublishedAt] = useState(new Date().toISOString().slice(0, 16));
 
     const [createNews] = useCreateNewsMutation();
     const { data = [], isLoading, isError } = useGetTagsQuery()
@@ -322,8 +324,10 @@ const CreateNews = () => {
                 title,
                 author,
                 tags: selectedTags,
-                content: contentHtml, // <-- send HTML instead of JSON
+                content: contentHtml,
                 attachments: newsAttachments || [],
+                status,
+                published_at: status === "published" ? new Date(publishedAt).toISOString() : undefined,
             }).unwrap();
 
             alert("News Created Successfully!");
@@ -370,6 +374,33 @@ const CreateNews = () => {
             <div className="bg-white p-6 rounded-lg shadow overflow-y-auto space-y-6">
                 <h1 className="text-2xl font-bold mb-6 text-[#073954]">Create News</h1>
                 <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="status">Status</Label>
+                            <select
+                                id="status"
+                                value={status}
+                                onChange={(e) => setStatus(e.target.value as any)}
+                                className="w-full border border-gray-300 p-2 rounded-md bg-white text-sm"
+                            >
+                                <option value="draft">Draft</option>
+                                <option value="published">Published</option>
+                                <option value="archived">Archived</option>
+                            </select>
+                        </div>
+                        {status === "published" && (
+                            <div className="space-y-2">
+                                <Label htmlFor="published-at">Publish Date & Time</Label>
+                                <Input
+                                    id="published-at"
+                                    type="datetime-local"
+                                    value={publishedAt}
+                                    onChange={(e) => setPublishedAt(e.target.value)}
+                                />
+                            </div>
+                        )}
+                    </div>
+
                     <Input value={title} onChange={e => setTitle(e.target.value)} placeholder="Title *" />
                     <Input value={author} onChange={e => setAuthor(e.target.value)} placeholder="Author *" />
                     <div className="w-full space-y-2">
@@ -467,7 +498,7 @@ const CreateNews = () => {
                         onChange={(ids, files) => {
                             setNewsAttachments(prev => [
                                 ...prev.filter(a => a.category !== "headline"),
-                                ...ids.map(id => ({ attachment_id: id, category: "headline" })),
+                                ...ids.map(id => ({ attachment_id: id, category: "headline" as const })),
                             ]);
                             if (files) setHeadlineFiles(files);
                             setCurrentMediaIndex(0);
@@ -486,7 +517,7 @@ const CreateNews = () => {
                         onChange={(ids, files) => {
                             setNewsAttachments(prev => [
                                 ...prev.filter(a => a.category !== "footer"),
-                                ...ids.map(id => ({ attachment_id: id, category: "footer" })),
+                                ...ids.map(id => ({ attachment_id: id, category: "footer" as const })),
                             ]);
                             if (files) setFooterFiles(files);
                         }}

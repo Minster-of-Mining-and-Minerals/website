@@ -6,7 +6,7 @@ export const newsApi = baseApi.injectEndpoints({
         /** ---------------------------
          * GET ALL NEWS
          * --------------------------- */
-        getNews: builder.query<News[], { search?: string; tag?: string } | void>({
+        getNews: builder.query<News[], { search?: string; tag?: string; status?: string; isAdmin?: boolean } | void>({
             query: (params) => (params ? { url: "/news", params } : { url: "/news" }),
             transformResponse: (response: any): News[] => response.data ?? [],
             providesTags: ["News"],
