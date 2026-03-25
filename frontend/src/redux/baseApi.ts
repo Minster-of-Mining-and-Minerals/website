@@ -33,6 +33,9 @@ export const baseApi = createApi({
     "Message",
     "SocialMedia",
     "Footer",
+    "Card",
+    "Slider",
+    "Partner",
   ],
   endpoints: () => ({}),
 });

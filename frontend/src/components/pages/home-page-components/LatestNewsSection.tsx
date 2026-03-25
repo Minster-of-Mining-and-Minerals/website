@@ -1,155 +1,150 @@
 "use client";
 
 import Image from "next/image";
-import { ChevronLeft, ChevronRight, ArrowRight, ChevronDown } from "lucide-react";
+import { ArrowRight, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import clsx from "clsx";
 import { Button } from "../../ui/button";
+import { useGetNewsQuery } from "@/redux/api/newsApi";
+import { getFileUrl } from "@/utils/fileUrl";
+import Link from "next/link";
 
 type NewsItem = {
-    id: number;
+    id: string;
     title: string;
     description: string;
     image: string;
     date: string;
 };
-const news: NewsItem[] = [
-    {
-        id: 1,
-        title: "The Ministry of Mines held a consultation forum with stakeholders",
-        description:
-            "The Ministry of Mines conducted a high-level consultation forum with regional and federal stakeholders to strengthen coordination, address sector challenges, and improve overall performance and policy alignment within the mining industry.",
-        image: "/home-1.jpg",
-        date: "2026-01-26",
-    },
-    {
-        id: 2,
-        title: "Mining sector reform progress review",
-        description:
-            "A comprehensive review meeting was held to assess progress, identify gaps, and discuss key challenges related to ongoing mining sector reforms aimed at improving efficiency, transparency, and investment attractiveness.",
-        image: "/home-2.jpg",
-        date: "2026-01-18",
-    },
-    {
-        id: 3,
-        title: "Capacity building workshop conducted",
-        description:
-            "A capacity building workshop was successfully conducted for mining sector professionals, focusing on technical skills, regulatory updates, and best practices to enhance institutional and operational effectiveness.",
-        image: "/home-3.jpg",
-        date: "2026-01-10",
-    },
-    {
-        id: 4,
-        title: "Regional mining coordination meeting",
-        description:
-            "Regional mining bureaus convened for a coordination meeting to align development strategies, share experiences, and strengthen collaboration for sustainable and well-regulated mineral resource development.",
-        image: "/home-4.jpg",
-        date: "2026-01-05",
-    }
-];
 
+// Helper to extract plain text from Quill Delta
+const deltaToPlainText = (delta: any): string => {
+    if (!delta || !Array.isArray(delta.ops)) return "";
+    return delta.ops
+        .filter((op: any) => typeof op.insert === "string")
+        .map((op: any) => op.insert)
+        .join("")
+        .trim();
+};
 
 export default function LatestNewsSection() {
+    const { data: apiNews, isLoading } = useGetNewsQuery();
+    const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
     const [active, setActive] = useState(0);
+
+    useEffect(() => {
+        if (apiNews && apiNews.length > 0) {
+            const mapped: NewsItem[] = apiNews.slice(0, 6).map((n) => {
+                const headlineAttachment = n.attachments?.find(a => a.category === 'headline')?.attachment
+                    || n.attachments?.[0]?.attachment;
+
+                return {
+                    id: n.news_id,
+                    title: n.title,
+                    description: deltaToPlainText(n.content).substring(0, 200) + "...",
+                    image: headlineAttachment?.file_path ? getFileUrl(headlineAttachment.file_path) : "/placeholder-news.jpg",
+                    date: new Date(n.created_at).toLocaleDateString(),
+                };
+            });
+            setNewsItems(mapped);
+        }
+    }, [apiNews]);
 
     // 🔁 Auto slide every 10s
     useEffect(() => {
-        const interval = setInterval(() => {
-            setActive((prev) => (prev === news.length - 1 ? 0 : prev + 1));
-        }, 10000);
+        if (newsItems.length > 0) {
+            const interval = setInterval(() => {
+                setActive((prev) => (prev === newsItems.length - 1 ? 0 : prev + 1));
+            }, 10000);
+            return () => clearInterval(interval);
+        }
+    }, [newsItems.length]);
 
-        return () => clearInterval(interval);
-    }, []);
+    if (isLoading) {
+        return (
+            <div className="w-full py-20 flex items-center justify-center">
+                <Loader2 className="w-8 h-8 animate-spin text-golden-dark" />
+            </div>
+        );
+    }
 
-    const next = () =>
-        setActive((prev) => (prev === news.length - 1 ? 0 : prev + 1));
+    if (newsItems.length === 0) return null;
 
-    const prev = () =>
-        setActive((prev) => (prev === 0 ? news.length - 1 : prev - 1));
-
-    const item = news[active];
+    const item = newsItems[active];
 
     return (
         <section className="w-full py-20">
-            <div className="max-w-7xl mx-auto px-6 ">
-
+            <div className="max-w-7xl mx-auto px-6">
                 {/* Section Header */}
                 <div className="mb-10 flex justify-between items-center">
-                    <div className="flex  flex-col ">
-                        <p className=" text-sm font-medium text-gray-500">News & Updates</p>
+                    <div className="flex flex-col">
+                        <p className="text-sm font-medium text-gray-500">News & Updates</p>
                         <h2 className="text-2xl sm:text-3xl font-bold text-golden-dark">
                             Latest News
                         </h2>
                         <div className="mt-3 h-1 w-20 bg-golden-dark rounded-full"></div>
                     </div>
-                    {/* Creative "Find All News" Card */}
                     <div className="flex items-center">
-                        <a
+                        <Link
                             href="/news"
-                            className="flex items-center gap-2 bg-golden-dark hover:bg-golden-darkHover text-white px-2 md:px-5 py-2 md:py-3 rounded-md md:rounded-2xl  shadow-md transition-all transform "
+                            className="flex items-center gap-2 bg-golden-dark hover:bg-golden-darkHover text-white px-4 md:px-5 py-2 md:py-3 rounded-md md:rounded-2xl shadow-md transition-all transform"
                         >
                             <span className="font-medium text-xs md:text-base">Find All News</span>
                             <ArrowRight size={18} />
-                        </a>
+                        </Link>
                     </div>
                 </div>
 
                 {/* Main Card */}
                 <div className="relative bg-white rounded-3xl shadow-sm overflow-hidden">
                     <div className="grid grid-cols-1 md:grid-cols-2">
-
                         {/* Image */}
-                        <div className="relative h-[250px] md:h-[370px]">
-                            <Image
+                        <div className="relative">
+                            <img
                                 src={item.image}
                                 alt={item.title}
-                                fill
                                 className="object-cover"
-                                priority
                             />
-
                             {/* Date */}
                             <span className="absolute top-4 left-4 bg-white text-primary text-xs md:text-sm font-medium px-4 py-1 rounded-full shadow">
                                 {item.date}
                             </span>
-
-
                         </div>
 
                         {/* Content */}
                         <div className="p-4 md:p-8 flex flex-col justify-center gap-4">
-                            <h3 className="text-lg md:text-xl font-semibold text-gray-900">
+                            <h3 className="text-lg md:text-xl font-semibold text-gray-900 line-clamp-2">
                                 {item.title}
                             </h3>
-                            <p className="text-gray-600 leading-relaxed text-sm md:text-base">
+                            <p className="text-gray-600 leading-relaxed text-sm md:text-base line-clamp-3">
                                 {item.description}
                             </p>
 
-                            <Button className="mt-4 bg-golden-dark hover:bg-golden-darkHover inline-flex items-center gap-2 w-fit px-6 py-3 rounded-md   text-white text-sm font-medium  transition">
-                                Read More <ArrowRight size={16} />
-                            </Button>
+                            <Link href={`/news/${item.id}`}>
+                                <Button className="mt-4 bg-golden-dark hover:bg-golden-darkHover inline-flex items-center gap-2 w-fit px-6 py-3 rounded-md text-white text-sm font-medium transition">
+                                    Read More <ArrowRight size={16} />
+                                </Button>
+                            </Link>
                         </div>
                     </div>
                 </div>
 
-                {/* Thumbnails (6 images) */}
+                {/* Thumbnails */}
                 <div className="mt-6 flex w-full md:justify-center md:items-center gap-4 overflow-x-auto py-2 px-4 md:px-0 scroll-smooth snap-x snap-mandatory">
-
-                    {news.map((n, i) => (
+                    {newsItems.map((n, i) => (
                         <button
                             key={n.id}
                             onClick={() => setActive(i)}
                             className={clsx(
-                                "relative flex-shrink-0 w-28 h-20 rounded-xl overflow-hidden border transition",
+                                "relative flex-shrink-0 w-28 h-auto rounded-xl overflow-hidden border transition",
                                 active === i
                                     ? "border-golden-dark ring-2 ring-primary/30"
                                     : "border-transparent opacity-70 hover:opacity-100"
                             )}
                         >
-                            <Image
+                            <img
                                 src={n.image}
                                 alt={n.title}
-                                fill
                                 className="object-cover"
                             />
                         </button>
@@ -159,3 +154,4 @@ export default function LatestNewsSection() {
         </section>
     );
 }
+

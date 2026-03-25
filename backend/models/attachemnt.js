@@ -19,6 +19,21 @@ module.exports = (sequelize, DataTypes) => {
                 foreignKey: "attachment_id",
                 as: "leadershipAttachments",
             });
+
+            Attachment.hasMany(models.PartnerAttachment, {
+                foreignKey: "attachment_id",
+                as: "partnerAttachments",
+            });
+
+            Attachment.hasMany(models.Slider, {
+                foreignKey: "attachment_id",
+                as: "sliders",
+            });
+
+            Attachment.hasMany(models.Card, {
+                foreignKey: "attachment_id",
+                as: "cards",
+            });
         }
     }
 

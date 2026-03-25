@@ -42,6 +42,11 @@ const messageRoute = require("./routers/contact/messageRoutes");
 const socialMediaRoute = require("./routers/footer/socialMediaRoutes");
 const footerRoute = require("./routers/footer/footerRoutes");
 
+// ================== Hero Section Routes ==========================
+const cardRoute = require("./routers/hero/cardRoute");
+const sliderRoute = require("./routers/hero/sliderRoute");
+const partnerRoute = require("./routers/hero/partnerRoute");
+
 // ================== Attachment Routes ==========================
 const attachmentRoute = require("./routers/attachement/attachementRoutes");
 
@@ -150,6 +155,11 @@ app.use("/api/message", messageRoute);
 // ================== Footer Page Routes ==========================
 app.use("/api/social-media", socialMediaRoute);
 app.use("/api/footer", footerRoute);
+
+// ================== Hero Section Routes ==========================
+app.use("/api/cards", cardRoute);
+app.use("/api/sliders", sliderRoute);
+app.use("/api/partners", partnerRoute);
 
 // ================== Api Attachment Routes =====================
 app.use("/api/attachments", attachmentRoute);

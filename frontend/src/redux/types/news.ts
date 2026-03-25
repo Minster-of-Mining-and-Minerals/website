@@ -13,7 +13,9 @@ export interface TagLink {
 
 export interface News {
     news_id: string;
-    description: string;
+    title: string;
+    content: any; // Quill Delta JSON
+    author?: string;
     created_at: string;
     updated_at: string;
     deleted_at?: string;
