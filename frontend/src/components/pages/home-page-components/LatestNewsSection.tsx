@@ -99,11 +99,11 @@ export default function LatestNewsSection() {
                 <div className="relative bg-white rounded-3xl shadow-sm overflow-hidden">
                     <div className="grid grid-cols-1 md:grid-cols-2">
                         {/* Image */}
-                        <div className="relative">
+                        <div className="relative h-[250px] md:h-[370px]">
                             <img
                                 src={item.image}
                                 alt={item.title}
-                                className="object-cover"
+                                className="object-cover h-full w-full"
                             />
                             {/* Date */}
                             <span className="absolute top-4 left-4 bg-white text-primary text-xs md:text-sm font-medium px-4 py-1 rounded-full shadow">
