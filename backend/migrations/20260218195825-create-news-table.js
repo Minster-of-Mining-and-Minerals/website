@@ -21,6 +21,18 @@ module.exports = {
         type: Sequelize.TEXT,
         allowNull: true,
       },
+      // ✅ STATUS (Draft / Published / Archived)
+      status: {
+        type: Sequelize.ENUM("draft", "published", "archived"),
+        allowNull: false,
+        defaultValue: "draft",
+      },
+
+      // ✅ WHEN IT WAS PUBLISHED
+      published_at: {
+        type: Sequelize.DATE,
+        allowNull: true,
+      },
       created_at: {
         type: Sequelize.DATE,
         defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
