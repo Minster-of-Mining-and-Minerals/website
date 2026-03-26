@@ -3,6 +3,23 @@ import { useGetStrategiesQuery } from "@/redux/api/strategyApi";
 import InfoCard from "./InfoCard";
 import { getFileUrl } from "@/utils/fileUrl";
 
+const splitTitle = (title = "") => {
+    const words = title.trim().split(/\s+/);
+
+    if (words.length === 1) {
+        // Single word → split into two halves
+        const mid = Math.ceil(words[0].length / 2);
+        return [words[0].slice(0, mid), words[0].slice(mid)];
+    }
+
+    // Multiple words → split by word count
+    const mid = Math.ceil(words.length / 2);
+    return [
+        words.slice(0, mid).join(" "),
+        words.slice(mid).join(" "),
+    ];
+};
+
 export default function VisionMissionValues() {
     // Fetch strategies and get the first one
     const { data: strategies, isLoading, error } = useGetStrategiesQuery();
@@ -13,6 +30,7 @@ export default function VisionMissionValues() {
     const visionSection = strategy?.sections?.find(s => s.type === "vision");
     const coreValuesSection = strategy?.sections?.find(s => s.type === "core_values");
 
+    const [firstPart, secondPart] = splitTitle(strategy?.title || "");
 
     // Prepare data objects matching the existing structure
     const missionVision = {
@@ -62,7 +80,8 @@ export default function VisionMissionValues() {
                 {/* Page Header */}
                 <div className="text-center mb-12">
                     <h1 className="text-2xl md:text-4xl font-bold text-teal-900">
-                        <span className="text-golden-dark">Vision, Mission </span> & Core Values
+                        <span className="text-golden-dark">{firstPart} </span>
+                        <span className="text-teal-900">{secondPart}</span>
                     </h1>
                     <p className="text-gray-600 mt-3 max-w-3xl mx-auto">
                         {strategy?.description || "Guiding principles that shape the strategic direction and operational excellence of the Ministry of Mines."}
