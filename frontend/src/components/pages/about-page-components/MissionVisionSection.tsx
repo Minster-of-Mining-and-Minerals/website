@@ -1,47 +1,90 @@
 "use client";
-import { Eye, Target, Award } from "lucide-react";
+import { useGetStrategiesQuery } from "@/redux/api/strategyApi";
 import InfoCard from "./InfoCard";
+import { getFileUrl } from "@/utils/fileUrl";
 
-const missionVision = {
-    mission: {
-        icon: "/icons/goal.png",
-        title: "Mission",
-        description:
-            "To generate, manage, and deliver geosciences data for society and business in a sustainable and responsible manner that supports the development of mineral resources in Ethiopia.",
-    },
-    vision: {
-        icon: "/icons/witness.png",
-        title: "Vision",
-        description:
-            "To foresee the well developed Mineral Resources Contribution to the Foreign Currency Earnings increase by 10 fold, and be the backbone of the industry.",
-    },
+const splitTitle = (title = "") => {
+    const words = title.trim().split(/\s+/);
+
+    if (words.length === 1) {
+        // Single word → split into two halves
+        const mid = Math.ceil(words[0].length / 2);
+        return [words[0].slice(0, mid), words[0].slice(mid)];
+    }
+
+    // Multiple words → split by word count
+    const mid = Math.ceil(words.length / 2);
+    return [
+        words.slice(0, mid).join(" "),
+        words.slice(mid).join(" "),
+    ];
 };
-
-const coreValues = {
-    icon: "/icons/diamond.png",
-    title: "Values",
-    values: [
-        "Teamwork is a fundamental principle of the Ministry of Mines, emphasizing collaboration among departments, stakeholders, and partners to achieve shared goals in the sustainable development and management of Ethiopia’s mineral resources.",
-        "Innovation and creativity guide the Ministry in adopting modern technologies, improving regulatory frameworks, and encouraging forward-looking solutions that enhance efficiency, competitiveness, and responsible growth within the mining sector.",
-        "Endurance reflects the Ministry’s commitment to long-term planning, resilience, and consistent effort in overcoming sectoral challenges while ensuring stability, continuity, and progress in mineral resource development.",
-        "Ethics underpin all activities of the Ministry of Mines, ensuring transparency, accountability, fairness, and integrity in decision-making, licensing, investment facilitation, and engagement with communities and stakeholders.",
-    ],
-};
-
 
 export default function VisionMissionValues() {
+    // Fetch strategies and get the first one
+    const { data: strategies, isLoading, error } = useGetStrategiesQuery();
+    const strategy = strategies?.[0]; // Get the first strategy from index 0
+
+    // Extract sections from the strategy data
+    const missionSection = strategy?.sections?.find(s => s.type === "mission");
+    const visionSection = strategy?.sections?.find(s => s.type === "vision");
+    const coreValuesSection = strategy?.sections?.find(s => s.type === "core_values");
+
+    const [firstPart, secondPart] = splitTitle(strategy?.title || "");
+
+    // Prepare data objects matching the existing structure
+    const missionVision = {
+        mission: {
+            icon: missionSection?.attachment?.file_path
+                ? getFileUrl(missionSection.attachment.file_path)
+                : "/icons/goal.png",
+            title: "Mission",
+            description: missionSection?.content || "",
+        },
+        vision: {
+            icon: visionSection?.attachment?.file_path
+                ? getFileUrl(visionSection.attachment.file_path)
+                : "/icons/witness.png",
+            title: "Vision",
+            description: visionSection?.content || "",
+        },
+    };
+
+    const coreValues = {
+        icon: coreValuesSection?.attachment?.file_path
+            ? getFileUrl(coreValuesSection.attachment.file_path)
+            : "/icons/diamond.png",
+        title: "Values",
+        values: coreValuesSection?.core_values?.map(v => v.content) || [],
+    };
+
+    // Loading state
+    if (isLoading) {
+        return (
+            <div className="flex justify-center items-center min-h-[400px]">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-900"></div>
+            </div>
+        );
+    }
+
+    // Error state
+    if (error) {
+        console.error("Failed to load strategy data:", error);
+        // Still render with default data if there's an error
+    }
+
     return (
-        <div className="flex flex-col bg-[#09e32d] p-6">
+        <div className="flex flex-col mt-20 mb-20 p-6">
             <div className="max-w-7xl mx-auto">
 
                 {/* Page Header */}
                 <div className="text-center mb-12">
-                    <h1 className="text-4xl font-bold text-golden-dark">
-                        Vision, Mission & Core Values
+                    <h1 className="text-2xl md:text-4xl font-bold text-teal-900">
+                        <span className="text-golden-dark">{firstPart} </span>
+                        <span className="text-teal-900">{secondPart}</span>
                     </h1>
                     <p className="text-gray-600 mt-3 max-w-3xl mx-auto">
-                        Guiding principles that shape the strategic direction and operational
-                        excellence of the Ministry of Mines.
+                        {strategy?.description || "Guiding principles that shape the strategic direction and operational excellence of the Ministry of Mines."}
                     </p>
                 </div>
 
@@ -81,8 +124,6 @@ export default function VisionMissionValues() {
                     </div>
                 </div>
             </div>
-
-
         </div>
     );
 }

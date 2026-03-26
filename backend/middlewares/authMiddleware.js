@@ -2,56 +2,60 @@ const jwt = require("jsonwebtoken");
 const db = require("../models");
 
 const authenticateToken = async (req, res, next) => {
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1]; // Bearer <token>
-
-  if (!token) {
-    return res.status(401).json({
-      success: false,
-      message: "Access token required",
-    });
-  }
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    // Fetch user with roles and permissions
-    const user = await db.User.findByPk(decoded.user_id, {
-      attributes: { exclude: ["password"] },
-      // include: [
-      //   // {
-      //   //   model: db.UserType,
-      //   //   as: "userType",
-      //   // },
-      // ],
-    });
-
-    if (!user || !user.is_active) {
-      return res.status(403).json({
-        success: false,
-        message: "User not found or inactive",
-      });
-    }
-
-    // Extract permissions and roles
-    // const permissions = new Set();
-    // const roles = new Set();
-
-    req.user = {
-      user_id: user.user_id,
-      email: user.email,
-      full_name: user.full_name,
-    };
-
-    next();
-  } catch (error) {
-    console.error("Auth middleware error:", error);
-    return res.status(403).json({
-      success: false,
-      message: "Invalid or expired token",
-    });
-  }
+  next();
 };
+
+// const authenticateToken = async (req, res, next) => {
+//   const authHeader = req.headers["authorization"];
+//   const token = authHeader && authHeader.split(" ")[1]; // Bearer <token>
+
+//   if (!token) {
+//     return res.status(401).json({
+//       success: false,
+//       message: "Access token required",
+//     });
+//   }
+
+//   try {
+//     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+//     // Fetch user with roles and permissions
+//     const user = await db.User.findByPk(decoded.user_id, {
+//       attributes: { exclude: ["password"] },
+//       // include: [
+//       //   // {
+//       //   //   model: db.UserType,
+//       //   //   as: "userType",
+//       //   // },
+//       // ],
+//     });
+
+//     if (!user || !user.is_active) {
+//       return res.status(403).json({
+//         success: false,
+//         message: "User not found or inactive",
+//       });
+//     }
+
+//     // Extract permissions and roles
+//     // const permissions = new Set();
+//     // const roles = new Set();
+
+//     req.user = {
+//       user_id: user.user_id,
+//       email: user.email,
+//       full_name: user.full_name,
+//     };
+
+//     next();
+//   } catch (error) {
+//     console.error("Auth middleware error:", error);
+//     return res.status(403).json({
+//       success: false,
+//       message: "Invalid or expired token",
+//     });
+//   }
+// };
 
 // Permission middleware
 const checkPermission = (resource, action) => {

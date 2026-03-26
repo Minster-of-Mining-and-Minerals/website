@@ -1,18 +1,65 @@
-import React from "react";
+"use client";
+
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import { Button } from "../../ui/button";
+import { useGetCardsQuery } from "@/redux/api/cardApi";
+import { getFileUrl } from "@/utils/fileUrl";
+
+interface CardData {
+    title: string;
+    description: string;
+    image: string;
+    buttonText: string;
+    button_url: string;
+}
 
 const CardSection = () => {
+    const { data: cards, isLoading } = useGetCardsQuery();
+    const [cardData, setCardData] = useState<CardData | null>(null);
+
+    useEffect(() => {
+        if (cards && cards.length > 0) {
+            const firstCard = cards[0];
+            setCardData({
+                title: firstCard.title,
+                description: firstCard.description || "",
+                image: firstCard.attachment?.file_path ? getFileUrl(firstCard.attachment.file_path) : "",
+                buttonText: firstCard.button_name || "",
+                button_url: firstCard.button_url || "#",
+            });
+        }
+    }, [cards]);
+
+    // Show loading state
+    if (isLoading) {
+        return (
+            <section className="w-full flex justify-center md:px-4 mb-20">
+                <div className="relative w-full max-w-7xl md:rounded-3xl overflow-hidden shadow-xl bg-gray-200 h-64 flex items-center justify-center">
+                    <p className="text-gray-600">Loading...</p>
+                </div>
+            </section>
+        );
+    }
+
+    // Don't render if no card data is available
+    if (!cardData || !cardData.title) {
+        return null;
+    }
+
     return (
         <section className="w-full flex justify-center md:px-4 mb-20">
             <div
-                className="relative w-full max-w-7xl md:rounded-3xl  overflow-hidden shadow-xl"
+                className="relative w-full max-w-7xl md:rounded-3xl overflow-hidden shadow-xl"
             >
                 {/* Background Image */}
-                <img
-                    src="/home-5.jpg"
-                    alt="Factory"
-                    className="absolute inset-0 w-full h-full object-cover"
-                />
+                {cardData.image && (
+                    <img
+                        src={cardData.image}
+                        alt={cardData.title}
+                        className="absolute inset-0 w-full h-full object-cover"
+                    />
+                )}
 
                 {/* Dark Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-r from-black/90 to-black/50" />
@@ -23,24 +70,21 @@ const CardSection = () => {
                     {/* Left Text */}
                     <div className="">
                         <h2 className="text-lg lg:text-3xl font-bold text-golden-classic mb-4 leading-snug">
-                            One of the Best Performing Economies in Ethiopia
+                            {cardData.title}
                         </h2>
 
                         <p className="text-sm max-w-2xl lg:text-base text-gray-200 leading-relaxed">
-                            Ethiopia has seen astonishing growth in the last ten years.
-                            Growing at an average rate of{" "}
-                            <span className="font-semibold">9.7%</span> between 2009 and 2019,
-                            Ethiopia has consistently been one of Africa’s top performing
-                            economies.
+                            {cardData.description}
                         </p>
                     </div>
 
-                    {/* Right Buttons */}
+                    {/* Right Button */}
                     <div className="flex gap-4">
-                        <Button className="bg-golden-dark hover:bg-golden-darkHover px-9 py-2">
-                            Learn More
-                        </Button>
-
+                        <Link href={cardData.button_url} target={cardData.button_url.startsWith("http") ? "_blank" : undefined}>
+                            <Button className="bg-golden-dark hover:bg-golden-darkHover px-9 py-2">
+                                {cardData.buttonText}
+                            </Button>
+                        </Link>
                     </div>
 
                 </div>

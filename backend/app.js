@@ -20,6 +20,36 @@ const authRoute = require("./routers/user-routes/authRoutes");
 const permissionRoute = require("./routers/user-routes/permissionRoutes");
 const changePasswordRoutes = require("./routers/user-routes/passwordChangeRoutes");
 
+// ================== News Routes ==========================
+const newsRoute = require("./routers/news/newsRoutes");
+const tagRoute = require("./routers/news/tagRoutes");
+
+// ================== Service Routes ==========================
+const serviceRoute = require("./routers/sevice/serviceRoutes");
+
+// ================== About Page Routes ==========================
+const backgroundRoute = require("./routers/about/backgroundRoutes");
+const leadershipRoute = require("./routers/about/leadershipRoutes");
+const strategyRoute = require("./routers/about/strategyRoutes");
+
+// ================== Contact Page Routes ==========================
+const federalOfficeRoute = require("./routers/contact/federalOfficeRoutes");
+const regionRoute = require("./routers/contact/regionRoutes");
+const regionalOfficeRoute = require("./routers/contact/regionalOfficeRoutes");
+const messageRoute = require("./routers/contact/messageRoutes");
+
+// ================== Footer Page Routes ==========================
+const socialMediaRoute = require("./routers/footer/socialMediaRoutes");
+const footerRoute = require("./routers/footer/footerRoutes");
+
+// ================== Hero Section Routes ==========================
+const cardRoute = require("./routers/hero/cardRoute");
+const sliderRoute = require("./routers/hero/sliderRoute");
+const partnerRoute = require("./routers/hero/partnerRoute");
+
+// ================== Attachment Routes ==========================
+const attachmentRoute = require("./routers/attachement/attachementRoutes");
+
 const app = express();
 const appServer = http.createServer(app);
 
@@ -96,12 +126,43 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // ================== API Routes go here ==================
 
+// ================== User Routes ==========================
 app.use("/api/users", userRoute);
 app.use("/api/roles", roleRoute);
 app.use("/api/user-roles", userRoleRoute);
 app.use("/api/auth", authRoute);
 app.use("/api/change-password", changePasswordRoutes);
 app.use("/api/permissions", permissionRoute);
+
+// ================== News Routes ==========================
+app.use("/api/news", newsRoute);
+app.use("/api/tags", tagRoute);
+
+// ================== Service Routes ==========================
+app.use("/api/services", serviceRoute);
+
+// ================== About Page Routes ==========================
+app.use("/api/backgrounds", backgroundRoute);
+app.use("/api/leadership", leadershipRoute);
+app.use("/api/strategy", strategyRoute);
+
+// ================== Contact Page Routes ==========================
+app.use("/api/federal-office", federalOfficeRoute);
+app.use("/api/region", regionRoute);
+app.use("/api/regional-offices", regionalOfficeRoute);
+app.use("/api/message", messageRoute);
+
+// ================== Footer Page Routes ==========================
+app.use("/api/social-media", socialMediaRoute);
+app.use("/api/footer", footerRoute);
+
+// ================== Hero Section Routes ==========================
+app.use("/api/cards", cardRoute);
+app.use("/api/sliders", sliderRoute);
+app.use("/api/partners", partnerRoute);
+
+// ================== Api Attachment Routes =====================
+app.use("/api/attachments", attachmentRoute);
 
 // ================== Root Endpoint ==================
 app.get("/", (req, res) => {

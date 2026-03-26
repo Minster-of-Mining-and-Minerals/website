@@ -29,12 +29,14 @@ export default function PublicNavbar() {
             name: t("nav.sector"),
             children: [
                 { name: t("nav.mining"), link: "/mining" },
-                { name: t("nav.gie"), link: "/gie" },
-                { name: t("nav.midi"), link: "/midi" },
+                { name: t("nav.geology"), link: "/geology" },
+                { name: t("nav.petroleum"), link: "/petroleum" },
             ],
         },
 
         { name: t("nav.about"), link: "/about" },
+        { name: t("nav.asm"), link: "/asm" },
+        { name: t("nav.investigating-in-ethiopia"), link: "/investigating-in-ethiopia" },
         { name: t("nav.services"), link: "/services" },
         { name: t("nav.news"), link: "/news" },
         { name: t("nav.contact"), link: "/contact" },
