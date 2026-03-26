@@ -47,8 +47,13 @@ const cardRoute = require("./routers/hero/cardRoute");
 const sliderRoute = require("./routers/hero/sliderRoute");
 const partnerRoute = require("./routers/hero/partnerRoute");
 
+// ================== Sector Routes ==========================
+const gamestoneRoute = require("./routers/sectors/mining/gamestoneRoutes");
+
+
 // ================== Attachment Routes ==========================
 const attachmentRoute = require("./routers/attachement/attachementRoutes");
+
 
 const app = express();
 const appServer = http.createServer(app);
@@ -160,6 +165,10 @@ app.use("/api/footer", footerRoute);
 app.use("/api/cards", cardRoute);
 app.use("/api/sliders", sliderRoute);
 app.use("/api/partners", partnerRoute);
+
+// ================== Sector Routes ==========================
+app.use("/api/gamestones", gamestoneRoute);
+
 
 // ================== Api Attachment Routes =====================
 app.use("/api/attachments", attachmentRoute);

@@ -107,6 +107,19 @@ const newsManagementItems = [
   },
 ];
 
+const miningManagementItems = [
+  {
+    title: "Snapshots",
+    url: "/admin/sectors/mining/snapshots",
+    icon: Megaphone,
+  },
+  {
+    title: "Gemstones",
+    url: "/admin/sectors/mining/gamestones",
+    icon: Tag,
+  },
+];
+
 export function AppSidebar() {
   const rawPathname = usePathname();
   const pathname = stripLocale(rawPathname);
@@ -259,6 +272,59 @@ export function AppSidebar() {
                   <CollapsibleContent>
                     <SidebarMenuSub className="pt-1">
                       {userManagementItems.map((subItem) => (
+                        <SidebarMenuSubItem key={subItem.url}>
+                          <SidebarMenuSubButton
+                            asChild
+                            isActive={pathname === subItem.url}
+                            className="text-primary hover:bg-golden-metallic
+                              group-data-[collapsible=icon]:justify-center
+                              data-[active=true]:bg-golden-metallic
+                              data-[active=true]:text-primary"
+                          >
+                            <Link href={subItem.url}>
+                              <subItem.icon className="h-4 w-4" />
+                              <span>{subItem.title}</span>
+                            </Link>
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                      ))}
+                    </SidebarMenuSub>
+                  </CollapsibleContent>
+                </SidebarMenuItem>
+              </Collapsible>
+
+              {/* MINING WITH NESTED MENU */}
+              <Collapsible
+                asChild
+                defaultOpen={pathname.startsWith("/admin/sectors/mining")}
+                className="group/collapsible"
+              >
+                <SidebarMenuItem className="group-data-[collapsible=icon]:w-fit">
+                  <CollapsibleTrigger asChild>
+                    <SidebarMenuButton
+                      tooltip="Mining"
+                      isActive={pathname.startsWith("/admin/sectors/mining")}
+                      className="text-primary hover:bg-golden-metallic px-5 py-5
+                        group-data-[collapsible=icon]:px-2
+                        group-data-[collapsible=icon]:justify-center
+                        data-[active=true]:bg-golden-dark
+                        data-[active=true]:text-primary-foreground"
+                    >
+                      <Newspaper className="group-data-[collapsible=icon]:size-5" />
+                      <span className="text-base group-data-[collapsible=icon]:hidden">
+                        Mining
+                      </span>
+                      <ChevronRight
+                        className="ml-auto transition-transform duration-200
+                          group-data-[state=open]/collapsible:rotate-90
+                          group-data-[collapsible=icon]:hidden"
+                      />
+                    </SidebarMenuButton>
+                  </CollapsibleTrigger>
+
+                  <CollapsibleContent>
+                    <SidebarMenuSub className="pt-1">
+                      {miningManagementItems.map((subItem) => (
                         <SidebarMenuSubItem key={subItem.url}>
                           <SidebarMenuSubButton
                             asChild
