@@ -99,29 +99,51 @@ export default function HeroSection() {
 
             {slides.map((slide, index) => {
                 const isActive = index === current;
-                const isPrev = index === (current - 1 + slides.length) % slides.length;
+                const hasMultipleSlides = slides.length > 1;
+
+                // Determine the classes based on slide count
+                let transitionClasses = "";
+
+                if (hasMultipleSlides) {
+                    const isPrev = index === (current - 1 + slides.length) % slides.length;
+                    transitionClasses = clsx(
+                        "absolute inset-0 will-change-[transform,opacity,filter]",
+                        "transition-[transform,opacity,filter] duration-[6000ms]",
+                        "ease-[cubic-bezier(0.25,0.1,0.25,1)]",
+                        isActive && "translate-x-0 opacity-100 blur-0 z-20",
+                        isPrev && "-translate-x-full opacity-0 blur-xl z-10",
+                        !isActive && !isPrev && "translate-x-full opacity-0 blur-xl z-0 pointer-events-none"
+                    );
+                } else {
+                    // Single slide - no transitions
+                    transitionClasses = clsx(
+                        "absolute inset-0",
+                        isActive && "z-20",
+                        !isActive && "hidden"
+                    );
+                }
 
                 return (
                     <div
                         key={slide.id}
-                        className={clsx(
-                            "absolute inset-0 will-change-[transform,opacity,filter]",
-                            "transition-[transform,opacity,filter] duration-[6000ms]",
-                            "ease-[cubic-bezier(0.25,0.1,0.25,1)]",
-                            isActive && "translate-x-0 opacity-100 blur-0 z-20",
-                            isPrev && "-translate-x-full opacity-0 blur-xl z-10",
-                            !isActive && !isPrev && "translate-x-full opacity-0 blur-xl z-0 pointer-events-none"
-                        )}
+                        className={transitionClasses}
                     >
                         <div className={clsx("relative flex items-center justify-start w-full h-full overflow-hidden", slide.bg)}>
+                            {/* Optimize image rendering */}
                             <img
                                 src={slide.image}
                                 alt={slide.title[locale] || slide.title['en']}
                                 className="absolute inset-0 w-full h-full object-cover"
+                                style={{
+                                    imageRendering: 'auto',
+                                    filter: 'none' // Ensure no filters are applied
+                                }}
+                                loading="eager"
                             />
-                            <div className="absolute inset-0 bg-black/40" />
+                            {/* Dark overlay with proper opacity */}
+                            <div className="absolute inset-0 bg-black/50 z-10" />
 
-                            <div className="relative z-10 w-full h-full flex items-center justify-center mb-20">
+                            <div className="relative z-20 w-full h-full flex items-center justify-center mb-20">
                                 <div className="max-w-7xl w-full px-6">
                                     <div className="inline-flex items-center gap-2 rounded-full bg-golden-dark10 text-golden-dark text-sm font-semibold mb-10">
                                         <span className="relative flex h-2 w-2">
@@ -152,49 +174,55 @@ export default function HeroSection() {
                 );
             })}
 
-            {/* Controls */}
-            <button
-                onClick={prev}
-                className="absolute start-5 top-1/2 -translate-y-1/2 z-30 size-10 rounded-full bg-base-100 shadow-sm flex items-center justify-center hover:bg-base-200 transition"
-            >
-                <span className="icon-[tabler--chevron-left] size-5" />
-            </button>
-            <button
-                onClick={next}
-                className="absolute end-5 top-1/2 -translate-y-1/2 z-30 size-10 rounded-full bg-base-100 shadow-sm flex items-center justify-center hover:bg-base-200 transition"
-            >
-                <span className="icon-[tabler--chevron-right] size-5" />
-            </button>
-
-            {/* Pagination */}
-            <div className="absolute px-4 max-w-7xl mx-auto w-full bottom-4 inset-x-0 flex justify-between items-center gap-3 z-30">
-                <div className="flex gap-1">
-                    {slides.map((_, idx) => (
-                        <button
-                            key={idx}
-                            onClick={() => setCurrent(idx)}
-                            className={clsx(
-                                "h-2.5 w-2.5 rounded-full transition",
-                                current === idx ? "bg-golden-classic" : "bg-white/60 hover:bg-white"
-                            )}
-                        />
-                    ))}
-                </div>
-                <div className="flex gap-2">
+            {/* Only show controls if there are multiple slides */}
+            {slides.length > 1 && (
+                <>
                     <button
                         onClick={prev}
-                        className="rounded-md p-1 md:p-3 hover:bg-white/80 bg-white shadow-sm flex items-center justify-center transition"
+                        className="absolute start-5 top-1/2 -translate-y-1/2 z-30 size-10 rounded-full bg-base-100 shadow-sm flex items-center justify-center hover:bg-base-200 transition"
                     >
-                        <ChevronDown className="rotate-90 size-7" />
+                        <span className="icon-[tabler--chevron-left] size-5" />
                     </button>
                     <button
                         onClick={next}
-                        className="p-1 md:p-3 rounded-md hover:bg-white/80 bg-white shadow-sm flex items-center justify-center transition"
+                        className="absolute end-5 top-1/2 -translate-y-1/2 z-30 size-10 rounded-full bg-base-100 shadow-sm flex items-center justify-center hover:bg-base-200 transition"
                     >
-                        <ChevronDown className="-rotate-90 h-6" />
+                        <span className="icon-[tabler--chevron-right] size-5" />
                     </button>
+                </>
+            )}
+
+            {/* Pagination - only show for multiple slides */}
+            {slides.length > 1 && (
+                <div className="absolute px-4 max-w-7xl mx-auto w-full bottom-4 inset-x-0 flex justify-between items-center gap-3 z-30">
+                    <div className="flex gap-1">
+                        {slides.map((_, idx) => (
+                            <button
+                                key={idx}
+                                onClick={() => setCurrent(idx)}
+                                className={clsx(
+                                    "h-2.5 w-2.5 rounded-full transition",
+                                    current === idx ? "bg-golden-classic" : "bg-white/60 hover:bg-white"
+                                )}
+                            />
+                        ))}
+                    </div>
+                    <div className="flex gap-2">
+                        <button
+                            onClick={prev}
+                            className="rounded-md p-1 md:p-3 hover:bg-white/80 bg-white shadow-sm flex items-center justify-center transition"
+                        >
+                            <ChevronDown className="rotate-90 size-7" />
+                        </button>
+                        <button
+                            onClick={next}
+                            className="p-1 md:p-3 rounded-md hover:bg-white/80 bg-white shadow-sm flex items-center justify-center transition"
+                        >
+                            <ChevronDown className="-rotate-90 h-6" />
+                        </button>
+                    </div>
                 </div>
-            </div>
+            )}
         </div>
     );
 }
