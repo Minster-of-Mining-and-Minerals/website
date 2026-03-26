@@ -22,6 +22,7 @@ const createGamestone = async (req, res) => {
             description,
             attachment_id,
             discovered_date,
+            location,
             parent_id,
             attachments, // multiple attachments
         } = req.body;
@@ -39,6 +40,7 @@ const createGamestone = async (req, res) => {
                 gamestone_id: uuidv4(),
                 title,
                 description,
+                location,
                 attachment_id: attachment_id || null,
                 discovered_date,
                 parent_id: parent_id || null,
@@ -173,6 +175,22 @@ const getGamestoneById = async (req, res) => {
                 {
                     model: Gamestone,
                     as: "sub_items",
+                    include: [
+                        {
+                            model: Attachment,
+                            as: "attachment",
+                        },
+                        {
+                            model: GamestoneAttachment,
+                            as: "attachments",
+                            include: [
+                                {
+                                    model: Attachment,
+                                    as: "attachment",
+                                },
+                            ],
+                        },
+                    ],
                 },
                 {
                     model: Gamestone,
@@ -230,6 +248,7 @@ const updateGamestone = async (req, res) => {
             description,
             attachment_id,
             discovered_date,
+            location,
             parent_id,
             attachments,
         } = req.body;
@@ -240,6 +259,7 @@ const updateGamestone = async (req, res) => {
                 description,
                 attachment_id,
                 discovered_date,
+                location,
                 parent_id,
                 updated_at: new Date(),
             },

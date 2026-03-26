@@ -28,6 +28,8 @@ const createGamestoneSchema = Joi.object({
 
     attachment_id: uuidSchema.allow(null).optional(),
 
+    location: Joi.string().allow(null, "").optional(),
+
     discovered_date: Joi.date().iso().allow(null).optional(),
 
     parent_id: uuidSchema.allow(null).optional(),
@@ -46,6 +48,8 @@ const updateGamestoneSchema = Joi.object({
     description: Joi.string().allow(null, "").optional(),
 
     attachment_id: uuidSchema.allow(null).optional(),
+    
+    location: Joi.string().allow(null, "").optional(),
 
     discovered_date: Joi.date().iso().allow(null).optional(),
 

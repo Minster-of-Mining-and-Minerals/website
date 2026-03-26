@@ -1,10 +1,11 @@
-import React from "react";
-const GamestonesPage = () => {
-    return (
-        <>
-            <div>Gamestones Page</div>
-        </>
-    );
-};
+import GemstonesList from "@/features/sectors/mining/GemstonesList";
 
-export default GamestonesPage;
+function Gemstones() {
+    return (
+        <div>
+            <GemstonesList />
+        </div>
+    );
+}
+
+export default Gemstones

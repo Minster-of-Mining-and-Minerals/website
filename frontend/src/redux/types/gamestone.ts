@@ -6,6 +6,7 @@ export interface Gamestone {
     gamestone_id: string;
     title: string;
     description?: string;
+    location?: string | null;
     attachment_id?: string | null;
     discovered_date?: string | null;
     parent_id?: string | null;
@@ -28,6 +29,7 @@ export interface Gamestone {
 export interface CreateGamestonePayload {
     title: string;
     description?: string;
+    location?: string | null;
     attachment_id?: string | null;
     discovered_date?: string | null;
     parent_id?: string | null;
@@ -40,6 +42,7 @@ export interface CreateGamestonePayload {
 export interface UpdateGamestonePayload {
     title?: string;
     description?: string;
+    location?: string | null;
     attachment_id?: string | null;
     discovered_date?: string | null;
     parent_id?: string | null;

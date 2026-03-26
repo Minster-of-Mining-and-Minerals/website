@@ -48,6 +48,11 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull: true,
             },
 
+            location: {
+                type: DataTypes.TEXT,
+                allowNull: true,
+            },
+
             // Main image (single)
             attachment_id: {
                 type: DataTypes.UUID,
