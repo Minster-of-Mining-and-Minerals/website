@@ -51,6 +51,11 @@ const items = [
     label: "Training & Capacity Building",
     slug: "/geology/training",
     description: "Professional training programs and geoscience capacity development"
+  },
+  {
+    label: "Resources",
+    slug: "/geology/resource",
+    description: "Resources"
   }
 ];
 

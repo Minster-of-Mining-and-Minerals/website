@@ -49,7 +49,7 @@ const partnerRoute = require("./routers/hero/partnerRoute");
 
 // ================== Sector Routes ==========================
 const gamestoneRoute = require("./routers/sectors/mining/gamestoneRoutes");
-
+const resourceRoute = require("./routers/sectors/resourceRoutes");
 
 // ================== Attachment Routes ==========================
 const attachmentRoute = require("./routers/attachement/attachementRoutes");
@@ -168,7 +168,7 @@ app.use("/api/partners", partnerRoute);
 
 // ================== Sector Routes ==========================
 app.use("/api/gamestones", gamestoneRoute);
-
+app.use("/api/resources", resourceRoute);
 
 // ================== Api Attachment Routes =====================
 app.use("/api/attachments", attachmentRoute);

@@ -37,6 +37,7 @@ export const baseApi = createApi({
     "Slider",
     "Partner",
     "Gamestone",
+    "Resource",
   ],
   endpoints: () => ({}),
 });

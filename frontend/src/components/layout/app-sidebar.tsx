@@ -118,6 +118,37 @@ const miningManagementItems = [
     url: "/admin/sectors/mining/gamestones",
     icon: Tag,
   },
+  {
+    title: "Resources",
+    url: "/admin/sectors/mining/resources",
+    icon: Tag,
+  },
+];
+
+const geologyManagementItems = [
+  {
+    title: "Snapshots",
+    url: "/admin/sectors/geology/snapshots",
+    icon: Megaphone,
+  },
+  {
+    title: "Resources",
+    url: "/admin/sectors/geology/resources",
+    icon: Tag,
+  },
+];
+
+const petroleumManagementItems = [
+  {
+    title: "Snapshots",
+    url: "/admin/sectors/petroleum/snapshots",
+    icon: Megaphone,
+  },
+  {
+    title: "Resources",
+    url: "/admin/sectors/petroleum/resources",
+    icon: Tag,
+  },
 ];
 
 export function AppSidebar() {
@@ -240,59 +271,6 @@ export function AppSidebar() {
                 </SidebarMenuItem>
               </Collapsible>
 
-              {/* USERS WITH NESTED MENU */}
-              <Collapsible
-                asChild
-                defaultOpen={pathname.startsWith("/admin/users")}
-                className="group/collapsible"
-              >
-                <SidebarMenuItem className="group-data-[collapsible=icon]:w-fit">
-                  <CollapsibleTrigger asChild>
-                    <SidebarMenuButton
-                      tooltip="Users"
-                      isActive={pathname.startsWith("/admin/users")}
-                      className="text-primary hover:bg-golden-metallic px-5 py-5
-                        group-data-[collapsible=icon]:px-2
-                        group-data-[collapsible=icon]:justify-center
-                        data-[active=true]:bg-golden-dark
-                        data-[active=true]:text-primary-foreground"
-                    >
-                      <Users className="group-data-[collapsible=icon]:size-5" />
-                      <span className="text-base group-data-[collapsible=icon]:hidden">
-                        Users
-                      </span>
-                      <ChevronRight
-                        className="ml-auto transition-transform duration-200
-                          group-data-[state=open]/collapsible:rotate-90
-                          group-data-[collapsible=icon]:hidden"
-                      />
-                    </SidebarMenuButton>
-                  </CollapsibleTrigger>
-
-                  <CollapsibleContent>
-                    <SidebarMenuSub className="pt-1">
-                      {userManagementItems.map((subItem) => (
-                        <SidebarMenuSubItem key={subItem.url}>
-                          <SidebarMenuSubButton
-                            asChild
-                            isActive={pathname === subItem.url}
-                            className="text-primary hover:bg-golden-metallic
-                              group-data-[collapsible=icon]:justify-center
-                              data-[active=true]:bg-golden-metallic
-                              data-[active=true]:text-primary"
-                          >
-                            <Link href={subItem.url}>
-                              <subItem.icon className="h-4 w-4" />
-                              <span>{subItem.title}</span>
-                            </Link>
-                          </SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
-                      ))}
-                    </SidebarMenuSub>
-                  </CollapsibleContent>
-                </SidebarMenuItem>
-              </Collapsible>
-
               {/* MINING WITH NESTED MENU */}
               <Collapsible
                 asChild
@@ -325,6 +303,165 @@ export function AppSidebar() {
                   <CollapsibleContent>
                     <SidebarMenuSub className="pt-1">
                       {miningManagementItems.map((subItem) => (
+                        <SidebarMenuSubItem key={subItem.url}>
+                          <SidebarMenuSubButton
+                            asChild
+                            isActive={pathname === subItem.url}
+                            className="text-primary hover:bg-golden-metallic
+                              group-data-[collapsible=icon]:justify-center
+                              data-[active=true]:bg-golden-metallic
+                              data-[active=true]:text-primary"
+                          >
+                            <Link href={subItem.url}>
+                              <subItem.icon className="h-4 w-4" />
+                              <span>{subItem.title}</span>
+                            </Link>
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                      ))}
+                    </SidebarMenuSub>
+                  </CollapsibleContent>
+                </SidebarMenuItem>
+              </Collapsible>
+
+              {/* GEOLOGY WITH NESTED MENU */}
+              <Collapsible
+                asChild
+                defaultOpen={pathname.startsWith("/admin/sectors/geology")}
+                className="group/collapsible"
+              >
+                <SidebarMenuItem className="group-data-[collapsible=icon]:w-fit">
+                  <CollapsibleTrigger asChild>
+                    <SidebarMenuButton
+                      tooltip="Geology"
+                      isActive={pathname.startsWith("/admin/sectors/geology")}
+                      className="text-primary hover:bg-golden-metallic px-5 py-5
+                        group-data-[collapsible=icon]:px-2
+                        group-data-[collapsible=icon]:justify-center
+                        data-[active=true]:bg-golden-dark
+                        data-[active=true]:text-primary-foreground"
+                    >
+                      <Newspaper className="group-data-[collapsible=icon]:size-5" />
+                      <span className="text-base group-data-[collapsible=icon]:hidden">
+                        Geology
+                      </span>
+                      <ChevronRight
+                        className="ml-auto transition-transform duration-200
+                          group-data-[state=open]/collapsible:rotate-90
+                          group-data-[collapsible=icon]:hidden"
+                      />
+                    </SidebarMenuButton>
+                  </CollapsibleTrigger>
+
+                  <CollapsibleContent>
+                    <SidebarMenuSub className="pt-1">
+                      {geologyManagementItems.map((subItem) => (
+                        <SidebarMenuSubItem key={subItem.url}>
+                          <SidebarMenuSubButton
+                            asChild
+                            isActive={pathname === subItem.url}
+                            className="text-primary hover:bg-golden-metallic
+                              group-data-[collapsible=icon]:justify-center
+                              data-[active=true]:bg-golden-metallic
+                              data-[active=true]:text-primary"
+                          >
+                            <Link href={subItem.url}>
+                              <subItem.icon className="h-4 w-4" />
+                              <span>{subItem.title}</span>
+                            </Link>
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                      ))}
+                    </SidebarMenuSub>
+                  </CollapsibleContent>
+                </SidebarMenuItem>
+              </Collapsible>
+
+              {/* PETROLEUM WITH NESTED MENU */}
+              <Collapsible
+                asChild
+                defaultOpen={pathname.startsWith("/admin/petroleum")}
+                className="group/collapsible"
+              >
+                <SidebarMenuItem className="group-data-[collapsible=icon]:w-fit">
+                  <CollapsibleTrigger asChild>
+                    <SidebarMenuButton
+                      tooltip="Petroleum"
+                      isActive={pathname.startsWith("/admin/petroleum")}
+                      className="text-primary hover:bg-golden-metallic px-5 py-5
+                        group-data-[collapsible=icon]:px-2
+                        group-data-[collapsible=icon]:justify-center
+                        data-[active=true]:bg-golden-dark
+                        data-[active=true]:text-primary-foreground"
+                    >
+                      <Newspaper className="group-data-[collapsible=icon]:size-5" />
+                      <span className="text-base group-data-[collapsible=icon]:hidden">
+                        Petroleum
+                      </span>
+                      <ChevronRight
+                        className="ml-auto transition-transform duration-200
+                          group-data-[state=open]/collapsible:rotate-90
+                          group-data-[collapsible=icon]:hidden"
+                      />
+                    </SidebarMenuButton>
+                  </CollapsibleTrigger>
+
+                  <CollapsibleContent>
+                    <SidebarMenuSub className="pt-1">
+                      {petroleumManagementItems.map((subItem) => (
+                        <SidebarMenuSubItem key={subItem.url}>
+                          <SidebarMenuSubButton
+                            asChild
+                            isActive={pathname === subItem.url}
+                            className="text-primary hover:bg-golden-metallic
+                              group-data-[collapsible=icon]:justify-center
+                              data-[active=true]:bg-golden-metallic
+                              data-[active=true]:text-primary"
+                          >
+                            <Link href={subItem.url}>
+                              <subItem.icon className="h-4 w-4" />
+                              <span>{subItem.title}</span>
+                            </Link>
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                      ))}
+                    </SidebarMenuSub>
+                  </CollapsibleContent>
+                </SidebarMenuItem>
+              </Collapsible>
+
+              {/* USERS WITH NESTED MENU */}
+              <Collapsible
+                asChild
+                defaultOpen={pathname.startsWith("/admin/users")}
+                className="group/collapsible"
+              >
+                <SidebarMenuItem className="group-data-[collapsible=icon]:w-fit">
+                  <CollapsibleTrigger asChild>
+                    <SidebarMenuButton
+                      tooltip="Users"
+                      isActive={pathname.startsWith("/admin/users")}
+                      className="text-primary hover:bg-golden-metallic px-5 py-5
+                        group-data-[collapsible=icon]:px-2
+                        group-data-[collapsible=icon]:justify-center
+                        data-[active=true]:bg-golden-dark
+                        data-[active=true]:text-primary-foreground"
+                    >
+                      <Users className="group-data-[collapsible=icon]:size-5" />
+                      <span className="text-base group-data-[collapsible=icon]:hidden">
+                        Users
+                      </span>
+                      <ChevronRight
+                        className="ml-auto transition-transform duration-200
+                          group-data-[state=open]/collapsible:rotate-90
+                          group-data-[collapsible=icon]:hidden"
+                      />
+                    </SidebarMenuButton>
+                  </CollapsibleTrigger>
+
+                  <CollapsibleContent>
+                    <SidebarMenuSub className="pt-1">
+                      {userManagementItems.map((subItem) => (
                         <SidebarMenuSubItem key={subItem.url}>
                           <SidebarMenuSubButton
                             asChild

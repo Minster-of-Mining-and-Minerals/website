@@ -217,34 +217,6 @@ const LicensingAndLegislationPage = () => {
                             ))}
                         </div>
                     </div>
-
-                    {/* Quick Links */}
-                    <div className='shadow-xl bg-gray-50 rounded-xl p-6 border border-gray-200'>
-                        <h3 className='text-xl font-bold text-gray-900 mb-4'>
-                            Quick Resources
-                        </h3>
-                        <div className='space-y-3'>
-                            {[
-                                { label: "License Application Portal", type: "link" },
-                                { label: "Legal Framework Documents", type: "download" },
-                                { label: "Compliance Guidelines", type: "download" },
-                                { label: "Fee Structure", type: "link" }
-                            ].map((resource, index) => (
-                                <a
-                                    key={index}
-                                    href="#"
-                                    className='flex items-center justify-between p-3 bg-white rounded-lg border border-gray-200 hover:border-blue-400 hover:shadow transition-all group'
-                                >
-                                    <span className='text-gray-700 group-hover:text-blue-600'>
-                                        {resource.label}
-                                    </span>
-                                    <span className='px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded group-hover:bg-blue-50 group-hover:text-blue-600'>
-                                        {resource.type === 'link' ? 'View →' : 'PDF ↓'}
-                                    </span>
-                                </a>
-                            ))}
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>

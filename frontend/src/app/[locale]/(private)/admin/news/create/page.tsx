@@ -233,7 +233,7 @@ const FileUploadField: React.FC<FileUploadFieldProps> = ({
                                 {file.file_type === "video" && (
                                     <div className="w-10 h-10 bg-gray-200 rounded flex items-center justify-center">
                                         <video className="w-8 h-8 object-cover" muted>
-                                            <source src={file.previewUrl} type="video/mp4" />
+                                            <source src={file.previewUrl ?? undefined} type="video/mp4" />
                                         </video>
                                     </div>
                                 )}

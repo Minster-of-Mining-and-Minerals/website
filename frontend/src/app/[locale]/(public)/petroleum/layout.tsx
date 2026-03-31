@@ -10,6 +10,7 @@ const items = [
     { label: "Opportunities in Petroleum", slug: "/petroleum", description: "Overview of Ethiopia's petroleum sector" },
     { label: "Applying for Petroleum", slug: "/petroleum/applying-for-petroleum", description: "Overview of Ethiopia's petroleum sector" },
     { label: "Legislation and Regulation", slug: "/petroleum/legislation-and-regulation", description: "Overview of Ethiopia's petroleum sector" },
+    { label: "Resource", slug: "/petroleum/resource", description: "Overview of Ethiopia's petroleum sector" },
 ];
 
 export default function Layout({
