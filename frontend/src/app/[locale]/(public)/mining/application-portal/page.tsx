@@ -69,27 +69,6 @@ const ApplicationPortalPage = () => {
 
     return (
         <div className='min-h-screen bg-gradient-to-b from-gray-50 to-white'>
-            {/* Hero Header */}
-            <div className='bg-gradient-to-r from-golden-dark to-golden-dark text-white'>
-                <div className='w-7xl mx-auto px-6 py-16'>
-                    <div className='max-w-4xl'>
-                        <h1 className='text-5xl font-bold mb-6'>
-                            Mining License Application Portal
-                        </h1>
-                        <p className='text-xl text-blue-100 mb-8'>
-                            Digital gateway for transparent and efficient mining license applications with the Ministry of Mines
-                        </p>
-                        <a
-                            href="#apply-now"
-                            className='inline-flex items-center gap-2 bg-white text-blue-900 px-8 py-4 rounded-lg font-semibold hover:bg-blue-50 transition-colors shadow-lg'
-                        >
-                            Start New Application
-                            <ArrowRight className="w-5 h-5" />
-                        </a>
-                    </div>
-                </div>
-            </div>
-
             <div className='w-7xl mx-auto px-6 py-12'>
                 {/* Portal Overview */}
                 <div className='grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16'>

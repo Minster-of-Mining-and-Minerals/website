@@ -6,8 +6,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy: "jwt",
-    maxAge: 5 * 60,
-    updateAge: 25 * 60,
+    maxAge: 10 * 60, // 10 minutes
+    updateAge: 60,   // update every 1 minute
   },
   pages: {
     signIn: "/login",
