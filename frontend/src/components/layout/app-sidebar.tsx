@@ -333,7 +333,7 @@ export function AppSidebar() {
                 <SidebarMenuItem className="group-data-[collapsible=icon]:w-fit">
                   <CollapsibleTrigger asChild>
                     <SidebarMenuButton
-                      tooltip="Geology"
+                      tooltip="Geothermal"
                       isActive={pathname.startsWith("/admin/sectors/geology")}
                       className="text-primary hover:bg-golden-metallic px-5 py-5
                         group-data-[collapsible=icon]:px-2
@@ -343,7 +343,7 @@ export function AppSidebar() {
                     >
                       <Newspaper className="group-data-[collapsible=icon]:size-5" />
                       <span className="text-base group-data-[collapsible=icon]:hidden">
-                        Geology
+                        Geothermal
                       </span>
                       <ChevronRight
                         className="ml-auto transition-transform duration-200
