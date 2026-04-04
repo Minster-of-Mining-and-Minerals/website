@@ -1,61 +1,87 @@
-import React from 'react'
-import Image from "next/image";
-const miningData = [
-    {
-        title: "Mining",
-        heading: "Mining is the extraction of valuable minerals or other geological materials from the Earth.",
-        description: "Ethiopia is endowed with a wide range of mineral resources, including gold, coal, iron ore, copper, potash, industrial minerals, and gemstones. The mining sector plays a significant role in the Ethiopian economy, contributing to export earnings, job creation, and rural development. The government has been implementing reforms to improve the mining sector, including the establishment of the Ministry of Mines and Petroleum, the development of a new mining law, and the promotion of foreign investment.",
-        image: "/home-2.jpg",
-    },
-]
+"use client";
+import { useGetSnapshotsQuery } from "@/redux/api/snapshotApi";
+import { getFileUrl } from "@/utils/fileUrl";
+import { Loader2 } from "lucide-react";
 
 const MiningPage = () => {
+    const { data: snapshots = [], isLoading } = useGetSnapshotsQuery({ sector: "mining", publishedOnly: true });
+
+    // Use the first published snapshot found for this sector
+    const snapshot = snapshots[0];
+
+    if (isLoading) {
+        return (
+            <div className="flex flex-col items-center justify-center py-20 gap-4 min-h-[400px]">
+                <Loader2 className="h-8 w-8 animate-spin text-golden-dark" />
+                <p className="text-gray-500 animate-pulse">Loading mining sector data...</p>
+            </div>
+        );
+    }
+
+    if (!snapshot) {
+        // Fallback to static content if no snapshot exists in DB
+        return (
+            <div className='w-full max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-7 gap-8 px-4'>
+                No snapshot found
+            </div>
+        );
+    }
+
+    const imageUrl = snapshot.attachment?.file_path ? getFileUrl(snapshot.attachment.file_path) : "/home-2.jpg";
+
     return (
-        <div className='w-7xl mx-auto grid grid-cols-1 md:grid-cols-7 gap-8'>
-            <div className="col-span-2 prose max-w-none flex flex-col gap-4 text-gray-500">
+        <div className='w-full max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-7 gap-10 px-4'>
+            {/* Left Content Column */}
+            <div className="col-span-1 md:col-span-2 prose max-w-none flex flex-col gap-4 text-gray-600">
                 <p className='text-gray-900'>
-                    On this page, you can learn more about Ethiopia’s mining sector, including an overview of its natural resources, mining’s current economic contribution, the reforms which are taking place, and who the key actors are.
+                    {snapshot.description_one}
                 </p>
                 <p className='text-gray-500'>
-                    On this page, you can learn more about Ethiopia’s mining sector, including an overview of its natural resources, mining’s current economic contribution, the reforms which are taking place, and who the key actors are.
+                    {snapshot.description_two}
                 </p>
             </div>
-            <div className="col-span-3 flex flex-col gap-4">
-                <Image
-                    src={miningData[0].image}
-                    alt={miningData[0].title}
-                    width={1200}
-                    height={1200}
-                    className="object-cover w-full"
-                    priority={true}
-                />
-                <p className='text-gray-900'>
-                    {miningData[0].heading}
-                </p>
+
+            {/* Central Hex/Image Column */}
+            <div className="col-span-1 md:col-span-3 flex flex-col gap-6">
+                <div className="relative group overflow-hidden rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500">
+                    <img
+                        src={imageUrl}
+                        alt={snapshot.title}
+                        className="object-cover h-auto w-full group-hover:scale-105 transition-transform duration-700"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
+                </div>
+                {snapshot.attachment_description && (
+                    <p className='text-gray-900 font-medium border-l-4 border-golden-dark pl-4'>
+                        {snapshot.attachment_description}
+                    </p>
+
+                )}
             </div>
-            {/* Ministry's Core Mandate */}
-            <div className="col-span-2 prose max-w-none flex flex-col gap-2 text-gray-500">
-                <div className="flex flex-col gap-2">
-                    <h2 className="text-xl font-bold text-golden-dark">• Mandate</h2>
-                    <p>
-                        Lead East Africa's mining sector through sustainable resource development and economic value addition.
-                    </p>
-                </div>
-                <div className="flex flex-col gap-2">
-                    <h2 className="text-xl font-bold text-golden-dark">• Strategic Focus</h2>
-                    <p>
-                        Ensure sustainable, transparent mineral resource management and foster investment-friendly policies.
-                    </p>
-                </div>
-                <div className="flex flex-col gap-2">
-                    <h2 className="text-xl font-bold text-golden-dark">• Key Priority</h2>
-                    <p>
-                        Maximize mining's contribution to the national economy through effective governance and value chain development.
-                    </p>
-                </div>
+
+            {/* Right Mandates Column */}
+            <div className="col-span-1 md:col-span-2 flex flex-col gap-8">
+                {snapshot.sections?.map((section, idx) => (
+                    <div key={section.section_id || idx} className="flex flex-col gap-3 group">
+                        <h2 className="text-lg font-bold text-golden-dark flex items-center gap-2 group-hover:translate-x-1 transition-transform">
+                            <span className="h-2 w-2 rounded-full bg-golden-dark" />
+                            {section.title}
+                        </h2>
+                        <div
+                            className="bg-gray-50/50 p-4 rounded-xl border border-transparent group-hover:border-golden-dark/10 group-hover:bg-white transition-all text-sm text-gray-600 leading-relaxed"
+                        >
+                            {section.content}
+                        </div>
+                    </div>
+                ))}
+                {(!snapshot.sections || snapshot.sections.length === 0) && (
+                    <div className="text-gray-400 italic text-sm py-4 border-t border-gray-100">
+                        No strategic details available.
+                    </div>
+                )}
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default MiningPage
+export default MiningPage;

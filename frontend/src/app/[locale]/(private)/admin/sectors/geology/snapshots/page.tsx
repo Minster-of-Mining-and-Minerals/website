@@ -1,9 +1,12 @@
 import React from 'react'
+import SnapshotList from '@/features/sectors/mining/SnapshotList'
 
-function GeologySnapshotPage() {
+function GeothermalSnapshotPage() {
     return (
-        <div>GeologySnapshotPage</div>
+        <div>
+            <SnapshotList sector="geothermal" />
+        </div>
     )
 }
 
-export default GeologySnapshotPage
+export default GeothermalSnapshotPage

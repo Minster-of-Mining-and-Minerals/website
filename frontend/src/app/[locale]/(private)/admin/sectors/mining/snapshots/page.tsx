@@ -1,7 +1,10 @@
-import React from "react";
+import SnapshotList from "@/features/sectors/mining/SnapshotList";
+
 const SnapshotsPage = () => {
     return (
-        <div>Snapshots Page</div>
+        <div>
+            <SnapshotList sector="mining" />
+        </div>
     );
 };
 

@@ -38,6 +38,7 @@ export const baseApi = createApi({
     "Partner",
     "Gamestone",
     "Resource",
+    "Snapshot",
   ],
   endpoints: () => ({}),
 });
