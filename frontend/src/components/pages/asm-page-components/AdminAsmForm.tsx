@@ -138,9 +138,7 @@ export default function AdminAsmForm() {
                             {[
                                 { value: "overview", label: "Headlines" },
                                 { value: "economic", label: "Economic Impact" },
-                                { value: "impact", label: "Impact Contribution" },
                                 { value: "strategy", label: "Strategic Objectives" },
-                                { value: "pillars", label: "Strategic Pillars" },
                                 { value: "initiatives", label: "Key Initiatives" },
                                 { value: "objectives", label: "Objectives" },
                                 { value: "previews", label: "Previews" },
@@ -162,39 +160,54 @@ export default function AdminAsmForm() {
                                     title="Headlines"
                                     objectives={headlines}
                                     onChange={setHeadlines}
-                                />
-                            </TabsContent>
-
-                            <TabsContent value="strategy">
-                                <AdminAsmObjectivesPanel
-                                    title="Strategic Objectives"
-                                    objectives={strategicObjective}
-                                    onChange={setStrategicObjective}
+                                    maxItems={1}
+                                    hideFootnote
                                 />
                             </TabsContent>
 
                             <TabsContent value="economic">
-                                <AdminAsmObjectivesPanel
-                                    title="Economic Impact Data"
-                                    objectives={economicImpact}
-                                    onChange={setEconomicImpact}
-                                />
+                                <div className="space-y-12">
+                                    <AdminAsmObjectivesPanel
+                                        title="Economic Impact Data"
+                                        objectives={economicImpact}
+                                        onChange={setEconomicImpact}
+                                        maxItems={1}
+                                        hideDescription
+                                        hideContent
+                                    />
+                                    <div className="border-t border-slate-200 pt-6">
+                                        <AdminAsmObjectivesPanel
+                                            title="Impact Contribution"
+                                            objectives={impactContribution}
+                                            onChange={setImpactContribution}
+                                            hideContent
+                                            hideFootnote
+                                        />
+                                    </div>
+                                </div>
                             </TabsContent>
 
-                            <TabsContent value="impact">
-                                <AdminAsmObjectivesPanel
-                                    title="Impact Contribution"
-                                    objectives={impactContribution}
-                                    onChange={setImpactContribution}
-                                />
-                            </TabsContent>
-
-                            <TabsContent value="pillars">
-                                <AdminAsmObjectivesPanel
-                                    title="Strategic Pillars"
-                                    objectives={strategicPillars}
-                                    onChange={setStrategicPillars}
-                                />
+                            <TabsContent value="strategy">
+                                <div className="space-y-12">
+                                    <AdminAsmObjectivesPanel
+                                        title="Strategic Objective"
+                                        objectives={strategicObjective}
+                                        onChange={setStrategicObjective}
+                                        maxItems={1}
+                                        hideIcon
+                                        hideContent
+                                        hideFootnote
+                                    />
+                                    <div className="border-t border-slate-200 pt-6">
+                                        <AdminAsmObjectivesPanel
+                                            title="Strategic Pillars"
+                                            objectives={strategicPillars}
+                                            onChange={setStrategicPillars}
+                                            hideContent
+                                            hideFootnote
+                                        />
+                                    </div>
+                                </div>
                             </TabsContent>
 
                             <TabsContent value="initiatives">
@@ -202,6 +215,8 @@ export default function AdminAsmForm() {
                                     title="Key Initiatives"
                                     objectives={keyInitiatives}
                                     onChange={setKeyInitiatives}
+                                    hideContent
+                                    hideFootnote
                                 />
                             </TabsContent>
 
@@ -210,6 +225,8 @@ export default function AdminAsmForm() {
                                     title="General Objectives"
                                     objectives={objectives}
                                     onChange={setObjectives}
+                                    hideContent
+                                    hideFootnote
                                 />
                             </TabsContent>
 

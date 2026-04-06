@@ -1,10 +1,9 @@
 import React from 'react'
-import AsmPage from './new'
-// import AsmPage from './test'
+import PublicAsmPage from '@/components/pages/asm-page-components/PublicAsmPage'
 
 function page() {
     return (
-        <AsmPage />
+        <PublicAsmPage />
     )
 }
 

@@ -27,7 +27,7 @@ const RenderIcon = ({ name, className }: { name?: string; className?: string }) 
     return <Icon className={className} />;
 };
 
-const AsmPage = () => {
+const PublicAsmPage = () => {
     const { data: asms = [], isLoading } = useGetASMsQuery();
     const asm = asms[0];
 
@@ -57,7 +57,7 @@ const AsmPage = () => {
     };
 
     const economicImpact = asm.economic_impact || [];
-    const impactContribution = asm.impact_contribution || "";
+    const impactContribution = asm.impact_contribution || [];
     const strategicObjective = asm.strategic_objective || [];
     const strategicPillars = asm.strategic_pillars || [];
     const previews = asm.previews || [];
@@ -287,4 +287,4 @@ const AsmPage = () => {
     );
 };
 
-export default AsmPage;
+export default PublicAsmPage;
