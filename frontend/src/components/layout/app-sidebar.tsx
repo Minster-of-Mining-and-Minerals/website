@@ -138,6 +138,14 @@ const geologyManagementItems = [
   },
 ];
 
+const asmManagementItems = [
+  {
+    title: "ASM Overview",
+    url: "/admin/asm",
+    icon: Megaphone,
+  },
+];
+
 const petroleumManagementItems = [
   {
     title: "Snapshots",
@@ -303,6 +311,59 @@ export function AppSidebar() {
                   <CollapsibleContent>
                     <SidebarMenuSub className="pt-1">
                       {miningManagementItems.map((subItem) => (
+                        <SidebarMenuSubItem key={subItem.url}>
+                          <SidebarMenuSubButton
+                            asChild
+                            isActive={pathname === subItem.url}
+                            className="text-primary hover:bg-golden-metallic
+                              group-data-[collapsible=icon]:justify-center
+                              data-[active=true]:bg-golden-metallic
+                              data-[active=true]:text-primary"
+                          >
+                            <Link href={subItem.url}>
+                              <subItem.icon className="h-4 w-4" />
+                              <span>{subItem.title}</span>
+                            </Link>
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                      ))}
+                    </SidebarMenuSub>
+                  </CollapsibleContent>
+                </SidebarMenuItem>
+              </Collapsible>
+
+              {/* ASM WITH NESTED MENU */}
+              <Collapsible
+                asChild
+                defaultOpen={pathname.startsWith("/admin/asm")}
+                className="group/collapsible"
+              >
+                <SidebarMenuItem className="group-data-[collapsible=icon]:w-fit">
+                  <CollapsibleTrigger asChild>
+                    <SidebarMenuButton
+                      tooltip="Artisanal Mining"
+                      isActive={pathname.startsWith("/admin/asm")}
+                      className="text-primary hover:bg-golden-metallic px-5 py-5
+                        group-data-[collapsible=icon]:px-2
+                        group-data-[collapsible=icon]:justify-center
+                        data-[active=true]:bg-golden-dark
+                        data-[active=true]:text-primary-foreground"
+                    >
+                      <Newspaper className="group-data-[collapsible=icon]:size-5" />
+                      <span className="text-base group-data-[collapsible=icon]:hidden">
+                        Artisanal Mining
+                      </span>
+                      <ChevronRight
+                        className="ml-auto transition-transform duration-200
+                          group-data-[state=open]/collapsible:rotate-90
+                          group-data-[collapsible=icon]:hidden"
+                      />
+                    </SidebarMenuButton>
+                  </CollapsibleTrigger>
+
+                  <CollapsibleContent>
+                    <SidebarMenuSub className="pt-1">
+                      {asmManagementItems.map((subItem) => (
                         <SidebarMenuSubItem key={subItem.url}>
                           <SidebarMenuSubButton
                             asChild

@@ -54,6 +54,16 @@ module.exports = (sequelize, DataTypes) => {
                 foreignKey: "attachment_id",
                 as: "snapshots",
             });
+
+            Attachment.hasMany(models.ASMAttachment, {
+                foreignKey: "attachment_id",
+                as: "asmAttachments",
+            });
+
+            Attachment.hasMany(models.ASMPreview, {
+                foreignKey: "attachment_id",
+                as: "asmPreviews",
+            });
         }
     }
 

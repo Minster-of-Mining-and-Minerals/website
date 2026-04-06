@@ -52,6 +52,9 @@ const gamestoneRoute = require("./routers/sectors/mining/gamestoneRoutes");
 const resourceRoute = require("./routers/sectors/resourceRoutes");
 const snapshotRoute = require("./routers/sectors/snapshotRoutes");
 
+// ================== ASM Routes ==========================
+const asmRoute = require("./routers/asm/asmRoutes");
+
 // ================== Attachment Routes ==========================
 const attachmentRoute = require("./routers/attachement/attachementRoutes");
 
@@ -171,6 +174,9 @@ app.use("/api/partners", partnerRoute);
 app.use("/api/gamestones", gamestoneRoute);
 app.use("/api/resources", resourceRoute);
 app.use("/api/snapshots", snapshotRoute);
+
+// ================== ASM Routes ==========================
+app.use("/api/asm", asmRoute);
 
 // ================== Api Attachment Routes =====================
 app.use("/api/attachments", attachmentRoute);
