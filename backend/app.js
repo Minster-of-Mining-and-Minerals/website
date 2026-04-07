@@ -55,6 +55,9 @@ const snapshotRoute = require("./routers/sectors/snapshotRoutes");
 // ================== ASM Routes ==========================
 const asmRoute = require("./routers/asm/asmRoutes");
 
+// ================== Investigate Ethiopia Routes ==========================
+const investigateEthiopiaRoute = require("./routers/investigate_ethiopia/investigateEthiopiaRoutes");
+
 // ================== Attachment Routes ==========================
 const attachmentRoute = require("./routers/attachement/attachementRoutes");
 
@@ -177,6 +180,9 @@ app.use("/api/snapshots", snapshotRoute);
 
 // ================== ASM Routes ==========================
 app.use("/api/asm", asmRoute);
+
+// ================== Investigate Ethiopia Routes ==========================
+app.use("/api/investigate-ethiopia", investigateEthiopiaRoute);
 
 // ================== Api Attachment Routes =====================
 app.use("/api/attachments", attachmentRoute);

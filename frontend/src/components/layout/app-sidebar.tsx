@@ -146,6 +146,14 @@ const asmManagementItems = [
   },
 ];
 
+const investigateEthiopiaManagementItems = [
+  {
+    title: "Overview",
+    url: "/admin/investigate-ethiopia",
+    icon: Megaphone,
+  },
+];
+
 const petroleumManagementItems = [
   {
     title: "Snapshots",
@@ -364,6 +372,59 @@ export function AppSidebar() {
                   <CollapsibleContent>
                     <SidebarMenuSub className="pt-1">
                       {asmManagementItems.map((subItem) => (
+                        <SidebarMenuSubItem key={subItem.url}>
+                          <SidebarMenuSubButton
+                            asChild
+                            isActive={pathname === subItem.url}
+                            className="text-primary hover:bg-golden-metallic
+                              group-data-[collapsible=icon]:justify-center
+                              data-[active=true]:bg-golden-metallic
+                              data-[active=true]:text-primary"
+                          >
+                            <Link href={subItem.url}>
+                              <subItem.icon className="h-4 w-4" />
+                              <span>{subItem.title}</span>
+                            </Link>
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                      ))}
+                    </SidebarMenuSub>
+                  </CollapsibleContent>
+                </SidebarMenuItem>
+              </Collapsible>
+
+              {/* INVESTIGATE ETHIOPIA WITH NESTED MENU */}
+              <Collapsible
+                asChild
+                defaultOpen={pathname.startsWith("/admin/investigate-ethiopia")}
+                className="group/collapsible"
+              >
+                <SidebarMenuItem className="group-data-[collapsible=icon]:w-fit">
+                  <CollapsibleTrigger asChild>
+                    <SidebarMenuButton
+                      tooltip="Investigate Ethiopia"
+                      isActive={pathname.startsWith("/admin/investigate-ethiopia")}
+                      className="text-primary hover:bg-golden-metallic px-5 py-5
+                        group-data-[collapsible=icon]:px-2
+                        group-data-[collapsible=icon]:justify-center
+                        data-[active=true]:bg-golden-dark
+                        data-[active=true]:text-primary-foreground"
+                    >
+                      <Newspaper className="group-data-[collapsible=icon]:size-5" />
+                      <span className="text-base group-data-[collapsible=icon]:hidden">
+                        Investigate Ethiopia
+                      </span>
+                      <ChevronRight
+                        className="ml-auto transition-transform duration-200
+                          group-data-[state=open]/collapsible:rotate-90
+                          group-data-[collapsible=icon]:hidden"
+                      />
+                    </SidebarMenuButton>
+                  </CollapsibleTrigger>
+
+                  <CollapsibleContent>
+                    <SidebarMenuSub className="pt-1">
+                      {investigateEthiopiaManagementItems.map((subItem) => (
                         <SidebarMenuSubItem key={subItem.url}>
                           <SidebarMenuSubButton
                             asChild
