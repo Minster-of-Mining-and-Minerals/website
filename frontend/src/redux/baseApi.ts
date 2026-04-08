@@ -41,6 +41,7 @@ export const baseApi = createApi({
     "Snapshot",
     "ASM",
     "InvestigateEthiopia",
+    "PetroleumObjective",
   ],
   endpoints: () => ({}),
 });

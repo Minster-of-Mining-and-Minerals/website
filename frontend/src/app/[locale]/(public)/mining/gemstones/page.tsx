@@ -133,7 +133,7 @@ const GemstonesPage = () => {
                                         <img
                                             src={imageUrl}
                                             alt={gem.title}
-                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                            className="mt-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                         />
                                     ) : (
                                         <div className="w-full h-full flex flex-col items-center justify-center p-4 text-center">

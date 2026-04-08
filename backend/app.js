@@ -51,6 +51,7 @@ const partnerRoute = require("./routers/hero/partnerRoute");
 const gamestoneRoute = require("./routers/sectors/mining/gamestoneRoutes");
 const resourceRoute = require("./routers/sectors/resourceRoutes");
 const snapshotRoute = require("./routers/sectors/snapshotRoutes");
+const petroleumObjectiveRoute = require("./routers/sectors/petroleum/petroleumObjectiveRoutes");
 
 // ================== ASM Routes ==========================
 const asmRoute = require("./routers/asm/asmRoutes");
@@ -177,6 +178,7 @@ app.use("/api/partners", partnerRoute);
 app.use("/api/gamestones", gamestoneRoute);
 app.use("/api/resources", resourceRoute);
 app.use("/api/snapshots", snapshotRoute);
+app.use("/api/petroleum-objectives", petroleumObjectiveRoute);
 
 // ================== ASM Routes ==========================
 app.use("/api/asm", asmRoute);

@@ -38,7 +38,7 @@ function SubClassCard({ item }: { item: Gamestone }) {
                         <img
                             src={imageUrl}
                             alt={item.title}
-                            className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                            className="mt-0 absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     </>
@@ -328,7 +328,7 @@ export default function GemstoneDetailPage() {
                             <img
                                 src={imageUrl}
                                 alt={gemstone.title}
-                                className="absolute inset-0 w-full h-full object-cover"
+                                className="mt-0 absolute inset-0 w-full h-full object-cover"
                             />
                             {/* Gradient Overlay for Text Readability */}
                             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />

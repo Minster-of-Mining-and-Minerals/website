@@ -161,6 +161,11 @@ const petroleumManagementItems = [
     icon: Megaphone,
   },
   {
+    title: "Objectives",
+    url: "/admin/sectors/petroleum/objectives",
+    icon: Tag,
+  },
+  {
     title: "Resources",
     url: "/admin/sectors/petroleum/resources",
     icon: Tag,
@@ -502,14 +507,14 @@ export function AppSidebar() {
               {/* PETROLEUM WITH NESTED MENU */}
               <Collapsible
                 asChild
-                defaultOpen={pathname.startsWith("/admin/petroleum")}
+                defaultOpen={pathname.startsWith("/admin/sectors/petroleum")}
                 className="group/collapsible"
               >
                 <SidebarMenuItem className="group-data-[collapsible=icon]:w-fit">
                   <CollapsibleTrigger asChild>
                     <SidebarMenuButton
                       tooltip="Petroleum"
-                      isActive={pathname.startsWith("/admin/petroleum")}
+                      isActive={pathname.startsWith("/admin/sectors/petroleum")}
                       className="text-primary hover:bg-golden-metallic px-5 py-5
                         group-data-[collapsible=icon]:px-2
                         group-data-[collapsible=icon]:justify-center
