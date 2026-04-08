@@ -9,4 +9,4 @@ function PetroleumPage() {
   )
 }
 
-export default PetroleumPage
+export default PetroleumPage;
