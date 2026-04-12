@@ -74,6 +74,16 @@ module.exports = (sequelize, DataTypes) => {
                 foreignKey: "attachment_id",
                 as: "petroleumAttachments",
             });
+
+            Attachment.hasMany(models.ProcessBlockAttachment, {
+                foreignKey: "attachment_id",
+                as: "processBlockAttachments",
+            });
+
+            Attachment.hasMany(models.Step, {
+                foreignKey: "attachment_id",
+                as: "steps",
+            });
         }
     }
 

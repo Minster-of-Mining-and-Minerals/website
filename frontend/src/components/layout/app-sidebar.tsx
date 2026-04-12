@@ -166,6 +166,11 @@ const petroleumManagementItems = [
     icon: Tag,
   },
   {
+    title: "Processes",
+    url: "/admin/sectors/petroleum/processes",
+    icon: Tag,
+  },
+  {
     title: "Resources",
     url: "/admin/sectors/petroleum/resources",
     icon: Tag,
