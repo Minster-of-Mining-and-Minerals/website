@@ -2,6 +2,7 @@
 import React from "react";
 import { FileText, Download } from "lucide-react";
 import { useGetPetroleumRegulationProcessesQuery } from "@/redux/api/petroleumRegulationProcessApi";
+import { getFileUrl } from "@/utils/fileUrl";
 
 const PetroleumLegislationAndRegulationProcess = () => {
     const { data: processes, isLoading, error } = useGetPetroleumRegulationProcessesQuery({ published: true });
@@ -106,13 +107,7 @@ const PetroleumLegislationAndRegulationProcess = () => {
         );
     };
 
-    // Handle file download
-    const handleDownload = (attachment) => {
-        if (attachment.attachment?.file_path) {
-            const downloadUrl = `${process.env.REACT_APP_API_URL || 'http://localhost:3000'}/${attachment.attachment.file_path.replace(/\\/g, '/')}`;
-            window.open(downloadUrl, '_blank');
-        }
-    };
+
 
     return (
         <div className="container mx-auto py-12">
@@ -183,27 +178,30 @@ const PetroleumLegislationAndRegulationProcess = () => {
                                     </h3>
                                 </div>
                                 <div className={`p-4 space-y-2 ${attachments.length > 5 ? 'max-h-[400px] overflow-y-auto' : ''}`}>
-                                    {attachments.map((doc, index) => (
-                                        <div
-                                            key={doc.petroleum_regulation_attachment_id || index}
-                                            className="group flex flex-col p-3 rounded-xl hover:bg-golden-dark10 transition-all border border-transparent hover:border-golden-dark20"
-                                        >
-                                            <div className="flex items-start justify-between gap-3">
-                                                <span className="text-sm font-medium text-gray-800 leading-snug group-hover:text-golden-dark">
-                                                    {doc.label}
+                                    {attachments.map((doc, index) => {
+                                        const filePath = doc.attachment?.file_path;
+                                        return (
+                                            <a
+                                                key={doc.petroleum_regulation_attachment_id || index}
+                                                href={filePath ? getFileUrl(filePath) : "#"}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="group flex flex-col p-3 rounded-xl hover:bg-golden-dark10 transition-all border border-transparent hover:border-golden-dark20"
+                                            >
+                                                <div className="flex items-start justify-between gap-3">
+                                                    <span className="text-sm font-medium text-gray-800 leading-snug group-hover:text-golden-dark">
+                                                        {doc.label}
+                                                    </span>
+                                                    <div className="flex-shrink-0 p-2 rounded-lg bg-gray-100 group-hover:bg-golden-dark text-gray-500 group-hover:text-white transition-colors">
+                                                        <Download className="w-4 h-4" />
+                                                    </div>
+                                                </div>
+                                                <span className="mt-1 text-[10px] uppercase tracking-wider font-bold text-gray-400 group-hover:text-golden-dark60">
+                                                    {doc.attachment?.file_name?.split('.').pop() || 'PDF'}
                                                 </span>
-                                                <button
-                                                    onClick={() => handleDownload(doc)}
-                                                    className="flex-shrink-0 p-2 rounded-lg bg-gray-100 group-hover:bg-golden-dark text-gray-500 group-hover:text-white transition-colors"
-                                                >
-                                                    <Download className="w-4 h-4" />
-                                                </button>
-                                            </div>
-                                            <span className="mt-1 text-[10px] uppercase tracking-wider font-bold text-gray-400 group-hover:text-golden-dark60">
-                                                {doc.attachment?.file_name?.split('.').pop() || 'PDF'}
-                                            </span>
-                                        </div>
-                                    ))}
+                                            </a>
+                                        );
+                                    })}
                                 </div>
                             </div>
                         )}
