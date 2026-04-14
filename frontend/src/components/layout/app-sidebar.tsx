@@ -171,6 +171,11 @@ const petroleumManagementItems = [
     icon: Tag,
   },
   {
+    title: "Regulation Processes",
+    url: "/admin/sectors/petroleum/regulation-processes",
+    icon: Tag,
+  },
+  {
     title: "Resources",
     url: "/admin/sectors/petroleum/resources",
     icon: Tag,
