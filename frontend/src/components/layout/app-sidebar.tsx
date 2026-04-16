@@ -123,6 +123,11 @@ const miningManagementItems = [
     url: "/admin/sectors/mining/resources",
     icon: Tag,
   },
+  {
+    title: "Application Processes",
+    url: "/admin/sectors/mining/application-processes",
+    icon: Tag,
+  },
 ];
 
 const geologyManagementItems = [

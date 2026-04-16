@@ -54,6 +54,7 @@ const snapshotRoute = require("./routers/sectors/snapshotRoutes");
 const petroleumObjectiveRoute = require("./routers/sectors/petroleum/petroleumObjectiveRoutes");
 const petroleumProcessRoute = require("./routers/sectors/petroleum/petroleumProcessRoutes");
 const petroleumRegulationRoute = require("./routers/sectors/petroleum/petroleumProcessRegulationRoutes");
+const miningApplicationProcessRoute = require("./routers/sectors/mining/miningApplicationProcessRoutes");
 
 // ================== ASM Routes ==========================
 const asmRoute = require("./routers/asm/asmRoutes");
@@ -183,6 +184,7 @@ app.use("/api/snapshots", snapshotRoute);
 app.use("/api/petroleum-objectives", petroleumObjectiveRoute);
 app.use("/api/petroleum-processes", petroleumProcessRoute);
 app.use("/api/petroleum-regulation-processes", petroleumRegulationRoute);
+app.use("/api/mining-application-processes", miningApplicationProcessRoute);
 
 // ================== ASM Routes ==========================
 app.use("/api/asm", asmRoute);

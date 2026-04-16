@@ -47,7 +47,7 @@ const MiningPage = () => {
                     <img
                         src={imageUrl}
                         alt={snapshot.title}
-                        className="mt-0 object-cover h-auto w-full group-hover:scale-105 transition-transform duration-700"
+                        className="my-0 object-cover h-auto w-full group-hover:scale-105 transition-transform duration-700"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
                 </div>
