@@ -551,7 +551,7 @@ const CreateNews = () => {
                             {currentMedia.file_type === "image" && (
                                 // eslint-disable-next-line @next/next/no-img-element
                                 <img
-                                    src={getMediaUrl(currentMedia)}
+                                    src={getMediaUrl(currentMedia) || undefined}
                                     alt={currentMedia.file_name}
                                     className="w-full h-72 object-cover rounded-lg"
                                     onError={(e) => {
@@ -566,9 +566,9 @@ const CreateNews = () => {
                                     className="w-full h-72 rounded-lg bg-black"
                                     key={currentMedia.attachment_id} // Force re-render when video changes
                                 >
-                                    <source src={getMediaUrl(currentMedia)} type="video/mp4" />
-                                    <source src={getMediaUrl(currentMedia)} type="video/mov" />
-                                    <source src={getMediaUrl(currentMedia)} type="video/avi" />
+                                    <source src={getMediaUrl(currentMedia) || undefined} type="video/mp4" />
+                                    <source src={getMediaUrl(currentMedia) || undefined} type="video/mov" />
+                                    <source src={getMediaUrl(currentMedia) || undefined} type="video/avi" />
                                     Your browser does not support the video tag.
                                 </video>
                             )}

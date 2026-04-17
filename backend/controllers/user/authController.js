@@ -8,31 +8,6 @@ const login = async (req, res) => {
 
     const user = await User.findOne({
       where: { email },
-      include: [
-        // {
-        //   model: UserType,
-        //   as: "userType",
-        //   attributes: ["user_type_id", "name"],
-        // },
-        {
-          model: Role,
-          as: "roles",
-          through: { attributes: [] },
-          include: [
-            {
-              model: RolePermission,
-              as: "rolePermissions",
-              include: [
-                {
-                  model: Permission,
-                  as: "permission",
-                  attributes: ["permission_id", "resource", "action"],
-                },
-              ],
-            },
-          ],
-        },
-      ],
     });
 
     if (!user)
@@ -45,24 +20,12 @@ const login = async (req, res) => {
     if (!isMatch)
       return res.status(401).json({ message: "Invalid email or password" });
 
-    // ===== Clean roles + permissions for token use =====
-    const userRoles = user.roles.map((role) => ({
-      role_id: role.role_id,
-      name: role.name,
-      permissions: role.rolePermissions.map((rp) => ({
-        permission_id: rp.permission_id,
-        resource: rp.permission?.resource,
-        action: rp.permission?.action,
-      })),
-    }));
-
-    // ===== Generate JWT Token =====
+    // ===== Generate JWT Token (Lightweight) =====
     const token = jwt.sign(
       {
         user_id: user.user_id,
         email: user.email,
-        roles: userRoles.map((r) => r.name),
-        permissions: userRoles.flatMap((r) => r.permissions),
+        name: user.full_name,
       },
       process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRES_IN || "7d" }
@@ -87,7 +50,6 @@ const login = async (req, res) => {
           profile_image: user.profile_image,
           is_first_logged_in: user.is_first_logged_in,
         },
-        roles: userRoles,
       },
     });
   } catch (error) {

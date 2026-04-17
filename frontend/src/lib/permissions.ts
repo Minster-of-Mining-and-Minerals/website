@@ -127,15 +127,14 @@ export function hasPermission(
     return false;
 }
 
-// Also add a version that works with the raw permissions from your session
-export function hasPermissionFromSession(
-    session: { user?: { permissions?: string[] | null } } | null,
+// Also add a version that works with the raw permissions array
+export function hasDirectPermission(
+    userPermissions: string[] | null | undefined,
     required: {
         anyPermissions?: PermissionKey[];
         allPermissions?: PermissionKey[];
         onlyPermissions?: PermissionKey[];
     },
 ): boolean {
-    const userPermissions = session?.user?.permissions || [];
     return hasPermission(userPermissions, required);
 }

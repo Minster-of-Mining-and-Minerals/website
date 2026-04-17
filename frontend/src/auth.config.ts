@@ -49,8 +49,6 @@ export default {
           }
 
           const user = data.data.user;
-          const roles = data.data?.roles ?? [];
-          const permissions = data.data?.permissions ?? [];
           const token = data.token || data.data?.token;
 
           if (!token) {
@@ -68,10 +66,8 @@ export default {
             is_first_logged_in: user.is_first_logged_in,
             sector: user.sector,
             department: user.department,
-            role: roles?.[0]?.name ?? null,
-            roles: roles ?? [],
-            permissions: permissions,
           };
+
         } catch (err) {
           console.error("Authorize error:", err);
           return null;

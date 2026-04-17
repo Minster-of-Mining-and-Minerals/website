@@ -17,65 +17,68 @@ export const routePermissions: RouteConfig[] = [
     {
         path: "/admin/dashboard",
         label: "Dashboard",
-        // permissions: {
-        //   anyPermissions: ["DASHBOARD:VIEW"],
-        // },
+        permissions: {
+            anyPermissions: ["DASHBOARD:VIEW"],
+        },
     },
     {
         path: "/admin/hero-section",
         label: "Hero Section",
-        // permissions: {
-        //   anyPermissions: ["HERO:READ"],
-        // },
+        permissions: {
+            anyPermissions: ["HERO:READ"],
+        },
     },
     {
         path: "/admin/about",
         label: "About",
-        // permissions: {
-        //   anyPermissions: ["ABOUT:READ"],
-        // },
+        permissions: {
+            anyPermissions: ["ABOUT:READ"],
+        },
     },
     {
         path: "/admin/services",
         label: "Services",
-        // permissions: {
-        //   anyPermissions: ["SERVICES:READ"],
-        // },
+        permissions: {
+            anyPermissions: ["SERVICES:READ"],
+        },
     },
     {
         path: "/admin/contacts",
         label: "Contacts",
-        // permissions: {
-        //   anyPermissions: ["CONTACT:READ"],
-        // },
+        permissions: {
+            anyPermissions: ["CONTACT:READ"],
+        },
     },
     {
         path: "/admin/footer",
         label: "Footer",
-        // permissions: {
-        //   anyPermissions: ["FOOTER:READ"],
-        // },
+        permissions: {
+            anyPermissions: ["FOOTER:READ"],
+        },
     },
 
     // ---------------- USERS ----------------
     {
         path: "/admin/users",
         label: "Users",
+        permissions: {
+            anyPermissions: ["USERS:READ", "ROLES:READ", "PERMISSIONS:READ"],
+        },
         children: [
             {
                 path: "/admin/users",
                 label: "User Accounts",
-                // permissions: { anyPermissions: ["USERS:READ"] },
+                permissions: { anyPermissions: ["USERS:READ"] },
             },
             {
                 path: "/admin/users/roles",
                 label: "Role Management",
-                // permissions: { anyPermissions: ["ROLES:READ"] },
+                permissions: { anyPermissions: ["ROLES:READ"] },
             },
             {
                 path: "/admin/users/permissions",
                 label: "Permission Management",
-                // permissions: { anyPermissions: ["PERMISSIONS:READ"] },
+                permissions: { anyPermissions: ["PERMISSIONS:READ"] },
             },
         ],
     },
@@ -84,21 +87,24 @@ export const routePermissions: RouteConfig[] = [
     {
         path: "/admin/news",
         label: "News",
+        permissions: {
+            anyPermissions: ["NEWS:READ", "TAGS:READ"],
+        },
         children: [
             {
                 path: "/admin/news",
                 label: "News",
-                // permissions: { anyPermissions: ["NEWS:READ"] },
+                permissions: { anyPermissions: ["NEWS:READ"] },
             },
             {
                 path: "/admin/news/tags",
                 label: "Tags",
-                // permissions: { anyPermissions: ["TAGS:READ"] },
+                permissions: { anyPermissions: ["TAGS:READ"] },
             },
             {
                 path: "/admin/news/feedbacks",
                 label: "News Feedbacks",
-                // permissions: { anyPermissions: ["NEWS_FEEDBACKS:READ"] },
+                permissions: { anyPermissions: ["NEWS:READ"] }, // news feedbacks usually controlled via news or separate if added
             },
         ],
     },
@@ -107,31 +113,34 @@ export const routePermissions: RouteConfig[] = [
     {
         path: "/admin/sectors/mining",
         label: "Mining",
+        permissions: {
+            anyPermissions: ["MINING_SNAPSHOTS:READ", "MINING_GAMESTONES:READ", "MINING_RESOURCES:READ", "MINING_APPLICATION_PROCESSES:READ", "MINING_REGULATION_PROCESSES:READ"],
+        },
         children: [
             {
                 path: "/admin/sectors/mining/snapshots",
                 label: "Snapshots",
-                // permissions: { anyPermissions: ["MINING_SNAPSHOTS:READ"] },
+                permissions: { anyPermissions: ["MINING_SNAPSHOTS:READ"] },
             },
             {
                 path: "/admin/sectors/mining/gamestones",
                 label: "Gemstones",
-                // permissions: { anyPermissions: ["MINING_GAMESTONES:READ"] },
+                permissions: { anyPermissions: ["MINING_GAMESTONES:READ"] },
             },
             {
                 path: "/admin/sectors/mining/resources",
                 label: "Resources",
-                // permissions: { anyPermissions: ["MINING_RESOURCES:READ"] },
+                permissions: { anyPermissions: ["MINING_RESOURCES:READ"] },
             },
             {
                 path: "/admin/sectors/mining/application-processes",
                 label: "Application Processes",
-                // permissions: { anyPermissions: ["MINING_APPLICATION_PROCESSES:READ"] },
+                permissions: { anyPermissions: ["MINING_APPLICATION_PROCESSES:READ"] },
             },
             {
                 path: "/admin/sectors/mining/regulation-processes",
                 label: "Regulation Processes",
-                // permissions: { anyPermissions: ["MINING_REGULATION_PROCESSES:READ"] },
+                permissions: { anyPermissions: ["MINING_REGULATION_PROCESSES:READ"] },
             },
         ],
     },
@@ -140,16 +149,19 @@ export const routePermissions: RouteConfig[] = [
     {
         path: "/admin/sectors/geothermal",
         label: "Geothermal",
+        permissions: {
+            anyPermissions: ["GEOTHERMAL_SNAPSHOTS:READ", "GEOTHERMAL_RESOURCES:READ"],
+        },
         children: [
             {
                 path: "/admin/sectors/geothermal/snapshots",
                 label: "Snapshots",
-                // permissions: { anyPermissions: ["GEOTHERMAL_SNAPSHOTS:READ"] },
+                permissions: { anyPermissions: ["GEOTHERMAL_SNAPSHOTS:READ"] },
             },
             {
                 path: "/admin/sectors/geothermal/resources",
                 label: "Resources",
-                // permissions: { anyPermissions: ["GEOTHERMAL_RESOURCES:READ"] },
+                permissions: { anyPermissions: ["GEOTHERMAL_RESOURCES:READ"] },
             },
         ],
     },
@@ -158,32 +170,29 @@ export const routePermissions: RouteConfig[] = [
     {
         path: "/admin/sectors/petroleum",
         label: "Petroleum",
+        permissions: {
+            anyPermissions: ["PETROLEUM_SNAPSHOTS:READ", "PETROLEUM_PROCESSES:READ", "PETROLEUM_REGULATION_PROCESSES:READ", "PETROLEUM_RESOURCES:READ"],
+        },
         children: [
-            // {
-            //     path: "/admin/sectors/petroleum/snapshots",
-            //     label: "Snapshots",
-            //     // permissions: { anyPermissions: ["PETROLEUM_SNAPSHOTS:READ"] },
-            // },
             {
                 path: "/admin/sectors/petroleum/objectives",
                 label: "Objectives",
-                // ⚠️ no direct permission in seeder
-                // permissions: { anyPermissions: ["PETROLEUM_PROCESSES:READ"] },
+                permissions: { anyPermissions: ["PETROLEUM_PROCESSES:READ"] },
             },
             {
                 path: "/admin/sectors/petroleum/processes",
                 label: "Processes",
-                // permissions: { anyPermissions: ["PETROLEUM_PROCESSES:READ"] },
+                permissions: { anyPermissions: ["PETROLEUM_PROCESSES:READ"] },
             },
             {
                 path: "/admin/sectors/petroleum/regulation-processes",
                 label: "Regulation Processes",
-                // permissions: { anyPermissions: ["PETROLEUM_REGULATION_PROCESSES:READ"] },
+                permissions: { anyPermissions: ["PETROLEUM_REGULATION_PROCESSES:READ"] },
             },
             {
                 path: "/admin/sectors/petroleum/resources",
                 label: "Resources",
-                // permissions: { anyPermissions: ["PETROLEUM_RESOURCES:READ"] },
+                permissions: { anyPermissions: ["PETROLEUM_RESOURCES:READ"] },
             },
         ],
     },
@@ -192,11 +201,14 @@ export const routePermissions: RouteConfig[] = [
     {
         path: "/admin/asm",
         label: "Artisanal Mining",
+        permissions: {
+            anyPermissions: ["ASM:READ"],
+        },
         children: [
             {
                 path: "/admin/asm",
                 label: "Overview",
-                // permissions: { anyPermissions: ["ASM:READ"] },
+                permissions: { anyPermissions: ["ASM:READ"] },
             },
         ],
     },
@@ -205,14 +217,18 @@ export const routePermissions: RouteConfig[] = [
     {
         path: "/admin/investigate-ethiopia",
         label: "Investigate Ethiopia",
+        permissions: {
+            anyPermissions: ["INVESTIGATE_ETHIOPIA:READ"],
+        },
         children: [
             {
                 path: "/admin/investigate-ethiopia",
                 label: "Overview",
-                // permissions: { anyPermissions: ["INVESTIGATE_ETHIOPIA:READ"] },
+                permissions: { anyPermissions: ["INVESTIGATE_ETHIOPIA:READ"] },
             },
         ],
     },
+
 ];
 
 

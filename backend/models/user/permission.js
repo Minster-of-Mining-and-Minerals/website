@@ -25,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
       resource: {
         type: DataTypes.STRING(100),
         allowNull: false,
-        unique: true,
+        // Composite unique constraint with action is handled in migrations
       },
       action: {
         type: DataTypes.STRING(100),

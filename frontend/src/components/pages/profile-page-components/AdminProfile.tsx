@@ -8,6 +8,7 @@ import { User as UserIcon, Mail, Phone, Shield, Building2, Briefcase } from "luc
 
 export default function AdminProfile() {
   const { data: session } = useSession();
+  const { data: rolePerms, isLoading: isRolePermsLoading } = useGetUserRolesAndPermissionsQuery();
   const user = session?.user;
 
   if (!user) {
@@ -20,6 +21,8 @@ export default function AdminProfile() {
     .join("")
     .toUpperCase()
     .slice(0, 2) || "U";
+
+  const displayRole = rolePerms?.roles?.[0] || "N/A";
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -36,7 +39,11 @@ export default function AdminProfile() {
               {user.email}
             </CardDescription>
             <div className="flex gap-2 mt-2">
-              {user.role && <Badge variant="secondary" className="bg-golden-dark/10 text-golden-dark">{user.role}</Badge>}
+              {displayRole !== "N/A" && (
+                <Badge variant="secondary" className="bg-golden-dark/10 text-golden-dark">
+                  {displayRole}
+                </Badge>
+              )}
               <Badge variant="outline" className="border-golden-dark/20">Admin</Badge>
             </div>
           </div>
@@ -80,9 +87,9 @@ export default function AdminProfile() {
               </div>
               <div className="flex items-center justify-between p-3 rounded-lg border border-golden-dark/10 bg-golden-dark/5">
                 <span className="text-muted-foreground flex items-center gap-2">
-                  <Building2 className="h-4 w-4" /> Role Name
+                  <Building2 className="h-4 w-4" /> Primary Role
                 </span>
-                <span className="font-medium">{user.role || "N/A"}</span>
+                <span className="font-medium">{displayRole}</span>
               </div>
             </div>
           </div>
@@ -90,31 +97,31 @@ export default function AdminProfile() {
       </Card>
 
       {/* Permissions & Roles */}
-      {(user.roles && user.roles.length > 0) || (user.permissions && user.permissions.length > 0) ? (
+      {!isRolePermsLoading && ((rolePerms?.roles && rolePerms.roles.length > 0) || (rolePerms?.permissions && rolePerms.permissions.length > 0)) ? (
         <Card className="border-golden-dark/20 shadow-sm">
           <CardHeader>
             <CardTitle className="text-xl text-golden-dark flex items-center gap-2">
-              <Shield className="h-5 w-5" /> Access & Security
+               <Shield className="h-5 w-5" /> Access & Security
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             
-            {user.roles && user.roles.length > 0 && (
+            {rolePerms.roles && rolePerms.roles.length > 0 && (
               <div>
                 <h4 className="text-sm font-medium mb-3 text-muted-foreground">Assigned Roles</h4>
                 <div className="flex flex-wrap gap-2">
-                  {user.roles.map((r, i) => (
-                    <Badge key={i} variant="outline" className="border-golden-dark/30">{r.name}</Badge>
+                  {rolePerms.roles.map((r, i) => (
+                    <Badge key={i} variant="outline" className="border-golden-dark/30">{r}</Badge>
                   ))}
                 </div>
               </div>
             )}
 
-            {user.permissions && user.permissions.length > 0 && (
+            {rolePerms.permissions && rolePerms.permissions.length > 0 && (
               <div>
                 <h4 className="text-sm font-medium mb-3 text-muted-foreground">Granted Permissions</h4>
                 <div className="flex flex-wrap gap-2">
-                  {user.permissions.map((p, i) => (
+                  {rolePerms.permissions.map((p, i) => (
                     <Badge key={i} variant="secondary" className="bg-slate-100 font-mono text-xs text-muted-foreground">{p}</Badge>
                   ))}
                 </div>

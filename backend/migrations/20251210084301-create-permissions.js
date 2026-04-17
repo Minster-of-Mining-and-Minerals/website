@@ -12,7 +12,7 @@ module.exports = {
       resource: {
         type: Sequelize.STRING(100),
         allowNull: false,
-        unique: true,
+        // unique: true,
       },
       action: {
         type: Sequelize.STRING(100),

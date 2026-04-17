@@ -124,6 +124,15 @@ export const userApi = baseApi.injectEndpoints({
       transformResponse: (response: any): UserPosition[] => response.data ?? [],
       providesTags: ["User"],
     }),
+
+    /** ---------------------------
+     * GET USER ROLES AND PERMISSIONS
+     * --------------------------- */
+    getUserRolesAndPermissions: builder.query<{ permissions: string[], roles: string[] }, void>({
+      query: () => "/users/profile/permissions",
+      transformResponse: (response: any) => response.data ?? { permissions: [], roles: [] },
+      providesTags: ["User"],
+    }),
   }),
 });
 
@@ -138,4 +147,5 @@ export const {
   useResetUserPasswordMutation,
   useGetUserTypesQuery,
   useGetUserPositionsQuery,
+  useGetUserRolesAndPermissionsQuery,
 } = userApi;

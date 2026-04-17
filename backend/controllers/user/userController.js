@@ -4,6 +4,8 @@ const {
   UserPosition,
   Role,
   UserRoles,
+  RolePermission,
+  Permission,
   sequelize,
 } = require("../../models");
 const { v4: uuidv4, validate: isUuid } = require("uuid");
@@ -583,6 +585,72 @@ const getProfile = async (req, res) => {
   }
 };
 
+const getUserPermissions = async (req, res) => {
+  try {
+    const userId = req.user.user_id;
+
+    const user = await User.findOne({
+      where: { user_id: userId },
+      include: [
+        {
+          model: Role,
+          as: "roles",
+          through: { attributes: [] },
+          include: [
+            {
+              model: RolePermission,
+              as: "rolePermissions",
+              include: [
+                {
+                  model: Permission,
+                  as: "permission",
+                  attributes: ["resource", "action"],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    const flattenedPermissions = [
+      ...new Set(
+        user.roles.flatMap((role) =>
+          role.rolePermissions
+            .filter((rp) => rp.permission?.resource && rp.permission?.action)
+            .map(
+              (rp) =>
+                `${rp.permission.resource.toUpperCase()}:${rp.permission.action.toUpperCase()}`
+            )
+        )
+      ),
+    ];
+
+    const roles = user.roles.map((r) => r.name);
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        permissions: flattenedPermissions,
+        roles: roles,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   createUser,
   getUsers,
@@ -594,4 +662,5 @@ module.exports = {
   getProfile,
   getUserTypes,
   getUserPositions,
+  getUserPermissions,
 };

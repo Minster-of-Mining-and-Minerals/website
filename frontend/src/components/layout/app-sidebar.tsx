@@ -35,9 +35,8 @@ import {
 } from "@/components/ui/collapsible";
 
 import Image from "next/image";
-// import { routePermissions, getChildRoutes } from "@/config/routes";
-import { hasPermissionFromSession } from "@/lib/permissions";
-import { useSession } from "next-auth/react";
+import { hasDirectPermission } from "@/lib/permissions";
+import { useGetUserRolesAndPermissionsQuery } from "@/redux/api/userApi";
 import { routePermissions } from "@/utils/routes";
 
 /* ---------------- LOCALE STRIPPER ---------------- */
@@ -81,11 +80,11 @@ interface MenuItemProps {
 }
 
 const MenuItem = ({ item, pathname, isNested = false }: MenuItemProps) => {
-  const { data: session } = useSession();
+  const { data: permissionData } = useGetUserRolesAndPermissionsQuery();
 
   // Check permissions if they exist
   if (item.permissions) {
-    const hasAccess = hasPermissionFromSession(session, item.permissions);
+    const hasAccess = hasDirectPermission(permissionData?.permissions, item.permissions);
     if (!hasAccess) return null;
   }
 
@@ -154,18 +153,18 @@ interface CollapsibleSectionProps {
 }
 
 const CollapsibleSection = ({ route, pathname }: CollapsibleSectionProps) => {
-  const { data: session } = useSession();
+  const { data: permissionData } = useGetUserRolesAndPermissionsQuery();
 
   // Check parent permissions
   if (route.permissions) {
-    const hasAccess = hasPermissionFromSession(session, route.permissions);
+    const hasAccess = hasDirectPermission(permissionData?.permissions, route.permissions);
     if (!hasAccess) return null;
   }
 
   // Filter children based on permissions
   const visibleChildren = route.children?.filter(child => {
     if (child.permissions) {
-      return hasPermissionFromSession(session, child.permissions);
+      return hasDirectPermission(permissionData?.permissions, child.permissions);
     }
     return true;
   }) || [];

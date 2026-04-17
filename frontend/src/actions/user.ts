@@ -55,15 +55,3 @@ export const getCurrentUser = async () => {
   const session = await auth();
   return session?.user ?? null;
 };
-
-export const checkPermission = async (permissionKey: string) => {
-  const session = await auth();
-  if (!session?.user?.permissions) return false;
-  return session.user.permissions.includes(permissionKey);
-};
-
-export const hasRole = async (roleName: string) => {
-  const session = await auth();
-  if (!session?.user?.roles) return false;
-  return session.user.roles.some((role) => role.name === roleName);
-};
