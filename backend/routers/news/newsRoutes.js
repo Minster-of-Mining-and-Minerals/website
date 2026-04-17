@@ -16,9 +16,12 @@ const {
     deleteNews,
     reactToNews,
     recordNewsRead,
-    recordNewsFeedback,
     getNewsFeedbacks,
     getNewsFeedbackCount,
+    getAllNewsFeedbacks,
+    toggleNewsFeedbackStatus,
+    deleteNewsFeedback,
+    recordNewsFeedback,
 } = require("../../controllers/news/newsController");
 
 // ===========================
@@ -38,6 +41,11 @@ router.post("/read", authenticateToken, recordNewsRead);
 router.post("/feedback", authenticateToken, recordNewsFeedback);
 router.get("/feedback/:news_id", getNewsFeedbacks);
 router.get("/feedback/count/:news_id", getNewsFeedbackCount);
+
+// Admin Feedback Management
+router.get("/admin/feedback/all", authenticateToken, getAllNewsFeedbacks);
+router.patch("/admin/feedback/:id/toggle", authenticateToken, toggleNewsFeedbackStatus);
+router.delete("/admin/feedback/:id", authenticateToken, deleteNewsFeedback);
 
 /**
  * @swagger

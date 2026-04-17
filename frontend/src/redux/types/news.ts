@@ -80,6 +80,10 @@ export interface NewsFeedback {
     fullname: string;
     thought: string;
     created_at: string;
+    is_published: boolean;
+    news?: {
+        title: string;
+    };
 }
 
 export interface CreateNewsFeedbackPayload {

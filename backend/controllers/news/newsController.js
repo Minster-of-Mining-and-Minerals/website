@@ -499,8 +499,17 @@ const recordNewsFeedback = async (req, res) => {
 const getNewsFeedbacks = async (req, res) => {
     try {
         const { news_id } = req.params;
+        const { isAdmin } = req.query;
 
-        const newsFeedbacks = await NewsFeedback.findAll({ where: { news_id } });
+        const whereClause = { news_id };
+        if (isAdmin !== "true") {
+            whereClause.is_published = true;
+        }
+
+        const newsFeedbacks = await NewsFeedback.findAll({
+            where: whereClause,
+            order: [["created_at", "DESC"]]
+        });
 
         return res.status(200).json({
             success: true,
@@ -556,6 +565,102 @@ const getNewsFeedbackCount = async (req, res) => {
     }
 };
 
+// ===========================
+// GET ALL NEWS FEEDBACKS (ADMIN)
+// ===========================
+const getAllNewsFeedbacks = async (req, res) => {
+    try {
+        const newsFeedbacks = await NewsFeedback.findAll({
+            include: [
+                {
+                    model: sequelize.models.News,
+                    as: "news",
+                    attributes: ["title"],
+                },
+            ],
+            order: [["created_at", "DESC"]],
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: "All news feedbacks fetched successfully",
+            count: newsFeedbacks.length,
+            data: newsFeedbacks,
+        });
+    } catch (error) {
+        console.error("Get All News Feedbacks Error:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Failed to fetch all news feedbacks",
+            error: error.message,
+        });
+    }
+};
+
+// ===========================
+// TOGGLE NEWS FEEDBACK PUBLISH STATUS
+// ===========================
+const toggleNewsFeedbackStatus = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const feedback = await NewsFeedback.findByPk(id);
+        if (!feedback) {
+            return res.status(404).json({
+                success: false,
+                message: "Feedback not found",
+            });
+        }
+
+        feedback.is_published = !feedback.is_published;
+        await feedback.save();
+
+        return res.status(200).json({
+            success: true,
+            message: `Feedback ${feedback.is_published ? "published" : "unpublished"} successfully`,
+            data: feedback,
+        });
+    } catch (error) {
+        console.error("Toggle News Feedback Status Error:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Failed to update feedback status",
+            error: error.message,
+        });
+    }
+};
+
+// ===========================
+// DELETE NEWS FEEDBACK
+// ===========================
+const deleteNewsFeedback = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const feedback = await NewsFeedback.findByPk(id);
+        if (!feedback) {
+            return res.status(404).json({
+                success: false,
+                message: "Feedback not found",
+            });
+        }
+
+        await feedback.destroy();
+
+        return res.status(200).json({
+            success: true,
+            message: "Feedback deleted successfully",
+        });
+    } catch (error) {
+        console.error("Delete News Feedback Error:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Failed to delete feedback",
+            error: error.message,
+        });
+    }
+};
+
 
 module.exports = {
     createNews,
@@ -568,4 +673,7 @@ module.exports = {
     recordNewsFeedback,
     getNewsFeedbacks,
     getNewsFeedbackCount,
+    getAllNewsFeedbacks,
+    toggleNewsFeedbackStatus,
+    deleteNewsFeedback,
 };

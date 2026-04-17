@@ -82,8 +82,11 @@ export const newsApi = baseApi.injectEndpoints({
         /** ---------------------------
          * GET NEWS FEEDBACKS
          * --------------------------- */
-        getNewsFeedbacks: builder.query<NewsFeedback[], string>({
-            query: (news_id) => `/news/feedback/${news_id}`,
+        getNewsFeedbacks: builder.query<NewsFeedback[], { news_id: string; isAdmin?: boolean }>({
+            query: ({ news_id, isAdmin }) => ({
+                url: `/news/feedback/${news_id}`,
+                params: { isAdmin }
+            }),
             transformResponse: (response: any): NewsFeedback[] => response.data ?? [],
             providesTags: ["News"],
         }),
@@ -95,6 +98,38 @@ export const newsApi = baseApi.injectEndpoints({
             query: (news_id) => `/news/feedback/count/${news_id}`,
             transformResponse: (response: any): { news_id: string; feedback_count: number } => response.data,
             providesTags: ["News"],
+        }),
+
+        /** ---------------------------
+         * GET ALL FEEDBACKS (ADMIN)
+         * --------------------------- */
+        getAllNewsFeedbacks: builder.query<NewsFeedback[], void>({
+            query: () => "/news/admin/feedback/all",
+            transformResponse: (response: any): NewsFeedback[] => response.data ?? [],
+            providesTags: ["News"],
+        }),
+
+        /** ---------------------------
+         * TOGGLE FEEDBACK STATUS
+         * --------------------------- */
+        toggleFeedbackStatus: builder.mutation<NewsFeedback, string>({
+            query: (id) => ({
+                url: `/news/admin/feedback/${id}/toggle`,
+                method: "PATCH",
+            }),
+            transformResponse: (response: any): NewsFeedback => response.data,
+            invalidatesTags: ["News"],
+        }),
+
+        /** ---------------------------
+         * DELETE FEEDBACK (ADMIN)
+         * --------------------------- */
+        deleteFeedback: builder.mutation<{ message: string }, string>({
+            query: (id) => ({
+                url: `/news/admin/feedback/${id}`,
+                method: "DELETE",
+            }),
+            invalidatesTags: ["News"],
         }),
     }),
 });
@@ -110,4 +145,7 @@ export const {
     useRecordNewsFeedbackMutation,
     useGetNewsFeedbackCountQuery,
     useGetNewsFeedbacksQuery,
+    useGetAllNewsFeedbacksQuery,
+    useToggleFeedbackStatusMutation,
+    useDeleteFeedbackMutation,
 } = newsApi;

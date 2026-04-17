@@ -38,6 +38,10 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.DATE,
                 defaultValue: DataTypes.NOW,
             },
+            is_published: {
+                type: DataTypes.BOOLEAN,
+                defaultValue: false,
+            },
         },
         {
             sequelize,

@@ -10,7 +10,6 @@ import { Resource } from "@/redux/types/resource";
 import { DataTable } from "@/features/template/component/DataTable";
 import { TableLayout } from "@/features/template/component/TableLayout";
 import type { FilterField, ActionButton } from "@/types/tableLayout";
-import { getFileUrl } from "@/utils/fileUrl";
 
 /* ----------------------------------
    COMPONENT
@@ -20,12 +19,13 @@ interface ResourceListProps {
 }
 export default function ResourceList({ sector }: ResourceListProps) {
     const router = useRouter();
+    const enumValue = sector == "geothermal" ? "geology" : sector;
     const routePath = `/admin/sectors/${sector}/resources/create`;
     const title = sector.charAt(0).toUpperCase() + sector.slice(1);
     const description = `Manage ${title} resources`;
 
     /* API */
-    const { data = [], isLoading } = useGetResourcesQuery({ sector });
+    const { data = [], isLoading } = useGetResourcesQuery({ sector: enumValue });
     const [deleteResource] = useDeleteResourceMutation();
 
     /* View mode */
