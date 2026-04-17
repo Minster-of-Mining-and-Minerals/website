@@ -88,6 +88,16 @@ module.exports = (sequelize, DataTypes) => {
                 foreignKey: "attachment_id",
                 as: "petroleumRegulationAttachment",
             });
+
+            Attachment.hasMany(models.MiningGuidelineAttachment, {
+                foreignKey: "attachment_id",
+                as: "miningGuidelineAttachments",
+            });
+
+            Attachment.hasMany(models.MiningFramework, {
+                foreignKey: "attachment_id",
+                as: "miningFramework",
+            });
         }
     }
 

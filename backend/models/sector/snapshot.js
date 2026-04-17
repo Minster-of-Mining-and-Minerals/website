@@ -55,7 +55,7 @@ module.exports = (sequelize, DataTypes) => {
                     key: "attachment_id",
                 },
                 onUpdate: "CASCADE",
-                onDelete: "RESTRICT",
+                onDelete: "CASCADE",
             },
 
             attachment_description: {

@@ -41,6 +41,7 @@ export const baseApi = createApi({
     "PetroleumProcess",
     "PetroleumRegulationProcess",
     "MiningApplicationProcess",
+    "MiningRegulationProcess",
   ],
   endpoints: () => ({}),
 });

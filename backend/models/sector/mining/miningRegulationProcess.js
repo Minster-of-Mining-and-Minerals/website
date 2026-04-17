@@ -3,29 +3,35 @@ const { Model } = require("sequelize");
 
 
 module.exports = (sequelize, DataTypes) => {
-    class MiningApplicationProcess extends Model {
+    class MiningRegulationProcess extends Model {
         static associate(models) {
 
-            // ✅ FIXED NAME
-            MiningApplicationProcess.hasMany(models.MiningApplicationProcessAttachment, {
-                foreignKey: "mining_application_process_id",
-                as: "attachments",
+            MiningRegulationProcess.hasMany(models.MiningFramework, {
+                foreignKey: "mining_regulation_process_id",
+                as: "frameworks",
                 onDelete: "CASCADE",
                 onUpdate: "CASCADE",
-            });
+            })
 
-            MiningApplicationProcess.hasMany(models.MiningApplicationTypes, {
-                foreignKey: "mining_application_process_id",
-                as: "application_types",
+            MiningRegulationProcess.hasMany(models.MiningGuideline, {
+                foreignKey: "mining_regulation_process_id",
+                as: "guidelines",
                 onDelete: "CASCADE",
                 onUpdate: "CASCADE",
-            });
+            })
+
+            MiningRegulationProcess.hasMany(models.MiningService, {
+                foreignKey: "mining_regulation_process_id",
+                as: "services",
+                onDelete: "CASCADE",
+                onUpdate: "CASCADE",
+            })
         }
     }
 
-    MiningApplicationProcess.init(
+    MiningRegulationProcess.init(
         {
-            mining_application_process_id: {
+            mining_regulation_process_id: {
                 type: DataTypes.UUID,
                 defaultValue: DataTypes.UUIDV4,
                 primaryKey: true,
@@ -37,11 +43,6 @@ module.exports = (sequelize, DataTypes) => {
             description: {
                 type: DataTypes.TEXT,
                 allowNull: false,
-            },
-            objectives: {
-                type: DataTypes.JSON,
-                allowNull: false,
-                defaultValue: [],
             },
             publish: {
                 type: DataTypes.BOOLEAN,
@@ -55,13 +56,13 @@ module.exports = (sequelize, DataTypes) => {
         },
         {
             sequelize,
-            modelName: "MiningApplicationProcess",
-            tableName: "mining_application_process",
-            timestamps: true,           
+            modelName: "MiningRegulationProcess",
+            tableName: "mining_regulation_process",
+            timestamps: true,
             paranoid: true,
             underscored: true,
         }
     );
 
-    return MiningApplicationProcess;
+    return MiningRegulationProcess;
 };
