@@ -5,6 +5,9 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   Users,
+  User,
+  ShieldCheck,
+  Key,
   ChevronRight,
   Phone,
   Briefcase,
@@ -12,6 +15,23 @@ import {
   Megaphone,
   Tag,
   Newspaper,
+  Image as ImageIcon,
+  Info,
+  Layout,
+  MessageSquare,
+  Gem,
+  Camera,
+  Diamond,
+  Layers,
+  ClipboardList,
+  FileText,
+  Thermometer,
+  Droplets,
+  Target,
+  Activity,
+  Hammer,
+  Globe,
+  Search,
 } from "lucide-react";
 
 import {
@@ -49,23 +69,52 @@ const stripLocale = (pathname: string) => {
 };
 
 /* ---------------- ICON MAP ---------------- */
-const getIconForRoute = (label: string) => {
+const getIconComponent = (iconName?: string, label?: string) => {
   const iconMap: Record<string, any> = {
+    LayoutDashboard,
+    Image: ImageIcon,
+    Info,
+    Briefcase,
+    Phone,
+    Layout,
+    Users,
+    User,
+    ShieldCheck,
+    Key,
+    Newspaper,
+    Tag,
+    MessageSquare,
+    Gem,
+    Camera,
+    Diamond,
+    Layers,
+    ClipboardList,
+    FileText,
+    Thermometer,
+    Droplets,
+    Target,
+    Activity,
+    Hammer,
+    Globe,
+    Search,
+    // Legacy maps based on labels if needed
     Dashboard: LayoutDashboard,
-    "Hero Section": Building2,
-    About: Building2,
+    "Hero Section": ImageIcon,
+    About: Info,
     Services: Briefcase,
     Contacts: Phone,
-    Footer: Building2,
-    Users: Users,
-    News: Newspaper,
-    Mining: Megaphone,
-    "Artisanal Mining": Megaphone,
-    "Investigate Ethiopia": Megaphone,
-    Geothermal: Megaphone,
-    Petroleum: Megaphone,
+    Footer: Layout,
+    Mining: Gem,
+    "Artisanal Mining": Hammer,
+    "Investigate Ethiopia": Search,
+    Geothermal: Thermometer,
+    Petroleum: Droplets,
   };
-  return iconMap[label] || Tag;
+
+  if (iconName && iconMap[iconName]) return iconMap[iconName];
+  if (label && iconMap[label]) return iconMap[label];
+  
+  return Tag; // Default fallback
 };
 
 /* ---------------- MENU ITEM COMPONENT ---------------- */
@@ -73,6 +122,7 @@ interface MenuItemProps {
   item: {
     path: string;
     label: string;
+    icon?: string;
     permissions?: any;
   };
   pathname: string;
@@ -88,7 +138,7 @@ const MenuItem = ({ item, pathname, isNested = false }: MenuItemProps) => {
     if (!hasAccess) return null;
   }
 
-  const Icon = getIconForRoute(item.label);
+  const Icon = getIconComponent(item.icon, item.label);
   const isActive = isNested ? pathname === item.path : pathname.startsWith(item.path);
   const isExactActive = pathname === item.path;
 
@@ -146,6 +196,7 @@ interface CollapsibleSectionProps {
   route: {
     path: string;
     label: string;
+    icon?: string;
     children?: any[];
     permissions?: any;
   };
@@ -171,7 +222,7 @@ const CollapsibleSection = ({ route, pathname }: CollapsibleSectionProps) => {
 
   if (visibleChildren.length === 0) return null;
 
-  const Icon = getIconForRoute(route.label);
+  const Icon = getIconComponent(route.icon, route.label);
   const isActive = pathname.startsWith(route.path);
 
   return (
