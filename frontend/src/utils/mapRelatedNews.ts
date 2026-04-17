@@ -1,7 +1,7 @@
 import { extractExcerpt, extractHeadlineImage } from "./newsMapper";
 
-export const mapRelatedNews = (relatedNews) => {
-    return (relatedNews || []).map((item) => {
+export const mapRelatedNews = (relatedNews: any) => {
+    return (relatedNews || []).map((item: any) => {
         // extract first headline image
         console.log("item", item)
         const headlineMedia = extractHeadlineImage(item.attachments);

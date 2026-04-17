@@ -83,6 +83,11 @@ const navigationItems = [
 
 const userManagementItems = [
   {
+    title: "User Accounts",
+    url: "/admin/users",
+    icon: Users,
+  },
+  {
     title: "Role Management",
     url: "/admin/users/roles",
     icon: Shield,

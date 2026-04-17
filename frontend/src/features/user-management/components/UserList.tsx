@@ -1,0 +1,257 @@
+"use client";
+
+import { useState, useMemo } from "react";
+import { ColumnDef } from "@tanstack/react-table";
+import { Edit, Plus, CheckCircle2, XCircle, Key, Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+import { 
+    useGetUsersQuery, 
+    useToggleUserStatusMutation, 
+    useResetUserPasswordMutation,
+    useDeleteUserMutation
+} from "@/redux/api/userApi";
+import { User } from "@/redux/types/user";
+import { DataTable } from "@/features/template/component/DataTable";
+import { TableLayout } from "@/features/template/component/TableLayout";
+import { toast } from "sonner";
+import type { FilterField, ActionButton } from "@/types/tableLayout";
+import { Badge } from "@/components/ui/badge";
+
+/* ----------------------------------
+   COMPONENT
+----------------------------------- */
+export default function UserList() {
+    const router = useRouter();
+
+    /* API */
+    const { data: users = [], isLoading } = useGetUsersQuery();
+    const [toggleStatus] = useToggleUserStatusMutation();
+    const [resetPassword] = useResetUserPasswordMutation();
+    const [deleteUser] = useDeleteUserMutation();
+
+    const handleToggleStatus = async (user: User) => {
+        try {
+            await toggleStatus({ 
+                id: user.user_id, 
+                data: { is_active: !user.is_active } 
+            }).unwrap();
+            toast.success(`User ${user.is_active ? 'deactivated' : 'activated'} successfully`);
+        } catch {
+            toast.error("Failed to update user status");
+        }
+    };
+
+    const handleResetPassword = async (id: string) => {
+        if (!confirm("Are you sure you want to reset this user's password? An email will be sent with the new password.")) return;
+        try {
+            await resetPassword(id).unwrap();
+            toast.success("Password reset successfully. Email sent.");
+        } catch {
+            toast.error("Failed to reset password");
+        }
+    };
+
+    const handleDelete = async (id: string) => {
+        if (!confirm("Are you sure you want to deactivate (soft delete) this user?")) return;
+        try {
+            await deleteUser(id).unwrap();
+            toast.success("User deactivated successfully");
+        } catch {
+            toast.error("Failed to deactivate user");
+        }
+    };
+
+    /* View mode */
+    const [viewMode, setViewMode] = useState<"table" | "card">("table");
+
+    /* Pagination */
+    const [pageIndex, setPageIndex] = useState(0);
+    const [pageSize, setPageSize] = useState(10);
+
+    const handlePagination = (index: number, size: number) => {
+        setPageIndex(index);
+        setPageSize(size);
+    };
+
+    /* Filters */
+    const [search, setSearch] = useState("");
+
+    const filters: FilterField[] = [
+        {
+            key: "search",
+            label: "Search",
+            type: "text",
+            placeholder: "Search by name or email...",
+            value: search,
+            onChange: setSearch,
+        },
+    ];
+
+    /* ----------------------------------
+       DATA FILTERING
+    ----------------------------------- */
+    const filteredData = useMemo(() => {
+        return users.filter((user: User) => {
+            const matchesSearch =
+                !search ||
+                user.full_name?.toLowerCase().includes(search.toLowerCase()) ||
+                user.email?.toLowerCase().includes(search.toLowerCase());
+            return matchesSearch;
+        });
+    }, [users, search]);
+
+    /* Pagination slice */
+    const paginatedData = filteredData.slice(
+        pageIndex * pageSize,
+        pageIndex * pageSize + pageSize
+    );
+
+    /* ----------------------------------
+       TABLE COLUMNS
+    ----------------------------------- */
+    const columns: ColumnDef<User>[] = [
+        {
+            accessorKey: "full_name",
+            header: "Name",
+            cell: ({ row }) => (
+                <div className="flex flex-col">
+                    <span className="font-medium text-[#094C81]">{row.getValue("full_name")}</span>
+                    <span className="text-xs text-gray-500">{row.original.email}</span>
+                </div>
+            ),
+        },
+        {
+            accessorKey: "userType",
+            header: "Type",
+            cell: ({ row }) => (
+                <span className="text-xs font-semibold text-gray-600 bg-gray-100 px-2 py-1 rounded-md">
+                    {row.original.userType?.name || "Standard"}
+                </span>
+            ),
+        },
+        {
+            id: "roles",
+            header: "Roles",
+            cell: ({ row }) => {
+                const roles = row.original.roles || [];
+                return (
+                    <div className="flex flex-wrap gap-1 max-w-[200px]">
+                        {roles.length > 0 ? (
+                            roles.map((role) => (
+                                <Badge key={role.role_id} variant="secondary" className="text-[10px] px-1 h-5 bg-[#094C81]/10 text-[#094C81] border-none">
+                                    {role.name}
+                                </Badge>
+                            ))
+                        ) : (
+                            <span className="text-xs text-gray-400 italic">No roles</span>
+                        )}
+                    </div>
+                );
+            },
+        },
+        {
+            accessorKey: "is_active",
+            header: "Status",
+            cell: ({ row }) => {
+                const isActive = row.getValue("is_active") as boolean;
+                const user = row.original;
+                return (
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        className={`flex items-center gap-1.5 h-8 px-2 rounded-full ${isActive
+                            ? "bg-green-50 text-green-700 hover:bg-green-100 border border-green-200"
+                            : "bg-red-50 text-red-500 hover:bg-red-100 border border-red-200"
+                            }`}
+                        onClick={() => handleToggleStatus(user)}
+                    >
+                        {isActive ? (
+                            <>
+                                <CheckCircle2 className="h-3.5 w-3.5" />
+                                <span className="text-xs font-semibold">Active</span>
+                            </>
+                        ) : (
+                            <>
+                                <XCircle className="h-3.5 w-3.5" />
+                                <span className="text-xs font-semibold">Disabled</span>
+                            </>
+                        )}
+                    </Button>
+                );
+            },
+        },
+        {
+            id: "actions",
+            header: "Actions",
+            cell: ({ row }) => {
+                const id = row.original.user_id;
+                return (
+                    <div className="flex items-center gap-1">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            title="Edit User"
+                            onClick={() => router.push(`/admin/users/edit/${id}`)}
+                        >
+                            <Edit className="h-4 w-4 text-[#094C81]" />
+                        </Button>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            title="Reset Password"
+                            onClick={() => handleResetPassword(id)}
+                        >
+                            <Key className="h-4 w-4 text-amber-500" />
+                        </Button>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            title="Deactivate"
+                            onClick={() => handleDelete(id)}
+                        >
+                            <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                    </div>
+                );
+            },
+        },
+    ];
+
+    /* ----------------------------------
+       TOP ACTIONS
+    ----------------------------------- */
+    const actions: ActionButton[] = [
+        {
+            label: "Add New User",
+            icon: <Plus className="h-4 w-4" />,
+            variant: "default",
+            onClick: () => router.push(`/admin/users/create`),
+        },
+    ];
+
+    /* ----------------------------------
+       RENDER
+    ----------------------------------- */
+    return (
+        <TableLayout
+            title="User Management"
+            description="Manage system users, adjust roles, and control access permissions."
+            actions={actions}
+            filters={filters}
+            filterColumnsPerRow={1}
+            viewMode={viewMode}
+            onViewModeChange={setViewMode}
+        >
+            <DataTable
+                columns={columns}
+                data={paginatedData}
+                totalPageCount={Math.ceil(filteredData.length / pageSize)}
+                handlePagination={handlePagination}
+                tablePageSize={pageSize}
+                currentIndex={pageIndex}
+                isLoading={isLoading}
+            />
+        </TableLayout>
+    );
+}

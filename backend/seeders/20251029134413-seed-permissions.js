@@ -9,77 +9,125 @@ module.exports = {
       // Dashboard Access
       { resource: "dashboard", action: "view" },
 
-      // User Management
+      // User & Identity Management
       { resource: "users", action: "create" },
       { resource: "users", action: "read" },
       { resource: "users", action: "update" },
       { resource: "users", action: "delete" },
       { resource: "users", action: "assign_role" },
 
-      // Permission Management
-      { resource: "permissions", action: "read" },
-      { resource: "permissions", action: "update" },
-
-      // Role Management
       { resource: "roles", action: "create" },
       { resource: "roles", action: "read" },
       { resource: "roles", action: "update" },
       { resource: "roles", action: "delete" },
       { resource: "roles", action: "assign_permission" },
 
-      // Organization Management
-      { resource: "organizations", action: "create" },
-      { resource: "organizations", action: "read" },
-      { resource: "organizations", action: "update" },
-      { resource: "organizations", action: "delete" },
+      { resource: "permissions", action: "read" },
+      { resource: "permissions", action: "update" },
 
-      // Organization Structure
-      { resource: "organization_structures", action: "create" },
-      { resource: "organization_structures", action: "read" },
-      { resource: "organization_structures", action: "update" },
-      { resource: "organization_structures", action: "delete" },
+      // Public Content Management
+      { resource: "news", action: "create" },
+      { resource: "news", action: "read" },
+      { resource: "news", action: "update" },
+      { resource: "news", action: "delete" },
 
-      // Project Management
-      { resource: "projects", action: "create" },
-      { resource: "projects", action: "read" },
-      { resource: "projects", action: "update" },
-      { resource: "projects", action: "delete" },
-      { resource: "projects", action: "assign_users" },
+      { resource: "tags", action: "create" },
+      { resource: "tags", action: "read" },
+      { resource: "tags", action: "update" },
+      { resource: "tags", action: "delete" },
 
-      // Issue Management
-      { resource: "issues", action: "create" },
-      { resource: "issues", action: "read" },
-      { resource: "issues", action: "update" },
-      { resource: "issues", action: "delete" },
-      { resource: "issues", action: "assign" },
-      { resource: "issues", action: "accept" },
-      { resource: "issues", action: "resolve" },
-      { resource: "issues", action: "escalate" },
-      { resource: "issues", action: "view_own" },
-      { resource: "issues", action: "view_all" },
+      { resource: "hero", action: "create" },
+      { resource: "hero", action: "read" },
+      { resource: "hero", action: "update" },
+      { resource: "hero", action: "delete" },
 
-      // Issue Priority & Category
-      { resource: "issue_priorities", action: "create" },
-      { resource: "issue_priorities", action: "read" },
-      { resource: "issue_priorities", action: "update" },
-      { resource: "issue_priorities", action: "delete" },
+      { resource: "about", action: "read" },
+      { resource: "about", action: "update" },
 
-      { resource: "issue_categories", action: "create" },
-      { resource: "issue_categories", action: "read" },
-      { resource: "issue_categories", action: "update" },
-      { resource: "issue_categories", action: "delete" },
+      { resource: "contact", action: "read" },
+      { resource: "contact", action: "update" },
 
-      // Issue Flow Management
-      { resource: "issue_flows", action: "create" },
-      { resource: "issue_flows", action: "read" },
-      { resource: "issue_flows", action: "update" },
-      { resource: "issue_flows", action: "delete" },
+      { resource: "contact_messages", action: "read" },
+      { resource: "contact_messages", action: "update" },
+      { resource: "contact_messages", action: "delete" },
 
-      // Humnan Resource Management
-      { resource: "human_resources", action: "create" },
-      { resource: "human_resources", action: "read" },
-      { resource: "human_resources", action: "update" },
-      { resource: "human_resources", action: "delete" },
+      { resource: "footer", action: "read" },
+      { resource: "footer", action: "update" },
+
+      { resource: "investigate_ethiopia", action: "read" },
+      { resource: "investigate_ethiopia", action: "update" },
+
+      { resource: "services", action: "create" },
+      { resource: "services", action: "read" },
+      { resource: "services", action: "update" },
+      { resource: "services", action: "delete" },
+
+      { resource: "asm", action: "read" },
+      { resource: "asm", action: "update" },
+
+      // Sector: Mining
+      { resource: "mining_snapshots", action: "create" },
+      { resource: "mining_snapshots", action: "read" },
+      { resource: "mining_snapshots", action: "update" },
+      { resource: "mining_snapshots", action: "delete" },
+
+      { resource: "mining_gamestones", action: "create" },
+      { resource: "mining_gamestones", action: "read" },
+      { resource: "mining_gamestones", action: "update" },
+      { resource: "mining_gamestones", action: "delete" },
+
+      { resource: "mining_resources", action: "create" },
+      { resource: "mining_resources", action: "read" },
+      { resource: "mining_resources", action: "update" },
+      { resource: "mining_resources", action: "delete" },
+
+      { resource: "mining_application_processes", action: "create" },
+      { resource: "mining_application_processes", action: "read" },
+      { resource: "mining_application_processes", action: "update" },
+      { resource: "mining_application_processes", action: "delete" },
+
+      { resource: "mining_regulation_processes", action: "create" },
+      { resource: "mining_regulation_processes", action: "read" },
+      { resource: "mining_regulation_processes", action: "update" },
+      { resource: "mining_regulation_processes", action: "delete" },
+
+      // Sector: Geothermal
+      { resource: "geothermal_snapshots", action: "create" },
+      { resource: "geothermal_snapshots", action: "read" },
+      { resource: "geothermal_snapshots", action: "update" },
+      { resource: "geothermal_snapshots", action: "delete" },
+
+      { resource: "geothermal_resources", action: "create" },
+      { resource: "geothermal_resources", action: "read" },
+      { resource: "geothermal_resources", action: "update" },
+      { resource: "geothermal_resources", action: "delete" },
+
+      // Sector: Petroleum
+      { resource: "petroleum_snapshots", action: "create" },
+      { resource: "petroleum_snapshots", action: "read" },
+      { resource: "petroleum_snapshots", action: "update" },
+      { resource: "petroleum_snapshots", action: "delete" },
+
+      { resource: "petroleum_resources", action: "create" },
+      { resource: "petroleum_resources", action: "read" },
+      { resource: "petroleum_resources", action: "update" },
+      { resource: "petroleum_resources", action: "delete" },
+
+      { resource: "petroleum_processes", action: "create" },
+      { resource: "petroleum_processes", action: "read" },
+      { resource: "petroleum_processes", action: "update" },
+      { resource: "petroleum_processes", action: "delete" },
+      { resource: "petroleum_processes", action: "publish" },
+
+      { resource: "petroleum_regulation_processes", action: "create" },
+      { resource: "petroleum_regulation_processes", action: "read" },
+      { resource: "petroleum_regulation_processes", action: "update" },
+      { resource: "petroleum_regulation_processes", action: "delete" },
+
+      // System
+      { resource: "attachments", action: "create" },
+      { resource: "attachments", action: "read" },
+      { resource: "attachments", action: "delete" },
     ];
 
     for (const perm of permissions) {
