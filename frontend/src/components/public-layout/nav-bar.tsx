@@ -29,7 +29,7 @@ export default function PublicNavbar() {
             name: t("nav.sector"),
             children: [
                 { name: t("nav.mining"), link: "/mining" },
-                { name: t("nav.geology"), link: "/geology" },
+                { name: t("nav.geology"), link: "/geothermal" },
                 { name: t("nav.petroleum"), link: "/petroleum" },
             ],
         },

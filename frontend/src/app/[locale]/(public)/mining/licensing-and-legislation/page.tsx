@@ -1,6 +1,4 @@
 "use client";
-
-import React from 'react';
 import MiningLegislationAndRegulationProcess from '@/features/sectors/mining/MiningLegislationAndRegulationProcess';
 
 const LicensingAndLegislationPage = () => {

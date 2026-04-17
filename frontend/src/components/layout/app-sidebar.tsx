@@ -135,15 +135,15 @@ const miningManagementItems = [
   },
 ];
 
-const geologyManagementItems = [
+const geothermalManagementItems = [
   {
     title: "Snapshots",
-    url: "/admin/sectors/geology/snapshots",
+    url: "/admin/sectors/geothermal/snapshots",
     icon: Megaphone,
   },
   {
     title: "Resources",
-    url: "/admin/sectors/geology/resources",
+    url: "/admin/sectors/geothermal/resources",
     icon: Tag,
   },
 ];
@@ -474,14 +474,14 @@ export function AppSidebar() {
               {/* GEOLOGY WITH NESTED MENU */}
               <Collapsible
                 asChild
-                defaultOpen={pathname.startsWith("/admin/sectors/geology")}
+                defaultOpen={pathname.startsWith("/admin/sectors/geothermal")}
                 className="group/collapsible"
               >
                 <SidebarMenuItem className="group-data-[collapsible=icon]:w-fit">
                   <CollapsibleTrigger asChild>
                     <SidebarMenuButton
                       tooltip="Geothermal"
-                      isActive={pathname.startsWith("/admin/sectors/geology")}
+                      isActive={pathname.startsWith("/admin/sectors/geothermal")}
                       className="text-primary hover:bg-golden-metallic px-5 py-5
                         group-data-[collapsible=icon]:px-2
                         group-data-[collapsible=icon]:justify-center
@@ -502,7 +502,7 @@ export function AppSidebar() {
 
                   <CollapsibleContent>
                     <SidebarMenuSub className="pt-1">
-                      {geologyManagementItems.map((subItem) => (
+                      {geothermalManagementItems.map((subItem) => (
                         <SidebarMenuSubItem key={subItem.url}>
                           <SidebarMenuSubButton
                             asChild

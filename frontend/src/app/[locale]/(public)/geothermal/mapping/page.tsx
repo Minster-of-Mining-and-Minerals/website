@@ -1,60 +1,60 @@
 "use client";
 import React, { useState } from "react";
-import { Map, Layers, Compass, Drill, Filter, Globe, Shield, Droplets, Building, Mountain, Satellite, Database, Target, BarChart3, Download, Eye, ChevronDown } from "lucide-react";
+import { Map, Layers, Compass, Drill, Filter, Globe, Shield, Droplets, Building, Mountain, Satellite, Database, Target, BarChart3, Download, Eye, ChevronDown, BeakerIcon } from "lucide-react";
 
-const GeologicalMappingPage = () => {
+const GeothermalMappingPage = () => {
     const [activeTab, setActiveTab] = useState("overview");
 
     const tabs = [
         { id: "overview", label: "Overview", icon: Globe },
         { id: "importance", label: "Importance", icon: Target },
-        { id: "types", label: "Map Types", icon: Layers },
+        { id: "types", label: "Surface Manifestations", icon: Layers },
         { id: "data", label: "Data Collection", icon: Database },
-        { id: "applications", label: "Applications", icon: BarChart3 },
+        { id: "applications", label: "Energy Potential", icon: BarChart3 },
     ];
 
     const mapTypes = [
         {
-            title: "Regional Geological Maps",
-            scale: "1:250,000",
-            description: "Broad-scale maps covering large areas, showing rock types, structures, and major geological features.",
-            color: "bg-blue-100 text-blue-700",
-            icon: Map,
-        },
-        {
-            title: "Detailed Geological Maps",
-            scale: "1:50,000",
-            description: "High-resolution maps for specific areas, used in mineral exploration and infrastructure planning.",
-            color: "bg-green-100 text-green-700",
-            icon: Compass,
-        },
-        {
-            title: "Geohazard Maps",
-            scale: "Various Scales",
-            description: "Identify areas prone to earthquakes, landslides, and other geological hazards.",
-            color: "bg-red-100 text-red-700",
-            icon: Shield,
-        },
-        {
-            title: "Mineral Resource Maps",
+            title: "Thermal Spring Maps",
             scale: "1:100,000",
-            description: "Show distribution of mineral deposits and potential mining areas across Ethiopia.",
-            color: "bg-amber-100 text-amber-700",
-            icon: Mountain,
-        },
-        {
-            title: "Hydrogeological Maps",
-            scale: "1:250,000",
-            description: "Illustrate groundwater resources, aquifers, and water-bearing formations.",
-            color: "bg-cyan-100 text-cyan-700",
+            description: "Detailed mapping of hot springs, fumaroles, and geysers across the Rift Valley.",
+            color: "bg-orange-100 text-orange-700",
             icon: Droplets,
         },
         {
-            title: "Engineering Geological Maps",
-            scale: "1:25,000",
-            description: "Essential for construction projects, showing soil properties and rock strength.",
+            title: "Volcanic Structural Maps",
+            scale: "1:50,000",
+            description: "High-resolution mapping of calderas, faults, and volcanic centers for geothermal targeting.",
+            color: "bg-red-100 text-red-700",
+            icon: Mountain,
+        },
+        {
+            title: "Geothermal Alteration Maps",
+            scale: "Various Scales",
+            description: "Mapping of hydrothermally altered rocks indicating subsurface reservoir activity.",
+            color: "bg-amber-100 text-amber-700",
+            icon: Layers,
+        },
+        {
+            title: "Gravity & Magnetic Maps",
+            scale: "1:250,000",
+            description: "Geophysical maps showing subsurface heat sources and crustal thinning.",
+            color: "bg-blue-100 text-blue-700",
+            icon: Database,
+        },
+        {
+            title: "Resistivity Surveys",
+            scale: "1:50,000",
+            description: "Deep-probing electrical surveys to identify conductive geothermal reservoirs.",
             color: "bg-purple-100 text-purple-700",
-            icon: Building,
+            icon: Filter,
+        },
+        {
+            title: "Geochemical Zonality Maps",
+            scale: "1:100,000",
+            description: "Mapping of chemical signatures in water and gas to estimate reservoir temperatures.",
+            color: "bg-green-100 text-green-700",
+            icon: BeakerIcon,
         },
     ];
 
@@ -217,29 +217,29 @@ const GeologicalMappingPage = () => {
                                     <h2 className="text-2xl font-bold text-gray-900">What is Geological Mapping?</h2>
                                 </div>
                                 <p className="text-gray-700 text-lg leading-relaxed mb-6">
-                                    Geological mapping is the systematic process of recording geological information
-                                    on a map, including rock types, geological structures, mineral occurrences, and
-                                    surface features. It provides a visual representation of the Earth&apos;s subsurface
-                                    composition and history.
+                                    Geothermal mapping is the systematic process of identifying heat sources,
+                                    thermal manifestations, and reservoir structures using geological, 
+                                    geochemical, and geophysical methods. It provides the basis for 
+                                    successful drilling and power plant siting.
                                 </p>
-                                <div className="bg-gradient-to-r from-blue-50 to-teal-50 rounded-xl p-6 border border-blue-100">
-                                    <h3 className="font-bold text-gray-800 mb-3">Key Objectives</h3>
+                                <div className="bg-gradient-to-r from-orange-50 to-red-50 rounded-xl p-6 border border-orange-100">
+                                    <h3 className="font-bold text-gray-800 mb-3">Key Development Objectives</h3>
                                     <ul className="space-y-2">
                                         <li className="flex items-start gap-2">
-                                            <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
-                                            <span>Document Ethiopia&apos;s geological heritage</span>
+                                            <div className="w-2 h-2 bg-orange-500 rounded-full mt-2"></div>
+                                            <span>Locate and quantify Ethiopia&apos;s heat flow potential</span>
                                         </li>
                                         <li className="flex items-start gap-2">
-                                            <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
-                                            <span>Identify mineral and energy resources</span>
+                                            <div className="w-2 h-2 bg-orange-500 rounded-full mt-2"></div>
+                                            <span>Reduce exploration risk for private developers</span>
                                         </li>
                                         <li className="flex items-start gap-2">
-                                            <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
-                                            <span>Support infrastructure planning and development</span>
+                                            <div className="w-2 h-2 bg-orange-500 rounded-full mt-2"></div>
+                                            <span>Support sustainable base-load power generation</span>
                                         </li>
                                         <li className="flex items-start gap-2">
-                                            <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
-                                            <span>Assess geological hazards and risks</span>
+                                            <div className="w-2 h-2 bg-orange-500 rounded-full mt-2"></div>
+                                            <span>Identify direct-use opportunities for local industry</span>
                                         </li>
                                     </ul>
                                 </div>
@@ -251,22 +251,22 @@ const GeologicalMappingPage = () => {
                                         Ethiopia&apos;s Geological Context
                                     </h3>
                                     <p className="text-gray-700 mb-4">
-                                        Ethiopia possesses diverse geology ranging from ancient Precambrian rocks
-                                        to recent volcanic formations, including the East African Rift System,
-                                        making geological mapping particularly important for resource discovery
-                                        and hazard assessment.
-                                    </p>
-                                    <div className="flex flex-wrap gap-2">
-                                        <span className="px-3 py-1 bg-amber-100 text-amber-700 text-sm rounded-full">
-                                            East African Rift
-                                        </span>
-                                        <span className="px-3 py-1 bg-amber-100 text-amber-700 text-sm rounded-full">
-                                            Volcanic Formations
-                                        </span>
-                                        <span className="px-3 py-1 bg-amber-100 text-amber-700 text-sm rounded-full">
-                                            Mineral Belts
-                                        </span>
-                                    </div>
+                                    Ethiopia is endowed with vast geothermal resources, primarily concentrated 
+                                    within the Main Ethiopian Rift. The country possesses the potential for 
+                                    over 10,000 MW of geothermal power, making it a critical pillar of 
+                                    the national green energy strategy.
+                                </p>
+                                <div className="flex flex-wrap gap-2">
+                                    <span className="px-3 py-1 bg-amber-100 text-amber-700 text-sm rounded-full">
+                                        Main Ethiopian Rift
+                                    </span>
+                                    <span className="px-3 py-1 bg-amber-100 text-amber-700 text-sm rounded-full">
+                                        Fentale-Dofen Sector
+                                    </span>
+                                    <span className="px-3 py-1 bg-amber-100 text-amber-700 text-sm rounded-full">
+                                        Danakil Depression
+                                    </span>
+                                </div>
                                 </div>
                                 <div className="bg-gradient-to-br from-emerald-50 to-white rounded-2xl shadow-lg p-6 border border-emerald-100">
                                     <h3 className="font-bold text-gray-800 mb-4 flex items-center gap-2">
@@ -484,4 +484,4 @@ const GeologicalMappingPage = () => {
     );
 };
 
-export default GeologicalMappingPage;
+export default GeothermalMappingPage;

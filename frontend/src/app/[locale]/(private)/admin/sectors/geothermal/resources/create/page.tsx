@@ -274,12 +274,12 @@ export default function ResourceFormPage() {
                     data: {
                         title: title.trim(),
                         description: description.trim(), // Send as plain text
-                        sector: "geology",
+                        sector: "geothermal",
                         attachments: attachmentsPayload,
                     },
                 }).unwrap();
                 toast.success("Resource updated successfully!");
-                router.push("/admin/sectors/geology/resources");
+                router.push("/admin/sectors/geothermal/resources");
             } else {
                 await createResource({
                     title: title.trim(),
@@ -288,7 +288,7 @@ export default function ResourceFormPage() {
                     attachments: attachmentsPayload,
                 }).unwrap();
                 toast.success("Resource created successfully!");
-                router.push("/admin/sectors/geology/resources");
+                router.push("/admin/sectors/geothermal/resources");
             }
         } catch (error: any) {
             toast.error(error?.data?.message || (isEditing ? "Failed to update resource" : "Failed to create resource"));
@@ -325,7 +325,7 @@ export default function ResourceFormPage() {
                     <p className="text-sm text-gray-500 mt-0.5">
                         {isEditing
                             ? `Editing: ${existing?.title ?? "..."}`
-                            : "Add a new document or report to the geology sector"}
+                            : "Add a new document or report to the geothermal sector"}
                     </p>
                 </div>
             </div>
@@ -346,7 +346,7 @@ export default function ResourceFormPage() {
                                 id="title"
                                 value={title}
                                 onChange={(e) => setTitle(e.target.value)}
-                                placeholder="E.g., Geology Sector Annual Report 2024"
+                                placeholder="E.g., Geothermal Sector Annual Report 2024"
                                 className="focus-visible:ring-[#094C81]"
                             />
                         </div>
@@ -389,7 +389,7 @@ export default function ResourceFormPage() {
                             <Button
                                 type="button"
                                 variant="outline"
-                                onClick={() => router.push("/admin/sectors/geology/resources")}
+                                onClick={() => router.push("/admin/sectors/geothermal/resources")}
                             >
                                 Cancel
                             </Button>
