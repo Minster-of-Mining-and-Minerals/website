@@ -4,6 +4,7 @@ const fs = require("fs");
 const path = require("path");
 const Sequelize = require("sequelize");
 const process = require("process");
+const auditContext = require("../utils/auditContext");
 
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || "development";
@@ -71,5 +72,57 @@ Object.keys(db).forEach((modelName) => {
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
+
+// Helper to construct and save audit logs
+const logAction = (action) => async (instance, options) => {
+  if (!db.AuditLog) return;
+  // Prevent infinite loops
+  if (instance.constructor.name === "AuditLog") return;
+
+  const store = auditContext.getStore();
+  let userId = null;
+  if (store && store.has("userId")) {
+    userId = store.get("userId");
+  }
+
+  // Find the primary key name securely
+  let recordId = "UNKNOWN";
+  if (instance.constructor.primaryKeyAttributes && instance.constructor.primaryKeyAttributes.length > 0) {
+    const pk = instance.constructor.primaryKeyAttributes[0];
+    recordId = instance[pk] ? String(instance[pk]) : "UNKNOWN";
+  } else if (instance.id) {
+    recordId = String(instance.id);
+  }
+
+  let oldValues = null;
+  let newValues = null;
+
+  if (action === "CREATE") {
+    newValues = instance.get();
+  } else if (action === "UPDATE") {
+    // Selectively capture what changed or full previous snapshot
+    oldValues = instance._previousDataValues || null;
+    newValues = instance.get();
+  } else if (action === "DELETE") {
+    oldValues = instance.get();
+  }
+
+  try {
+    await db.AuditLog.create({
+      user_id: userId,
+      action: action,
+      model_name: instance.constructor.name,
+      record_id: recordId,
+      old_values: oldValues,
+      new_values: newValues,
+    }, { transaction: options.transaction });
+  } catch (error) {
+    console.error(`Failed to write AuditLog for ${instance.constructor.name} [${action}]:`, error);
+  }
+};
+
+sequelize.addHook("afterCreate", logAction("CREATE"));
+sequelize.addHook("afterUpdate", logAction("UPDATE"));
+sequelize.addHook("afterDestroy", logAction("DELETE"));
 
 module.exports = db;

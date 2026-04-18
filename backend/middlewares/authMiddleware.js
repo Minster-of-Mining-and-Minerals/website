@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const db = require("../models");
+const auditContext = require("../utils/auditContext");
 
 const authenticateToken = async (req, res, next) => {
   const authHeader = req.headers["authorization"];
@@ -15,9 +16,28 @@ const authenticateToken = async (req, res, next) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // Fetch user to ensure they exist and are active
+    // Fetch user to ensure they exist and are active, and attach permissions
     const user = await db.User.findByPk(decoded.user_id, {
       attributes: ["user_id", "email", "full_name", "is_active"],
+      include: [
+        {
+          model: db.Role,
+          as: "roles",
+          include: [
+            {
+              model: db.RolePermission,
+              as: "rolePermissions",
+              include: [
+                {
+                  model: db.Permission,
+                  as: "permission",
+                  attributes: ["resource", "action"],
+                },
+              ],
+            },
+          ],
+        },
+      ],
     });
 
     if (!user || !user.is_active) {
@@ -27,13 +47,34 @@ const authenticateToken = async (req, res, next) => {
       });
     }
 
+    const flattenedPermissions = [
+      ...new Set(
+        user.roles.flatMap((role) =>
+          role.rolePermissions
+            .filter((rp) => rp.permission?.resource && rp.permission?.action)
+            .map(
+              (rp) =>
+                `${rp.permission.resource}:${rp.permission.action}`
+            )
+        )
+      ),
+    ];
+
     req.user = {
       user_id: user.user_id,
       email: user.email,
       full_name: user.full_name,
+      roles: user.roles.map((r) => r.name),
+      permissions: flattenedPermissions,
     };
 
-    next();
+    // Run the remainder of the request within an ALS context
+    const store = new Map();
+    store.set("userId", user.user_id);
+
+    auditContext.run(store, () => {
+      next();
+    });
   } catch (error) {
     console.error("Auth middleware error:", error);
     return res.status(403).json({

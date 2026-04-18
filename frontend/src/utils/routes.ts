@@ -262,6 +262,23 @@ export const routePermissions: RouteConfig[] = [
         ],
     },
 
+    // ---------------- SYSTEM ----------------
+    {
+        path: "/admin/system",
+        label: "System",
+        icon: "ShieldCheck",
+        permissions: {
+            anyPermissions: ["AUDIT_LOGS:READ"],
+        },
+        children: [
+            {
+                path: "/admin/system/audit-logs",
+                label: "Audit Logs",
+                icon: "ClipboardList",
+                permissions: { anyPermissions: ["AUDIT_LOGS:READ"] },
+            },
+        ],
+    },
 ];
 
 

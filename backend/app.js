@@ -66,6 +66,9 @@ const investigateEthiopiaRoute = require("./routers/investigate_ethiopia/investi
 // ================== Attachment Routes ==========================
 const attachmentRoute = require("./routers/attachement/attachementRoutes");
 
+// ================== System Routes ==========================
+const auditLogRoute = require("./routers/system/auditLogRoutes");
+
 
 const app = express();
 const appServer = http.createServer(app);
@@ -196,6 +199,9 @@ app.use("/api/investigate-ethiopia", investigateEthiopiaRoute);
 
 // ================== Api Attachment Routes =====================
 app.use("/api/attachments", attachmentRoute);
+
+// ================== System Routes =====================
+app.use("/api/audit-logs", auditLogRoute);
 
 // ================== Root Endpoint ==================
 app.get("/", (req, res) => {
