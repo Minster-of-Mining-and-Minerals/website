@@ -68,6 +68,7 @@ const attachmentRoute = require("./routers/attachement/attachementRoutes");
 
 // ================== System Routes ==========================
 const auditLogRoute = require("./routers/system/auditLogRoutes");
+const dashboardRoute = require("./routers/system/dashboardRoutes");
 
 
 const app = express();
@@ -202,6 +203,7 @@ app.use("/api/attachments", attachmentRoute);
 
 // ================== System Routes =====================
 app.use("/api/audit-logs", auditLogRoute);
+app.use("/api/dashboard-analytics", dashboardRoute);
 
 // ================== Root Endpoint ==================
 app.get("/", (req, res) => {

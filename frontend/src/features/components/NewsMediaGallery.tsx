@@ -143,7 +143,6 @@ const NewsMediaGallery: React.FC<NewsMediaGalleryProps> = ({
                         src={headlineMedia[activeIndex].url}
                         className="h-full w-full object-cover"
                         controls
-                        muted
                         loop
                         playsInline
                     />

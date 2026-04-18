@@ -443,7 +443,12 @@ const recordNewsRead = async (req, res) => {
             defaults: { news_read_id: uuidv4(), total_read_time: read_time, last_read_at: new Date() },
         });
 
-        if (!created) {
+        if (created) {
+            // Increment total unique read count in metadata
+            await NewsMetadata.increment("read_count", {
+                where: { news_id },
+            });
+        } else {
             newsRead.total_read_time += read_time;
             newsRead.last_read_at = new Date();
             await newsRead.save();

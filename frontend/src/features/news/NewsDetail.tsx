@@ -1,21 +1,32 @@
 "use client";
-import React, { useState } from "react";
-import { useParams } from "next/navigation";
-import { useGetNewsByIdQuery } from "@/redux/api/newsApi";
+import { useGetNewsByIdQuery, useRecordNewsReadMutation, useGetNewsFeedbacksQuery } from "@/redux/api/newsApi";
 import { Calendar, User, ArrowLeft, MessageSquare } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
 import NewsLeftSide from "@/components/pages/news-page-components/NewsLeftSide";
 import { mapRelatedNews } from "@/utils/mapRelatedNews";
 import NewsMediaGallery from "../components/NewsMediaGallery";
 import NewsContentRenderer from "../components/NewsContentRenderer";
 import NewsDocuments from "../components/NewsDocuments";
 import NewsFeedback from "../components/NewsFeedback";
-import { useGetNewsFeedbacksQuery } from "@/redux/api/newsApi";
 
 const NewsDetail = () => {
     const params = useParams();
     const newsId = params.newsId as string;
     const { data: newsItem, isLoading, isError } = useGetNewsByIdQuery(newsId);
     const { data: feedbacks = [] } = useGetNewsFeedbacksQuery({ news_id: newsId });
+    const [recordNewsRead] = useRecordNewsReadMutation();
+
+    // Dwell-time timer to record view
+    useEffect(() => {
+        if (!newsId) return;
+
+        const timer = setTimeout(() => {
+            recordNewsRead({ news_id: newsId, read_time: 10 });
+        }, 10000); // 10 seconds threshold
+
+        return () => clearTimeout(timer);
+    }, [newsId, recordNewsRead]);
 
     const [rating, setRating] = useState(0);
     const [comment, setComment] = useState("");
