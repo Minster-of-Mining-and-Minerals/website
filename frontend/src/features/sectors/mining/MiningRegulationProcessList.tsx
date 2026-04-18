@@ -15,6 +15,7 @@ import { DataTable } from "@/features/template/component/DataTable";
 import { TableLayout } from "@/features/template/component/TableLayout";
 import { toast } from "sonner";
 import type { FilterField, ActionButton } from "@/types/tableLayout";
+import { ComponentGuard } from "@/components/auth/ComponentGuard";
 
 export default function MiningRegulationProcessList() {
     const router = useRouter();
@@ -141,48 +142,54 @@ export default function MiningRegulationProcessList() {
                 const id = row.original.mining_regulation_process_id;
                 return (
                     <div className="flex items-center gap-1">
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            title={row.original.publish ? "Unpublish" : "Publish"}
-                            onClick={async () => {
-                                if (confirm(`Are you sure you want to ${row.original.publish ? "unpublish" : "publish"} this process?`)) {
-                                    try {
-                                        await togglePublish({ id, data: { publish: !row.original.publish } }).unwrap();
-                                        toast.success(`Process ${row.original.publish ? "unpublished" : "published"} successfully`);
-                                    } catch (err: any) {
-                                        toast.error(err?.data?.message || `Failed to ${row.original.publish ? "unpublish" : "publish"} process`);
+                        <ComponentGuard anyPermissions={["MINING_REGULATION_PROCESSES:UPDATE"]}>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                title={row.original.publish ? "Unpublish" : "Publish"}
+                                onClick={async () => {
+                                    if (confirm(`Are you sure you want to ${row.original.publish ? "unpublish" : "publish"} this process?`)) {
+                                        try {
+                                            await togglePublish({ id, data: { publish: !row.original.publish } }).unwrap();
+                                            toast.success(`Process ${row.original.publish ? "unpublished" : "published"} successfully`);
+                                        } catch (err: any) {
+                                            toast.error(err?.data?.message || `Failed to ${row.original.publish ? "unpublish" : "publish"} process`);
+                                        }
                                     }
-                                }
-                            }}
-                        >
-                            <Globe className={`h-4 w-4 ${row.original.publish ? "text-green-600" : "text-gray-400"}`} />
-                        </Button>
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            title="Edit"
-                            onClick={() => router.push(`/admin/sectors/mining/regulation-processes/create?id=${id}`)}
-                        >
-                            <Edit className="h-4 w-4 text-[#094C81]" />
-                        </Button>
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            title="Delete"
-                            onClick={async () => {
-                                if (confirm("Are you sure you want to delete this process?")) {
-                                    try {
-                                        await deleteProcess(id).unwrap();
-                                        toast.success("Process deleted successfully");
-                                    } catch (err: any) {
-                                        toast.error(err?.data?.message || "Failed to delete process");
+                                }}
+                            >
+                                <Globe className={`h-4 w-4 ${row.original.publish ? "text-green-600" : "text-gray-400"}`} />
+                            </Button>
+                        </ComponentGuard>
+                        <ComponentGuard anyPermissions={["MINING_REGULATION_PROCESSES:UPDATE"]}>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                title="Edit"
+                                onClick={() => router.push(`/admin/sectors/mining/regulation-processes/create?id=${id}`)}
+                            >
+                                <Edit className="h-4 w-4 text-[#094C81]" />
+                            </Button>
+                        </ComponentGuard>
+                        <ComponentGuard anyPermissions={["MINING_REGULATION_PROCESSES:DELETE"]}>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                title="Delete"
+                                onClick={async () => {
+                                    if (confirm("Are you sure you want to delete this process?")) {
+                                        try {
+                                            await deleteProcess(id).unwrap();
+                                            toast.success("Process deleted successfully");
+                                        } catch (err: any) {
+                                            toast.error(err?.data?.message || "Failed to delete process");
+                                        }
                                     }
-                                }
-                            }}
-                        >
-                            <Trash className="h-4 w-4 text-destructive" />
-                        </Button>
+                                }}
+                            >
+                                <Trash className="h-4 w-4 text-destructive" />
+                            </Button>
+                        </ComponentGuard>
                     </div>
                 );
             },
@@ -198,6 +205,7 @@ export default function MiningRegulationProcessList() {
             icon: <Plus className="h-4 w-4" />,
             variant: "default",
             onClick: () => router.push(`/admin/sectors/mining/regulation-processes/create`),
+            permissions: ["MINING_REGULATION_PROCESSES:CREATE"],
         },
     ];
 

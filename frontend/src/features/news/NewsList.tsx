@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { DataTable } from "@/features/template/component/DataTable";
 import { TableLayout } from "@/features/template/component/TableLayout";
 import type { FilterField, ActionButton } from "@/types/tableLayout";
+import { ComponentGuard } from "@/components/auth/ComponentGuard";
 
 import AdminNewsCard from "@/components/pages/news-page-components/AdminNewsCard";
 
@@ -145,21 +146,25 @@ export default function NewsList() {
 
                 return (
                     <div className="flex items-center gap-1">
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => router.push(`/admin/news/${newsId}`)}
-                        >
-                            <Eye className="h-4 w-4" />
-                        </Button>
+                        <ComponentGuard anyPermissions={["NEWS:UPDATE"]}>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => router.push(`/admin/news/${newsId}`)}
+                            >
+                                <Eye className="h-4 w-4" />
+                            </Button>
+                        </ComponentGuard>
 
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => deleteNews(newsId)}
-                        >
-                            <Trash className="h-4 w-4 text-destructive" />
-                        </Button>
+                        <ComponentGuard anyPermissions={["NEWS:DELETE"]}>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => deleteNews(newsId)}
+                            >
+                                <Trash className="h-4 w-4 text-destructive" />
+                            </Button>
+                        </ComponentGuard>
                     </div>
                 );
             },
@@ -181,6 +186,7 @@ export default function NewsList() {
             icon: <Plus className="h-4 w-4" />,
             variant: "default",
             onClick: () => router.push("/admin/news/create"),
+            permissions: ["NEWS:CREATE"],
         },
     ];
 

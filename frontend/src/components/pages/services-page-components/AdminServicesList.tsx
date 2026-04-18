@@ -17,6 +17,7 @@ import { Service } from "@/redux/types/service";
 import { TableLayout } from "@/features/template/component/TableLayout";
 import { DataTable } from "@/features/template/component/DataTable";
 import ServiceModal from "./ServiceModal";
+import { ComponentGuard } from "@/components/auth/ComponentGuard";
 
 /* ----------------------------------
    COMPONENT
@@ -112,24 +113,28 @@ export default function AdminServicesList() {
                             <Eye className="h-4 w-4" />
                         </Button>
 
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => {
-                                setCurrentService(service);
-                                setModalOpen(true);
-                            }}
-                        >
-                            <Edit className="h-4 w-4" />
-                        </Button>
+                        <ComponentGuard anyPermissions={["SERVICES:UPDATE"]}>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => {
+                                    setCurrentService(service);
+                                    setModalOpen(true);
+                                }}
+                            >
+                                <Edit className="h-4 w-4" />
+                            </Button>
+                        </ComponentGuard>
 
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => deleteService(service.service_id)}
-                        >
-                            <Trash className="h-4 w-4 text-destructive" />
-                        </Button>
+                        <ComponentGuard anyPermissions={["SERVICES:DELETE"]}>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => deleteService(service.service_id)}
+                            >
+                                <Trash className="h-4 w-4 text-destructive" />
+                            </Button>
+                        </ComponentGuard>
                     </div>
                 );
             },
@@ -145,6 +150,7 @@ export default function AdminServicesList() {
                 setCurrentService(null);
                 setModalOpen(true);
             },
+            permissions: ["SERVICES:CREATE"],
         },
     ];
 

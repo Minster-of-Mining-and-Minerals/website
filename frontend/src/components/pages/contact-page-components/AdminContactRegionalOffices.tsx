@@ -25,6 +25,7 @@ import {
 import { useGetRegionsQuery } from "@/redux/api/regionApi";
 import { RegionalOfficeContactCenter, LicensingContact } from "@/redux/types/regionalOffice";
 import { toast } from "sonner";
+import { ComponentGuard } from "@/components/auth/ComponentGuard";
 
 type RegionalOffice = {
     id: string;
@@ -96,25 +97,29 @@ export default function AdminContactRegionalOffices() {
             header: "Actions",
             cell: ({ row }) => (
                 <div className="flex items-center gap-1">
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleEdit(row.original)}
-                        title="Edit"
-                        disabled={isDeleting}
-                    >
-                        <Edit2 className="w-4 h-4 text-blue-600" />
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleDelete(row.original.id)}
-                        title="Delete"
-                        className="text-destructive"
-                        disabled={isDeleting}
-                    >
-                        <Trash2 className="w-4 h-4" />
-                    </Button>
+                    <ComponentGuard anyPermissions={["CONTACT:UPDATE"]}>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleEdit(row.original)}
+                            title="Edit"
+                            disabled={isDeleting}
+                        >
+                            <Edit2 className="w-4 h-4 text-blue-600" />
+                        </Button>
+                    </ComponentGuard>
+                    <ComponentGuard anyPermissions={["CONTACT:DELETE"]}>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleDelete(row.original.id)}
+                            title="Delete"
+                            className="text-destructive"
+                            disabled={isDeleting}
+                        >
+                            <Trash2 className="w-4 h-4" />
+                        </Button>
+                    </ComponentGuard>
                 </div>
             ),
         },
@@ -413,6 +418,7 @@ export default function AdminContactRegionalOffices() {
                     label: "Add Office",
                     icon: <Plus className="w-4 h-4" />,
                     onClick: handleAdd,
+                    permissions: ["CONTACT:CREATE"],
                 }
             ]}
         >

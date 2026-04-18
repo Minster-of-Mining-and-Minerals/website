@@ -17,6 +17,7 @@ import {
 } from "@/redux/api/regionApi";
 import { Region } from "@/redux/types/region";
 import { toast } from "sonner";
+import { ComponentGuard } from "@/components/auth/ComponentGuard";
 
 export default function AdminRegionList() {
     const [pageIndex, setPageIndex] = useState(0);
@@ -51,25 +52,29 @@ export default function AdminRegionList() {
             header: "Actions",
             cell: ({ row }) => (
                 <div className="flex items-center gap-1">
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleEdit(row.original)}
-                        title="Edit"
-                        disabled={isDeleting}
-                    >
-                        <Edit2 className="w-4 h-4 text-blue-600" />
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleDelete(row.original.region_id)}
-                        title="Delete"
-                        className="text-destructive"
-                        disabled={isDeleting}
-                    >
-                        <Trash2 className="w-4 h-4" />
-                    </Button>
+                    <ComponentGuard anyPermissions={["CONTACT:UPDATE"]}>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleEdit(row.original)}
+                            title="Edit"
+                            disabled={isDeleting}
+                        >
+                            <Edit2 className="w-4 h-4 text-blue-600" />
+                        </Button>
+                    </ComponentGuard>
+                    <ComponentGuard anyPermissions={["CONTACT:DELETE"]}>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleDelete(row.original.region_id)}
+                            title="Delete"
+                            className="text-destructive"
+                            disabled={isDeleting}
+                        >
+                            <Trash2 className="w-4 h-4" />
+                        </Button>
+                    </ComponentGuard>
                 </div>
             ),
         },
@@ -243,6 +248,7 @@ export default function AdminRegionList() {
                     label: "Add Region",
                     icon: <Plus className="w-4 h-4" />,
                     onClick: handleAdd,
+                    permissions: ["CONTACT:CREATE"],
                 }
             ]}
         >

@@ -15,6 +15,7 @@ import { DataTable } from "@/features/template/component/DataTable";
 import { TableLayout } from "@/features/template/component/TableLayout";
 import { toast } from "sonner";
 import type { FilterField, ActionButton } from "@/types/tableLayout";
+import { ComponentGuard } from "@/components/auth/ComponentGuard";
 
 export default function PetroleumProcessList() {
     const router = useRouter();
@@ -121,48 +122,54 @@ export default function PetroleumProcessList() {
                 const id = row.original.petroleum_process_id;
                 return (
                     <div className="flex items-center gap-1">
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            title={row.original.published ? "Unpublish" : "Publish"}
-                            onClick={async () => {
-                                if (confirm(`Are you sure you want to ${row.original.published ? "unpublish" : "publish"} this process?`)) {
-                                    try {
-                                        await togglePublish(id).unwrap();
-                                        toast.success(`Process ${row.original.published ? "unpublished" : "published"} successfully`);
-                                    } catch (err: any) {
-                                        toast.error(err?.data?.message || `Failed to ${row.original.published ? "unpublish" : "publish"} process`);
+                        <ComponentGuard anyPermissions={["PETROLEUM_PROCESSES:PUBLISH"]}>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                title={row.original.published ? "Unpublish" : "Publish"}
+                                onClick={async () => {
+                                    if (confirm(`Are you sure you want to ${row.original.published ? "unpublish" : "publish"} this process?`)) {
+                                        try {
+                                            await togglePublish(id).unwrap();
+                                            toast.success(`Process ${row.original.published ? "unpublished" : "published"} successfully`);
+                                        } catch (err: any) {
+                                            toast.error(err?.data?.message || `Failed to ${row.original.published ? "unpublish" : "publish"} process`);
+                                        }
                                     }
-                                }
-                            }}
-                        >
-                            <Globe className={`h-4 w-4 ${row.original.published ? "text-green-600" : "text-gray-400"}`} />
-                        </Button>
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            title="Edit"
-                            onClick={() => router.push(`/admin/sectors/petroleum/processes/create?id=${id}`)}
-                        >
-                            <Edit className="h-4 w-4 text-[#094C81]" />
-                        </Button>
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            title="Delete"
-                            onClick={async () => {
-                                if (confirm("Are you sure you want to delete this process?")) {
-                                    try {
-                                        await deleteProcess(id).unwrap();
-                                        toast.success("Process deleted successfully");
-                                    } catch (err: any) {
-                                        toast.error(err?.data?.message || "Failed to delete process");
+                                }}
+                            >
+                                <Globe className={`h-4 w-4 ${row.original.published ? "text-green-600" : "text-gray-400"}`} />
+                            </Button>
+                        </ComponentGuard>
+                        <ComponentGuard anyPermissions={["PETROLEUM_PROCESSES:UPDATE"]}>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                title="Edit"
+                                onClick={() => router.push(`/admin/sectors/petroleum/processes/create?id=${id}`)}
+                            >
+                                <Edit className="h-4 w-4 text-[#094C81]" />
+                            </Button>
+                        </ComponentGuard>
+                        <ComponentGuard anyPermissions={["PETROLEUM_PROCESSES:DELETE"]}>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                title="Delete"
+                                onClick={async () => {
+                                    if (confirm("Are you sure you want to delete this process?")) {
+                                        try {
+                                            await deleteProcess(id).unwrap();
+                                            toast.success("Process deleted successfully");
+                                        } catch (err: any) {
+                                            toast.error(err?.data?.message || "Failed to delete process");
+                                        }
                                     }
-                                }
-                            }}
-                        >
-                            <Trash className="h-4 w-4 text-destructive" />
-                        </Button>
+                                }}
+                            >
+                                <Trash className="h-4 w-4 text-destructive" />
+                            </Button>
+                        </ComponentGuard>
                     </div>
                 );
             },
@@ -178,6 +185,7 @@ export default function PetroleumProcessList() {
             icon: <Plus className="h-4 w-4" />,
             variant: "default",
             onClick: () => router.push(`/admin/sectors/petroleum/processes/create`),
+            permissions: ["PETROLEUM_PROCESSES:CREATE"],
         },
     ];
 

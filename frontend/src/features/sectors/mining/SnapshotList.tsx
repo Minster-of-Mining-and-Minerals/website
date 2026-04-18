@@ -11,6 +11,7 @@ import { DataTable } from "@/features/template/component/DataTable";
 import { TableLayout } from "@/features/template/component/TableLayout";
 import { toast } from "sonner";
 import type { FilterField, ActionButton } from "@/types/tableLayout";
+import { ComponentGuard } from "@/components/auth/ComponentGuard";
 
 /* ----------------------------------
    COMPONENT
@@ -25,6 +26,8 @@ export default function SnapshotList({ sector }: SnapshotListProps) {
     const { data = [], isLoading } = useGetSnapshotsQuery({ sector: sector || "mining" });
     const [deleteSnapshot] = useDeleteSnapshotMutation();
     const [publishSnapshot] = usePublishSnapshotMutation();
+
+    const permPrefix = sector ? sector.toUpperCase() : "MINING";
 
     let sectorRoute = sector;
     if (sector === "geothermal") {
@@ -118,27 +121,29 @@ export default function SnapshotList({ sector }: SnapshotListProps) {
                 const isPublished = row.getValue("is_published") as boolean;
                 const id = row.original.snapshot_id;
                 return (
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        className={`flex items-center gap-1.5 h-8 px-2 rounded-full ${isPublished
-                            ? "bg-green-50 text-green-700 hover:bg-green-100 border border-green-200"
-                            : "bg-gray-50 text-gray-500 hover:bg-gray-100 border border-gray-200"
-                            }`}
-                        onClick={() => handleTogglePublish(id, isPublished)}
-                    >
-                        {isPublished ? (
-                            <>
-                                <CheckCircle2 className="h-3.5 w-3.5" />
-                                <span className="text-xs font-semibold">Published</span>
-                            </>
-                        ) : (
-                            <>
-                                <XCircle className="h-3.5 w-3.5" />
-                                <span className="text-xs font-semibold">Offline</span>
-                            </>
-                        )}
-                    </Button>
+                    <ComponentGuard anyPermissions={[`${permPrefix}_SNAPSHOTS:UPDATE` as any]}>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            className={`flex items-center gap-1.5 h-8 px-2 rounded-full ${isPublished
+                                ? "bg-green-50 text-green-700 hover:bg-green-100 border border-green-200"
+                                : "bg-gray-50 text-gray-500 hover:bg-gray-100 border border-gray-200"
+                                }`}
+                            onClick={() => handleTogglePublish(id, isPublished)}
+                        >
+                            {isPublished ? (
+                                <>
+                                    <CheckCircle2 className="h-3.5 w-3.5" />
+                                    <span className="text-xs font-semibold">Published</span>
+                                </>
+                            ) : (
+                                <>
+                                    <XCircle className="h-3.5 w-3.5" />
+                                    <span className="text-xs font-semibold">Offline</span>
+                                </>
+                            )}
+                        </Button>
+                    </ComponentGuard>
                 );
             },
         },
@@ -149,26 +154,30 @@ export default function SnapshotList({ sector }: SnapshotListProps) {
                 const id = row.original.snapshot_id;
                 return (
                     <div className="flex items-center gap-1">
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            title="Edit"
-                            onClick={() => router.push(`/admin/sectors/${sectorRoute}/snapshots/create?id=${id}`)}
-                        >
-                            <Edit className="h-4 w-4 text-[#094C81]" />
-                        </Button>
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            title="Delete"
-                            onClick={async () => {
-                                if (confirm("Delete this snapshot?")) {
-                                    await deleteSnapshot(id);
-                                }
-                            }}
-                        >
-                            <Trash className="h-4 w-4 text-destructive" />
-                        </Button>
+                        <ComponentGuard anyPermissions={[`${permPrefix}_SNAPSHOTS:UPDATE` as any]}>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                title="Edit"
+                                onClick={() => router.push(`/admin/sectors/${sectorRoute}/snapshots/create?id=${id}`)}
+                            >
+                                <Edit className="h-4 w-4 text-[#094C81]" />
+                            </Button>
+                        </ComponentGuard>
+                        <ComponentGuard anyPermissions={[`${permPrefix}_SNAPSHOTS:DELETE` as any]}>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                title="Delete"
+                                onClick={async () => {
+                                    if (confirm("Delete this snapshot?")) {
+                                        await deleteSnapshot(id);
+                                    }
+                                }}
+                            >
+                                <Trash className="h-4 w-4 text-destructive" />
+                            </Button>
+                        </ComponentGuard>
                     </div>
                 );
             },
@@ -184,6 +193,7 @@ export default function SnapshotList({ sector }: SnapshotListProps) {
             icon: <Plus className="h-4 w-4" />,
             variant: "default",
             onClick: () => router.push(`/admin/sectors/${sectorRoute}/snapshots/create`),
+            permissions: [`${permPrefix}_SNAPSHOTS:CREATE` as any],
         },
     ];
 

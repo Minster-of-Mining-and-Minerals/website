@@ -14,6 +14,7 @@ import { DataTable } from "@/features/template/component/DataTable";
 import { TableLayout } from "@/features/template/component/TableLayout";
 import { toast } from "sonner";
 import type { FilterField, ActionButton } from "@/types/tableLayout";
+import { ComponentGuard } from "@/components/auth/ComponentGuard";
 
 export default function PetroleumObjectiveList() {
     const router = useRouter();
@@ -117,31 +118,35 @@ export default function PetroleumObjectiveList() {
                 const id = row.original.petroleum_objective_id;
                 return (
                     <div className="flex items-center gap-1">
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            title="Edit"
-                            onClick={() => router.push(`/admin/sectors/petroleum/objectives/create?id=${id}`)}
-                        >
-                            <Edit className="h-4 w-4 text-[#094C81]" />
-                        </Button>
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            title="Delete"
-                            onClick={async () => {
-                                if (confirm("Are you sure you want to delete this objective?")) {
-                                    try {
-                                        await deleteObjective(id).unwrap();
-                                        toast.success("Objective deleted successfully");
-                                    } catch {
-                                        toast.error("Failed to delete objective");
+                        <ComponentGuard anyPermissions={["PETROLEUM_PROCESSES:UPDATE"]}>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                title="Edit"
+                                onClick={() => router.push(`/admin/sectors/petroleum/objectives/create?id=${id}`)}
+                            >
+                                <Edit className="h-4 w-4 text-[#094C81]" />
+                            </Button>
+                        </ComponentGuard>
+                        <ComponentGuard anyPermissions={["PETROLEUM_PROCESSES:DELETE"]}>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                title="Delete"
+                                onClick={async () => {
+                                    if (confirm("Are you sure you want to delete this objective?")) {
+                                        try {
+                                            await deleteObjective(id).unwrap();
+                                            toast.success("Objective deleted successfully");
+                                        } catch {
+                                            toast.error("Failed to delete objective");
+                                        }
                                     }
-                                }
-                            }}
-                        >
-                            <Trash className="h-4 w-4 text-destructive" />
-                        </Button>
+                                }}
+                            >
+                                <Trash className="h-4 w-4 text-destructive" />
+                            </Button>
+                        </ComponentGuard>
                     </div>
                 );
             },
@@ -157,6 +162,7 @@ export default function PetroleumObjectiveList() {
             icon: <Plus className="h-4 w-4" />,
             variant: "default",
             onClick: () => router.push(`/admin/sectors/petroleum/objectives/create`),
+            permissions: ["PETROLEUM_PROCESSES:CREATE"],
         },
     ];
 

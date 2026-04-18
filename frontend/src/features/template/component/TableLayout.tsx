@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { ActionButton, PageLayoutProps } from "@/types/tableLayout";
 import { FilterPopover } from "./FilterDrawer";
 import { useSearchParams, useRouter } from "next/navigation";
+import { hasAnyPermission } from "@/lib/permissions";
+import { useGetUserRolesAndPermissionsQuery } from "@/redux/api/userApi";
 
 export const TableLayout: React.FC<PageLayoutProps> = ({
   title,
@@ -34,12 +36,21 @@ export const TableLayout: React.FC<PageLayoutProps> = ({
     [searchParams, router]
   );
 
+  const { data: permissionData } = useGetUserRolesAndPermissionsQuery();
+  const userPermissions = permissionData?.permissions || [];
+
   const filteredActions = actions.filter((action) => {
     if (!action.permissions || action.permissions.length === 0) {
       return true; // no permission required
     }
-    // return hasAnyPermission(userPermissions, action.permissions);
-    return true;
+    return hasAnyPermission(userPermissions, action.permissions as any);
+  });
+
+  const filteredSideActions = sideActions.filter((action) => {
+    if (!action.permissions || action.permissions.length === 0) {
+      return true; // no permission required
+    }
+    return hasAnyPermission(userPermissions, action.permissions as any);
   });
 
   return (
@@ -60,9 +71,9 @@ export const TableLayout: React.FC<PageLayoutProps> = ({
             </div>
           )}
           <div className="flex w-fit">
-            {sideActions && sideActions.length > 0 && (
+            {filteredSideActions && filteredSideActions.length > 0 && (
               <div className="flex flex-wrap items-center gap-3">
-                {sideActions.map((action: ActionButton, index: number) => (
+                {filteredSideActions.map((action: ActionButton, index: number) => (
                   <Button
                     key={index}
                     variant={action.variant || "default"}

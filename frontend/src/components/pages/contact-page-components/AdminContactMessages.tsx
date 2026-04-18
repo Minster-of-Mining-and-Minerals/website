@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Eye, Trash2, MailOpen, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useGetMessagesQuery } from "@/redux/api/messageApi";
+import { ComponentGuard } from "@/components/auth/ComponentGuard";
 
 type ContactMessage = {
     id: string;
@@ -62,17 +63,21 @@ export default function AdminContactMessages() {
                         <Button variant="ghost" size="icon" title="View details">
                             <Eye className="w-4 h-4" />
                         </Button>
-                        <Button variant="ghost" size="icon" title="Mark as read">
-                            <MailOpen className="w-4 h-4" />
-                        </Button>
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            className="text-destructive"
-                            title="Delete"
-                        >
-                            <Trash2 className="w-4 h-4" />
-                        </Button>
+                        <ComponentGuard anyPermissions={["CONTACT_MESSAGES:UPDATE"]}>
+                            <Button variant="ghost" size="icon" title="Mark as read">
+                                <MailOpen className="w-4 h-4" />
+                            </Button>
+                        </ComponentGuard>
+                        <ComponentGuard anyPermissions={["CONTACT_MESSAGES:DELETE"]}>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="text-destructive"
+                                title="Delete"
+                            >
+                                <Trash2 className="w-4 h-4" />
+                            </Button>
+                        </ComponentGuard>
                     </div>
                 );
             },

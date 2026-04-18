@@ -12,6 +12,7 @@ import { Tag } from "@/redux/types/tag";
 import { TableLayout } from "../template/component/TableLayout";
 import { DataTable } from "../template/component/DataTable";
 import CreateTagModal from "@/components/common/modals/CreateTag";
+import { ComponentGuard } from "@/components/auth/ComponentGuard";
 
 /* ----------------------------------
    COMPONENT
@@ -76,29 +77,35 @@ export default function NewsTagList() {
 
                 return (
                     <div className="flex items-center gap-1">
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => router.push(`/news/tags/${tagId}`)}
-                        >
-                            <Eye className="h-4 w-4" />
-                        </Button>
+                        <ComponentGuard anyPermissions={["TAGS:UPDATE"]}>
+                            <>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => router.push(`/news/tags/${tagId}`)}
+                                >
+                                    <Eye className="h-4 w-4" />
+                                </Button>
 
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => router.push(`/news/tags/${tagId}/edit`)}
-                        >
-                            <Edit className="h-4 w-4" />
-                        </Button>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => router.push(`/news/tags/${tagId}/edit`)}
+                                >
+                                    <Edit className="h-4 w-4" />
+                                </Button>
+                            </>
+                        </ComponentGuard>
 
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => deleteTag(tagId)}
-                        >
-                            <Trash className="h-4 w-4 text-destructive" />
-                        </Button>
+                        <ComponentGuard anyPermissions={["TAGS:DELETE"]}>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => deleteTag(tagId)}
+                            >
+                                <Trash className="h-4 w-4 text-destructive" />
+                            </Button>
+                        </ComponentGuard>
                     </div>
                 );
             },
@@ -112,6 +119,7 @@ export default function NewsTagList() {
             icon: <Plus className="h-4 w-4" />,
             variant: "default",
             onClick: () => setModalOpen(true),
+            permissions: ["TAGS:CREATE"],
         },
     ];
 

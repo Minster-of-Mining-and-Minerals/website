@@ -11,6 +11,7 @@ import { DataTable } from "@/features/template/component/DataTable";
 import { TableLayout } from "@/features/template/component/TableLayout";
 import type { FilterField, ActionButton } from "@/types/tableLayout";
 import { getFileUrl } from "@/utils/fileUrl";
+import { ComponentGuard } from "@/components/auth/ComponentGuard";
 
 /* ----------------------------------
    COMPONENT
@@ -105,26 +106,30 @@ export default function GemstonesList() {
                 const id = row.original.gamestone_id;
                 return (
                     <div className="flex items-center gap-1">
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            title="Edit"
-                            onClick={() => router.push(`/admin/sectors/mining/gamestones/create?id=${id}`)}
-                        >
-                            <Eye className="h-4 w-4 text-[#094C81]" />
-                        </Button>
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            title="Delete"
-                            onClick={async () => {
-                                if (confirm("Delete this gamestone?")) {
-                                    await deleteGamestone(id);
-                                }
-                            }}
-                        >
-                            <Trash className="h-4 w-4 text-destructive" />
-                        </Button>
+                        <ComponentGuard anyPermissions={["MINING_GAMESTONES:UPDATE"]}>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                title="Edit"
+                                onClick={() => router.push(`/admin/sectors/mining/gamestones/create?id=${id}`)}
+                            >
+                                <Eye className="h-4 w-4 text-[#094C81]" />
+                            </Button>
+                        </ComponentGuard>
+                        <ComponentGuard anyPermissions={["MINING_GAMESTONES:DELETE"]}>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                title="Delete"
+                                onClick={async () => {
+                                    if (confirm("Delete this gamestone?")) {
+                                        await deleteGamestone(id);
+                                    }
+                                }}
+                            >
+                                <Trash className="h-4 w-4 text-destructive" />
+                            </Button>
+                        </ComponentGuard>
                     </div>
                 );
             },
@@ -140,6 +145,7 @@ export default function GemstonesList() {
             icon: <Plus className="h-4 w-4" />,
             variant: "default",
             onClick: () => router.push("/admin/sectors/mining/gamestones/create"),
+            permissions: ["MINING_GAMESTONES:CREATE"],
         },
     ];
 
@@ -168,26 +174,30 @@ export default function GemstonesList() {
                         </p>
                     )}
                     <div className="flex gap-2 mt-3">
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            className="flex-1 border-[#094C81] text-[#094C81] hover:bg-[#094C81] hover:text-white text-xs"
-                            onClick={() => router.push(`/admin/sectors/mining/gamestones/create?id=${item.gamestone_id}`)}
-                        >
-                            <Edit className="h-3 w-3 mr-1" /> Edit
-                        </Button>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            className="border-red-200 text-red-600 hover:bg-red-50 text-xs"
-                            onClick={async () => {
-                                if (confirm("Delete this gamestone?")) {
-                                    await deleteGamestone(item.gamestone_id);
-                                }
-                            }}
-                        >
-                            <Trash className="h-3 w-3" />
-                        </Button>
+                        <ComponentGuard anyPermissions={["MINING_GAMESTONES:UPDATE"]}>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="flex-1 border-[#094C81] text-[#094C81] hover:bg-[#094C81] hover:text-white text-xs"
+                                onClick={() => router.push(`/admin/sectors/mining/gamestones/create?id=${item.gamestone_id}`)}
+                            >
+                                <Edit className="h-3 w-3 mr-1" /> Edit
+                            </Button>
+                        </ComponentGuard>
+                        <ComponentGuard anyPermissions={["MINING_GAMESTONES:DELETE"]}>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="border-red-200 text-red-600 hover:bg-red-50 text-xs"
+                                onClick={async () => {
+                                    if (confirm("Delete this gamestone?")) {
+                                        await deleteGamestone(item.gamestone_id);
+                                    }
+                                }}
+                            >
+                                <Trash className="h-3 w-3" />
+                            </Button>
+                        </ComponentGuard>
                     </div>
                 </div>
             </div>

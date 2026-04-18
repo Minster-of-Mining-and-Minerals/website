@@ -10,6 +10,7 @@ import { DataTable } from "@/features/template/component/DataTable";
 import { TableLayout } from "@/features/template/component/TableLayout";
 import { toast } from "sonner";
 import type { FilterField } from "@/types/tableLayout";
+import { ComponentGuard } from "@/components/auth/ComponentGuard";
 
 /* ----------------------------------
    COMPONENT
@@ -154,15 +155,17 @@ export default function AdminFeedbackList() {
             header: "Actions",
             cell: ({ row }) => (
                 <div className="flex items-center gap-1">
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        title="Delete Feedback"
-                        className="text-red-500 hover:text-red-700"
-                        onClick={() => handleDelete(row.original.news_feedback_id)}
-                    >
-                        <Trash className="h-4 w-4" />
-                    </Button>
+                    <ComponentGuard anyPermissions={["NEWS:DELETE"]}>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            title="Delete Feedback"
+                            className="text-red-500 hover:text-red-700"
+                            onClick={() => handleDelete(row.original.news_feedback_id)}
+                        >
+                            <Trash className="h-4 w-4" />
+                        </Button>
+                    </ComponentGuard>
                 </div>
             ),
         },

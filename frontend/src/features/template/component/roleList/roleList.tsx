@@ -12,6 +12,7 @@ import { useGetRolesQuery } from "@/redux/api/roleApi";
 import type { Role } from "@/redux/types/auth";
 import type { FilterField, ActionButton } from "@/types/tableLayout";
 import { useRouter } from "next/navigation";
+import { ComponentGuard } from "@/components/auth/ComponentGuard";
 
 const columns: ColumnDef<Role>[] = [
   {
@@ -41,9 +42,11 @@ const columns: ColumnDef<Role>[] = [
     id: "actions",
     header: "Actions",
     cell: () => (
-      <Button variant="ghost" size="icon">
-        <MoreHorizontal />
-      </Button>
+      <ComponentGuard anyPermissions={["ROLES:UPDATE", "ROLES:DELETE"]}>
+        <Button variant="ghost" size="icon">
+          <MoreHorizontal />
+        </Button>
+      </ComponentGuard>
     ),
   },
 ];
@@ -91,6 +94,7 @@ export default function RoleList() {
       icon: <Plus className="h-4 w-4" />,
       variant: "default",
       onClick: () => router.push("roles/new"),
+      permissions: ["ROLES:CREATE"],
     },
   ];
 

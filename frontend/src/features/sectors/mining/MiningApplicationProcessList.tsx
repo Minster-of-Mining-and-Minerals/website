@@ -15,6 +15,7 @@ import { DataTable } from "@/features/template/component/DataTable";
 import { TableLayout } from "@/features/template/component/TableLayout";
 import { toast } from "sonner";
 import type { FilterField, ActionButton } from "@/types/tableLayout";
+import { ComponentGuard } from "@/components/auth/ComponentGuard";
 
 export default function MiningApplicationProcessList() {
     const router = useRouter();
@@ -135,48 +136,54 @@ export default function MiningApplicationProcessList() {
                 const isPublished = row.original.publish;
                 return (
                     <div className="flex items-center gap-1">
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            title={isPublished ? "Unpublish" : "Publish"}
-                            onClick={async () => {
-                                if (confirm(`Are you sure you want to ${isPublished ? "unpublish" : "publish"} this process?`)) {
-                                    try {
-                                        await togglePublish({ id, data: { publish: !isPublished } }).unwrap();
-                                        toast.success(`Process ${isPublished ? "unpublished" : "published"} successfully`);
-                                    } catch (err: any) {
-                                        toast.error(err?.data?.message || `Failed to ${isPublished ? "unpublish" : "publish"} process`);
+                        <ComponentGuard anyPermissions={["MINING_APPLICATION_PROCESSES:UPDATE"]}>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                title={isPublished ? "Unpublish" : "Publish"}
+                                onClick={async () => {
+                                    if (confirm(`Are you sure you want to ${isPublished ? "unpublish" : "publish"} this process?`)) {
+                                        try {
+                                            await togglePublish({ id, data: { publish: !isPublished } }).unwrap();
+                                            toast.success(`Process ${isPublished ? "unpublished" : "published"} successfully`);
+                                        } catch (err: any) {
+                                            toast.error(err?.data?.message || `Failed to ${isPublished ? "unpublish" : "publish"} process`);
+                                        }
                                     }
-                                }
-                            }}
-                        >
-                            <Globe className={`h-4 w-4 ${isPublished ? "text-green-600" : "text-gray-400"}`} />
-                        </Button>
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            title="Edit"
-                            onClick={() => router.push(`/admin/sectors/mining/application-processes/create?id=${id}`)}
-                        >
-                            <Edit className="h-4 w-4 text-[#094C81]" />
-                        </Button>
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            title="Delete"
-                            onClick={async () => {
-                                if (confirm("Are you sure you want to delete this process?")) {
-                                    try {
-                                        await deleteProcess(id).unwrap();
-                                        toast.success("Process deleted successfully");
-                                    } catch (err: any) {
-                                        toast.error(err?.data?.message || "Failed to delete process");
+                                }}
+                            >
+                                <Globe className={`h-4 w-4 ${isPublished ? "text-green-600" : "text-gray-400"}`} />
+                            </Button>
+                        </ComponentGuard>
+                        <ComponentGuard anyPermissions={["MINING_APPLICATION_PROCESSES:UPDATE"]}>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                title="Edit"
+                                onClick={() => router.push(`/admin/sectors/mining/application-processes/create?id=${id}`)}
+                            >
+                                <Edit className="h-4 w-4 text-[#094C81]" />
+                            </Button>
+                        </ComponentGuard>
+                        <ComponentGuard anyPermissions={["MINING_APPLICATION_PROCESSES:DELETE"]}>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                title="Delete"
+                                onClick={async () => {
+                                    if (confirm("Are you sure you want to delete this process?")) {
+                                        try {
+                                            await deleteProcess(id).unwrap();
+                                            toast.success("Process deleted successfully");
+                                        } catch (err: any) {
+                                            toast.error(err?.data?.message || "Failed to delete process");
+                                        }
                                     }
-                                }
-                            }}
-                        >
-                            <Trash className="h-4 w-4 text-destructive" />
-                        </Button>
+                                }}
+                            >
+                                <Trash className="h-4 w-4 text-destructive" />
+                            </Button>
+                        </ComponentGuard>
                     </div>
                 );
             },
@@ -192,6 +199,7 @@ export default function MiningApplicationProcessList() {
             icon: <Plus className="h-4 w-4" />,
             variant: "default",
             onClick: () => router.push(`/admin/sectors/mining/application-processes/create`),
+            permissions: ["MINING_APPLICATION_PROCESSES:CREATE"],
         },
     ];
 

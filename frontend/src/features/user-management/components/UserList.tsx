@@ -5,9 +5,9 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Edit, Plus, CheckCircle2, XCircle, Key, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { 
-    useGetUsersQuery, 
-    useToggleUserStatusMutation, 
+import {
+    useGetUsersQuery,
+    useToggleUserStatusMutation,
     useResetUserPasswordMutation,
     useDeleteUserMutation
 } from "@/redux/api/userApi";
@@ -17,6 +17,7 @@ import { TableLayout } from "@/features/template/component/TableLayout";
 import { toast } from "sonner";
 import type { FilterField, ActionButton } from "@/types/tableLayout";
 import { Badge } from "@/components/ui/badge";
+import { ComponentGuard } from "@/components/auth/ComponentGuard";
 
 /* ----------------------------------
    COMPONENT
@@ -32,9 +33,9 @@ export default function UserList() {
 
     const handleToggleStatus = async (user: User) => {
         try {
-            await toggleStatus({ 
-                id: user.user_id, 
-                data: { is_active: !user.is_active } 
+            await toggleStatus({
+                id: user.user_id,
+                data: { is_active: !user.is_active }
             }).unwrap();
             toast.success(`User ${user.is_active ? 'deactivated' : 'activated'} successfully`);
         } catch {
@@ -204,14 +205,16 @@ export default function UserList() {
                         >
                             <Key className="h-4 w-4 text-amber-500" />
                         </Button>
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            title="Deactivate"
-                            onClick={() => handleDelete(id)}
-                        >
-                            <Trash2 className="h-4 w-4 text-destructive" />
-                        </Button>
+                        <ComponentGuard anyPermissions={["USERS:DELETE"]}>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                title="Deactivate"
+                                onClick={() => handleDelete(id)}
+                            >
+                                <Trash2 className="h-4 w-4 text-destructive" />
+                            </Button>
+                        </ComponentGuard>
                     </div>
                 );
             },
@@ -227,6 +230,7 @@ export default function UserList() {
             icon: <Plus className="h-4 w-4" />,
             variant: "default",
             onClick: () => router.push(`/admin/users/create`),
+            permissions: ["USERS:CREATE"],
         },
     ];
 
@@ -250,7 +254,7 @@ export default function UserList() {
                 handlePagination={handlePagination}
                 tablePageSize={pageSize}
                 currentIndex={pageIndex}
-                isLoading={isLoading}
+                // isLoading={isLoading}
             />
         </TableLayout>
     );
