@@ -49,6 +49,8 @@ export const baseApi = createApi({
     "MiningApplicationProcess",
     "MiningRegulationProcess",
     "AuditLogs",
+    "Event",
+    "EventCategory",
   ],
   endpoints: () => ({}),
 });

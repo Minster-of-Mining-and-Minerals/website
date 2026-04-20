@@ -42,12 +42,5 @@ module.exports = {
     } catch (error) {
        console.log("Note: Could not find constraint 'permissions_resource_action_unique'.");
     }
-
-    // 2. Re-add a unique constraint on 'resource' (rollback to previous state)
-    await queryInterface.addConstraint("permissions", {
-      fields: ["resource"],
-      type: "unique",
-      name: "permissions_resource_key",
-    });
   },
 };

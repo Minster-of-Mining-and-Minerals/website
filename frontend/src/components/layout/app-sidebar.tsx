@@ -32,6 +32,7 @@ import {
   Hammer,
   Globe,
   Search,
+  Calendar,
 } from "lucide-react";
 
 import {
@@ -109,6 +110,7 @@ const getIconComponent = (iconName?: string, label?: string) => {
     "Investigate Ethiopia": Search,
     Geothermal: Thermometer,
     Petroleum: Droplets,
+    Calendar,
   };
 
   if (iconName && iconMap[iconName]) return iconMap[iconName];

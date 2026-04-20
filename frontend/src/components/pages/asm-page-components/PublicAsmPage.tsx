@@ -4,11 +4,7 @@ import React from "react";
 import * as LucideIcons from "lucide-react";
 import {
     FileText,
-    Leaf,
-    Users,
-    Globe,
     TrendingUp,
-    ShieldCheck,
     Target,
     Cpu,
     Gem,
@@ -169,53 +165,6 @@ const PublicAsmPage = () => {
 
                 {/* Sidebar Area */}
                 <div className="space-y-8">
-
-                    {/* Important Documents */}
-                    {sidebarDocs.length > 0 && (
-                        <section className="bg-gray-50 rounded-xl p-6 border border-gray-100">
-                            <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
-                                <FileText className="w-5 h-5 text-teal-700" />
-                                Important Documents
-                            </h3>
-
-                            <div
-                                className={`space-y-4 ${sidebarDocs.length > 5 ? "max-h-[360px] overflow-y-auto hide-scrollbar pr-2" : ""
-                                    }`}
-                            >
-                                {sidebarDocs.map((doc: any, idx: number) => (
-                                    <a
-                                        key={idx}
-                                        href={getFileUrl(doc.attachment?.file_path || doc.file_path || "#")}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="group block p-4 bg-white rounded-lg border border-gray-200 hover:border-teal-500 hover:shadow-sm transition-all"
-                                    >
-                                        <div className="flex items-start justify-between gap-4">
-                                            <div className="space-y-1">
-                                                <p className="text-sm font-semibold text-gray-900 group-hover:text-teal-700 transition-colors">
-                                                    {doc.label || "Document"}
-                                                </p>
-                                                <div className="flex items-center gap-2 text-[10px] text-gray-500 font-bold uppercase tracking-wider">
-                                                    <Badge
-                                                        variant="outline"
-                                                        className="text-[10px] px-1.5 py-0 group-hover:border-teal-200 group-hover:text-teal-700"
-                                                    >
-                                                        PDF
-                                                    </Badge>
-                                                    <span>Download</span>
-                                                </div>
-                                            </div>
-
-                                            <div className="p-2 bg-gray-50 rounded-lg group-hover:bg-teal-50 transition-colors">
-                                                <FileText className="w-4 h-4 text-gray-400 group-hover:text-teal-600" />
-                                            </div>
-                                        </div>
-                                    </a>
-                                ))}
-                            </div>
-                        </section>
-                    )}
-
                     {previews.length > 0 && (
                         <section className="space-y-6 pt-8">
                             {previews.map((preview: any, idx: number) => {
@@ -279,6 +228,51 @@ const PublicAsmPage = () => {
                                     </section>
                                 );
                             })}
+                        </section>
+                    )}
+                    {/* Important Documents */}
+                    {sidebarDocs.length > 0 && (
+                        <section className="bg-gray-50 rounded-xl p-6 border border-gray-100">
+                            <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
+                                <FileText className="w-5 h-5 text-teal-700" />
+                                Important Documents
+                            </h3>
+
+                            <div
+                                className={`space-y-4 ${sidebarDocs.length > 5 ? "max-h-[360px] overflow-y-auto hide-scrollbar pr-2" : ""
+                                    }`}
+                            >
+                                {sidebarDocs.map((doc: any, idx: number) => (
+                                    <a
+                                        key={idx}
+                                        href={getFileUrl(doc.attachment?.file_path || doc.file_path || "#")}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="group block p-4 bg-white rounded-lg border border-gray-200 hover:border-teal-500 hover:shadow-sm transition-all"
+                                    >
+                                        <div className="flex items-start justify-between gap-4">
+                                            <div className="space-y-1">
+                                                <p className="text-sm font-semibold text-gray-900 group-hover:text-teal-700 transition-colors">
+                                                    {doc.label || "Document"}
+                                                </p>
+                                                <div className="flex items-center gap-2 text-[10px] text-gray-500 font-bold uppercase tracking-wider">
+                                                    <Badge
+                                                        variant="outline"
+                                                        className="text-[10px] px-1.5 py-0 group-hover:border-teal-200 group-hover:text-teal-700"
+                                                    >
+                                                        PDF
+                                                    </Badge>
+                                                    <span>Download</span>
+                                                </div>
+                                            </div>
+
+                                            <div className="p-2 bg-gray-50 rounded-lg group-hover:bg-teal-50 transition-colors">
+                                                <FileText className="w-4 h-4 text-gray-400 group-hover:text-teal-600" />
+                                            </div>
+                                        </div>
+                                    </a>
+                                ))}
+                            </div>
                         </section>
                     )}
                 </div>

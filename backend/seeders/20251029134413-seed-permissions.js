@@ -12,6 +12,8 @@ module.exports = {
       { resource: "roles", actions: [...crudActions, "assign_permission"] },
       { resource: "permissions", actions: crudActions },
       { resource: "news", actions: [...crudActions, "publish"] },
+      { resource: "events", actions: [...crudActions, "publish"] },
+      { resource: "event_categories", actions: crudActions },
       { resource: "tags", actions: crudActions },
       { resource: "hero", actions: crudActions },
       { resource: "about", actions: crudActions },
@@ -43,7 +45,7 @@ module.exports = {
       r.actions.map((action) => ({
         resource: r.resource,
         action: action,
-      }))
+      })),
     );
 
     for (const perm of permissions) {
@@ -59,12 +61,12 @@ module.exports = {
               updated_at: now,
             },
           ],
-          { ignoreDuplicates: true }
+          { ignoreDuplicates: true },
         );
       } catch (error) {
         if (error.name === "SequelizeUniqueConstraintError") {
           console.log(
-            `Permission ${perm.resource}:${perm.action} already exists, skipping...`
+            `Permission ${perm.resource}:${perm.action} already exists, skipping...`,
           );
           continue;
         }

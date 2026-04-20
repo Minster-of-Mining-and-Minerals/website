@@ -66,10 +66,13 @@ const investigateEthiopiaRoute = require("./routers/investigate_ethiopia/investi
 // ================== Attachment Routes ==========================
 const attachmentRoute = require("./routers/attachement/attachementRoutes");
 
+// ================== Event Routes ==========================
+const eventRoute = require("./routers/event/eventRoutes");
+const eventCategoryRoute = require("./routers/event/eventCategoryRoutes");
+
 // ================== System Routes ==========================
 const auditLogRoute = require("./routers/system/auditLogRoutes");
 const dashboardRoute = require("./routers/system/dashboardRoutes");
-
 
 const app = express();
 const appServer = http.createServer(app);
@@ -200,6 +203,10 @@ app.use("/api/investigate-ethiopia", investigateEthiopiaRoute);
 
 // ================== Api Attachment Routes =====================
 app.use("/api/attachments", attachmentRoute);
+
+// ================== Event Routes =====================
+app.use("/api/events", eventRoute);
+app.use("/api/event-categories", eventCategoryRoute);
 
 // ================== System Routes =====================
 app.use("/api/audit-logs", auditLogRoute);

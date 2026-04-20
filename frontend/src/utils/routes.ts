@@ -124,6 +124,30 @@ export const routePermissions: RouteConfig[] = [
         ],
     },
 
+    // ---------------- EVENTS ----------------
+    {
+        path: "/admin/events",
+        label: "Events",
+        icon: "Calendar",
+        permissions: {
+            anyPermissions: ["EVENTS:READ", "EVENT_CATEGORIES:READ"],
+        },
+        children: [
+            {
+                path: "/admin/events",
+                label: "All Events",
+                icon: "Calendar",
+                permissions: { anyPermissions: ["EVENTS:READ"] },
+            },
+            {
+                path: "/admin/events/category",
+                label: "Categories",
+                icon: "Tag",
+                permissions: { anyPermissions: ["EVENT_CATEGORIES:READ"] },
+            },
+        ],
+    },
+
     // ---------------- MINING ----------------
     {
         path: "/admin/sectors/mining",

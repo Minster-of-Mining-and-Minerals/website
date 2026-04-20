@@ -39,6 +39,7 @@ export default function PublicNavbar() {
         { name: t("nav.investigating-in-ethiopia"), link: "/investigating-in-ethiopia" },
         { name: t("nav.services"), link: "/services" },
         { name: t("nav.news"), link: "/news" },
+        { name: t("nav.events"), link: "/events" },
         { name: t("nav.contact"), link: "/contact" },
     ];
 
