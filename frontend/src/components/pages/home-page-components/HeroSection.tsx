@@ -2,6 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import clsx from "clsx";
+<<<<<<< HEAD
+=======
+import Image from "next/image";
+>>>>>>> c6b5a12ca2fb87bcbe1c0e8702430b6289687674
 import { Activity, ArrowRight, ChevronDown } from "lucide-react";
 import { Button } from "../../ui/button";
 import { useTranslations } from "next-intl";
@@ -22,12 +26,73 @@ export type Slide = {
     bg: string;
 };
 
+<<<<<<< HEAD
 import { useGetSlidersQuery } from "@/redux/api/sliderApi";
 import { getFileUrl } from "@/utils/fileUrl";
 
 export default function HeroSection() {
     const { data: apiSliders, isLoading } = useGetSlidersQuery();
     const [slides, setSlides] = useState<Slide[]>([]);
+=======
+const DEFAULT_SLIDES: Slide[] = [
+    {
+        id: 1,
+        title: {
+            en: "A New Horizon of Opportunity",
+            am: "ኢትዮጵያ፡ የአዲስ ዕድል ገፅታ",
+        },
+        description: {
+            en: "Welcome to the Ministry of Mines, your gateway to Ethiopia’s abundant natural resources and investment opportunities.",
+            am: "ወደ የማዕድን ሚኒስቴር እንኳን ደህና መጡ፤ እዚህ በኢትዮጵያ ያሉ በጣም ባለሃብቶች ሀብቶችን ለማግኘት ዕድሎች ይገኛሉ።",
+        },
+        image: "/home-1.jpg",
+        bg: "bg-base-200/60",
+    },
+    {
+        id: 2,
+        title: {
+            en: "Invest with Confidence",
+            am: "በእምነት ያስገቡ",
+        },
+        description: {
+            en: "The MoM guides investors through licenses, legislation, and geodata to make your investment journey seamless.",
+            am: "ሚኒስቴሩ በፈቃድ፣ ሕግና ጂዮ-ዳታ አገልግሎት በመስጠት የተጠቃሚ የሆነ የስራ ሂደት ይሰጣል።",
+        },
+        image: "/home-2.jpg",
+        bg: "bg-base-200/80",
+    },
+    {
+        id: 3,
+        title: {
+            en: "Unlock Natural Wealth",
+            am: "የኢትዮጵያ ተፈጥሮ ሀብትን ይክፈቱ",
+        },
+        description: {
+            en: "From mining to geothermal energy and petroleum, Ethiopia offers a wide range of opportunities for visionary investors.",
+            am: "ከማዕድን እስከ ጂዮ-ርማል ኃይል እና ነዳጅ ሀብቶች ድረስ፣ ኢትዮጵያ ለራዕይ ያላቸው ተቀባዮች ብዙ ዕድሎች ትሰጣለች።",
+        },
+        image: "/home-3.jpg",
+        bg: "bg-base-200",
+    },
+    {
+        id: 4,
+        title: {
+            en: "Rapid Growth Awaits You",
+            am: "የኢትዮጵያ ፈጣን እድገት ይጠብቃል",
+        },
+        description: {
+            en: "Join one of Africa’s fastest-growing economies and explore the Ministry of Mines’ resources to maximize your impact.",
+            am: "በአፍሪካ ውስጥ ከፍ የሚደርስ ኢኮኖሚ ውስጥ ተሳትፎ አድርጉ እና ሚኒስቴሩ ያቀረበውን ሀብት እየተጠቀሙ ተፅዕኖ ከፍ ያድርጉ።",
+        },
+        image: "/home-4.jpg",
+        bg: "bg-base-200",
+    },
+];
+
+
+export default function HeroSection() {
+    const [slides, setSlides] = useState<Slide[]>(DEFAULT_SLIDES);
+>>>>>>> c6b5a12ca2fb87bcbe1c0e8702430b6289687674
     const [current, setCurrent] = useState(0);
     const [locale, setLocale] = useState<keyof LocalizedText>("en"); // default language
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -43,6 +108,7 @@ export default function HeroSection() {
         }
     }, [pathname]);
 
+<<<<<<< HEAD
     // Update slides when API data arrives
     useEffect(() => {
         if (apiSliders && apiSliders.length > 0) {
@@ -63,6 +129,19 @@ export default function HeroSection() {
             setCurrent(0); // Reset to first slide when new data arrives
         }
     }, [apiSliders]);
+=======
+    // Load dynamic slides
+    useEffect(() => {
+        const savedData = localStorage.getItem("home_hero_slides");
+        if (savedData) {
+            try {
+                setSlides(JSON.parse(savedData));
+            } catch (e) {
+                console.error("Failed to parse hero slides", e);
+            }
+        }
+    }, []);
+>>>>>>> c6b5a12ca2fb87bcbe1c0e8702430b6289687674
 
     // Go to next slide
     const next = () => setCurrent((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
@@ -83,6 +162,7 @@ export default function HeroSection() {
         };
     }, [current, slides]);
 
+<<<<<<< HEAD
     // Show loading state while fetching data
     if (isLoading) {
         return (
@@ -92,6 +172,8 @@ export default function HeroSection() {
         );
     }
 
+=======
+>>>>>>> c6b5a12ca2fb87bcbe1c0e8702430b6289687674
     if (slides.length === 0) return null;
 
     return (
@@ -117,13 +199,23 @@ export default function HeroSection() {
                             <img
                                 src={slide.image}
                                 alt={slide.title[locale] || slide.title['en']}
+<<<<<<< HEAD
                                 className="absolute inset-0 w-full h-full object-cover"
+=======
+                                fill
+                                className="object-cover w-full"
+                                priority={isActive}
+>>>>>>> c6b5a12ca2fb87bcbe1c0e8702430b6289687674
                             />
                             <div className="absolute inset-0 bg-black/40" />
 
                             <div className="relative z-10 w-full h-full flex items-center justify-center mb-20">
                                 <div className="max-w-7xl w-full px-6">
+<<<<<<< HEAD
                                     <div className="inline-flex items-center gap-2 rounded-full bg-golden-dark10 text-golden-dark text-sm font-semibold mb-10">
+=======
+                                    <div className="inline-flex items-center gap-2   rounded-full bg-golden-dark10 text-golden-dark text-sm font-semibold mb-10">
+>>>>>>> c6b5a12ca2fb87bcbe1c0e8702430b6289687674
                                         <span className="relative flex h-2 w-2">
                                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-golden-dark opacity-75"></span>
                                             <span className="relative inline-flex rounded-full h-2 w-2 bg-golden-dark"></span>

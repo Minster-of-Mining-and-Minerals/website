@@ -19,6 +19,7 @@ module.exports = (sequelize, DataTypes) => {
                 foreignKey: "attachment_id",
                 as: "leadershipAttachments",
             });
+<<<<<<< HEAD
 
             Attachment.hasMany(models.PartnerAttachment, {
                 foreignKey: "attachment_id",
@@ -34,6 +35,8 @@ module.exports = (sequelize, DataTypes) => {
                 foreignKey: "attachment_id",
                 as: "cards",
             });
+=======
+>>>>>>> c6b5a12ca2fb87bcbe1c0e8702430b6289687674
         }
     }
 

@@ -3,8 +3,22 @@
 import React, { useState, useEffect } from "react";
 import Marquee from "react-fast-marquee";
 
+<<<<<<< HEAD
 import { useGetPartnersQuery } from "@/redux/api/partnerApi";
 import { getFileUrl } from "@/utils/fileUrl";
+=======
+const DEFAULT_LOGOS = [
+    "https://nomadsinn.com/momp/wp-content/uploads/2019/10/CIRDI-FOOTER1.png",
+    "https://nomadsinn.com/momp/wp-content/uploads/2019/10/momplogo.png",
+    "https://nomadsinn.com/momp/wp-content/uploads/2019/10/gse.jpeg",
+
+];
+>>>>>>> c6b5a12ca2fb87bcbe1c0e8702430b6289687674
+
+const DEFAULT_HEADER = {
+    title: "Our Partners",
+    description: "We collaborate with trusted national and international partners to support sustainable industrial and economic development."
+};
 
 type PartnersSectionProps = {
     speed?: number; // higher = faster (react-fast-marquee logic)
@@ -16,6 +30,7 @@ type PartnerHeader = {
 };
 
 const PartnersSection: React.FC<PartnersSectionProps> = ({ speed = 50 }) => {
+<<<<<<< HEAD
     const { data: apiPartners, isLoading } = useGetPartnersQuery();
     const [logos, setLogos] = useState<string[]>([]);
     const [header, setHeader] = useState<PartnerHeader | null>(null);
@@ -55,10 +70,36 @@ const PartnersSection: React.FC<PartnersSectionProps> = ({ speed = 50 }) => {
     if (logos.length === 0 || !header || (!header.title && !header.description)) {
         return null;
     }
+=======
+    const [logos, setLogos] = useState<string[]>(DEFAULT_LOGOS);
+    const [header, setHeader] = useState(DEFAULT_HEADER);
+
+    useEffect(() => {
+        const savedLogos = localStorage.getItem("home_partner_logos");
+        const savedHeader = localStorage.getItem("home_partner_header");
+        if (savedLogos) {
+            try {
+                setLogos(JSON.parse(savedLogos));
+            } catch (e) {
+                console.error("Failed to parse partner logos", e);
+            }
+        }
+        if (savedHeader) {
+            try {
+                setHeader(JSON.parse(savedHeader));
+            } catch (e) {
+                console.error("Failed to parse partner header", e);
+            }
+        }
+    }, []);
+
+    if (logos.length === 0) return null;
+>>>>>>> c6b5a12ca2fb87bcbe1c0e8702430b6289687674
 
     return (
         <section className="w-full max-w-7xl pb-28 overflow-hidden">
             {/* Header */}
+<<<<<<< HEAD
             {header.title && (
                 <div className="mb-10 px-4">
                     <h2 className="text-2xl sm:text-3xl font-bold text-golden-dark">
@@ -72,6 +113,17 @@ const PartnersSection: React.FC<PartnersSectionProps> = ({ speed = 50 }) => {
                     )}
                 </div>
             )}
+=======
+            <div className="mb-10 px-4">
+                <h2 className="text-2xl sm:text-3xl font-bold text-golden-dark">
+                    {header.title}
+                </h2>
+                <div className="mt-2 h-1 w-20 bg-golden-dark rounded-full"></div>
+                <p className="mt-3 text-gray-600 max-w-2xl">
+                    {header.description}
+                </p>
+            </div>
+>>>>>>> c6b5a12ca2fb87bcbe1c0e8702430b6289687674
 
             {/* Marquee */}
             <Marquee

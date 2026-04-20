@@ -6,7 +6,11 @@ export const newsApi = baseApi.injectEndpoints({
         /** ---------------------------
          * GET ALL NEWS
          * --------------------------- */
+<<<<<<< HEAD
         getNews: builder.query<News[], { search?: string; tag?: string; status?: string; isAdmin?: boolean } | void>({
+=======
+        getNews: builder.query<News[], { search?: string; tag?: string } | void>({
+>>>>>>> c6b5a12ca2fb87bcbe1c0e8702430b6289687674
             query: (params) => (params ? { url: "/news", params } : { url: "/news" }),
             transformResponse: (response: any): News[] => response.data ?? [],
             providesTags: ["News"],

@@ -32,7 +32,11 @@ export default function NewsList() {
     const router = useRouter();
 
     /* API */
+<<<<<<< HEAD
     const { data = [], isLoading, isError } = useGetNewsQuery({ isAdmin: true });
+=======
+    const { data = [], isLoading, isError } = useGetNewsQuery();
+>>>>>>> c6b5a12ca2fb87bcbe1c0e8702430b6289687674
     const [deleteNews] = useDeleteNewsMutation();
 
     /* View mode */
@@ -80,11 +84,16 @@ export default function NewsList() {
     ----------------------------------- */
     const filteredData = useMemo(() => {
         return data.filter((item: News) => {
+<<<<<<< HEAD
             const tags = extractTags(item.tag_links || []);
             const itemCategory = tags[0] || "General";
 
             const matchesCategory =
                 !categoryFilter || itemCategory === categoryFilter;
+=======
+            const matchesCategory =
+                !categoryFilter || item.category === categoryFilter;
+>>>>>>> c6b5a12ca2fb87bcbe1c0e8702430b6289687674
 
             const matchesSearch =
                 !search ||
@@ -121,6 +130,7 @@ export default function NewsList() {
             header: "Views",
         },
         {
+<<<<<<< HEAD
             accessorKey: "status",
             header: "Status",
             cell: ({ row }) => {
@@ -136,6 +146,15 @@ export default function NewsList() {
                     </Badge>
                 );
             },
+=======
+            accessorKey: "published",
+            header: "Status",
+            cell: ({ row }) => (
+                <Badge variant={row.getValue("published") ? "default" : "destructive"}>
+                    {row.getValue("published") ? "Published" : "Draft"}
+                </Badge>
+            ),
+>>>>>>> c6b5a12ca2fb87bcbe1c0e8702430b6289687674
         },
         {
             id: "actions",
@@ -210,8 +229,13 @@ export default function NewsList() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {paginatedData.map((item) => {
                         const excerpt = extractExcerpt(item.content);
+<<<<<<< HEAD
                         const tags = extractTags(item.tag_links || []);
                         const headlineImage = extractHeadlineImage(item.attachments || []);
+=======
+                        const tags = extractTags(item.tag_links);
+                        console.log("extracted images: ", extractHeadlineImage(item.attachments))
+>>>>>>> c6b5a12ca2fb87bcbe1c0e8702430b6289687674
 
                         return (
                             <AdminNewsCard
@@ -219,9 +243,14 @@ export default function NewsList() {
                                 id={item.news_id}
                                 title={item.title}
                                 excerpt={excerpt}
+<<<<<<< HEAD
                                 media={headlineImage as any}
                                 status={item.status}
                                 publishedAt={item.published_at}
+=======
+                                media={extractHeadlineImage(item.attachments)}
+                                date={new Date(item.created_at).toLocaleDateString()}
+>>>>>>> c6b5a12ca2fb87bcbe1c0e8702430b6289687674
                                 category={tags[0] || "General"}
                                 tags={tags}
                                 readingTime={() => calculateReadingTime(excerpt)}

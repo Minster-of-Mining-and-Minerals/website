@@ -1,7 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+<<<<<<< HEAD
 import Link from "next/link";
+=======
+>>>>>>> c6b5a12ca2fb87bcbe1c0e8702430b6289687674
 import { Button } from "../../ui/button";
 import { useGetCardsQuery } from "@/redux/api/cardApi";
 import { getFileUrl } from "@/utils/fileUrl";
@@ -14,7 +17,15 @@ interface CardData {
     button_url: string;
 }
 
+const DEFAULT_CARD_DATA = {
+    title: "One of the Best Performing Economies in Ethiopia",
+    description: "Ethiopia has seen astonishing growth in the last ten years. Growing at an average rate of 9.7% between 2009 and 2019, Ethiopia has consistently been one of Africa’s top performing economies.",
+    image: "/home-5.jpg",
+    buttonText: "Learn More",
+};
+
 const CardSection = () => {
+<<<<<<< HEAD
     const { data: cards, isLoading } = useGetCardsQuery();
     const [cardData, setCardData] = useState<CardData | null>(null);
 
@@ -46,6 +57,20 @@ const CardSection = () => {
     if (!cardData || !cardData.title) {
         return null;
     }
+=======
+    const [cardData, setCardData] = useState(DEFAULT_CARD_DATA);
+
+    useEffect(() => {
+        const savedData = localStorage.getItem("home_card_data");
+        if (savedData) {
+            try {
+                setCardData(JSON.parse(savedData));
+            } catch (e) {
+                console.error("Failed to parse card data", e);
+            }
+        }
+    }, []);
+>>>>>>> c6b5a12ca2fb87bcbe1c0e8702430b6289687674
 
     return (
         <section className="w-full flex justify-center md:px-4 mb-20">
@@ -53,6 +78,7 @@ const CardSection = () => {
                 className="relative w-full max-w-7xl md:rounded-3xl overflow-hidden shadow-xl"
             >
                 {/* Background Image */}
+<<<<<<< HEAD
                 {cardData.image && (
                     <img
                         src={cardData.image}
@@ -60,6 +86,13 @@ const CardSection = () => {
                         className="absolute inset-0 w-full h-full object-cover"
                     />
                 )}
+=======
+                <img
+                    src={cardData.image}
+                    alt="Hero Card Image"
+                    className="absolute inset-0 w-full h-full object-cover"
+                />
+>>>>>>> c6b5a12ca2fb87bcbe1c0e8702430b6289687674
 
                 {/* Dark Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-r from-black/90 to-black/50" />
@@ -80,11 +113,17 @@ const CardSection = () => {
 
                     {/* Right Button */}
                     <div className="flex gap-4">
+<<<<<<< HEAD
                         <Link href={cardData.button_url} target={cardData.button_url.startsWith("http") ? "_blank" : undefined}>
                             <Button className="bg-golden-dark hover:bg-golden-darkHover px-9 py-2">
                                 {cardData.buttonText}
                             </Button>
                         </Link>
+=======
+                        <Button className="bg-golden-dark hover:bg-golden-darkHover px-9 py-2">
+                            {cardData.buttonText}
+                        </Button>
+>>>>>>> c6b5a12ca2fb87bcbe1c0e8702430b6289687674
                     </div>
 
                 </div>

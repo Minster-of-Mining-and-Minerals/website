@@ -66,6 +66,7 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.DATE,
                 defaultValue: DataTypes.NOW,
             },
+<<<<<<< HEAD
             status: {
                 type: DataTypes.ENUM("draft", "published", "archived"),
                 defaultValue: "draft",
@@ -75,6 +76,8 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.DATE,
                 allowNull: true,
             },
+=======
+>>>>>>> c6b5a12ca2fb87bcbe1c0e8702430b6289687674
             deleted_at: {
                 type: DataTypes.DATE,
                 allowNull: true,

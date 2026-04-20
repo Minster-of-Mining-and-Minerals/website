@@ -17,8 +17,11 @@ export type UploadedFileInfo = {
     file_path?: string;
     previewUrl?: string | null;
     category?: "headline" | "footer";
+<<<<<<< HEAD
     isBlob?: boolean;
     file_type?: 'image' | 'video' | 'pdf' | 'document';
+=======
+>>>>>>> c6b5a12ca2fb87bcbe1c0e8702430b6289687674
 };
 
 interface FileUploadFieldProps {

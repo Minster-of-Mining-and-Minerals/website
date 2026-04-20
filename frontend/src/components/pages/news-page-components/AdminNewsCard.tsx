@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+<<<<<<< HEAD
 import Link from "next/link";
 import { useUpdateNewsMutation } from "@/redux/api/newsApi";
 import { Button } from "@/components/ui/button";
@@ -17,6 +18,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+=======
+import Image from "next/image";
+import Link from "next/link";
+>>>>>>> c6b5a12ca2fb87bcbe1c0e8702430b6289687674
 
 type Media =
     | { url: string; type: "image" }
@@ -28,10 +33,16 @@ type NewsCardProps = {
     title: string;
     excerpt: string;
     media: Media;
+<<<<<<< HEAD
     tags: string[];
     status: "draft" | "published" | "archived";
     publishedAt?: string;
     category: string;
+=======
+    date: string;
+    category: string;
+    tags: string[];
+>>>>>>> c6b5a12ca2fb87bcbe1c0e8702430b6289687674
     readingTime: (text: string) => number;
 };
 
@@ -40,12 +51,20 @@ const AdminNewsCard = ({
     title,
     excerpt,
     media,
+<<<<<<< HEAD
     status,
     publishedAt,
+=======
+    date,
+>>>>>>> c6b5a12ca2fb87bcbe1c0e8702430b6289687674
     category,
     tags,
     readingTime,
 }: NewsCardProps) => {
+<<<<<<< HEAD
+=======
+    console.log("media: ", media);
+>>>>>>> c6b5a12ca2fb87bcbe1c0e8702430b6289687674
     return (
         <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -54,7 +73,11 @@ const AdminNewsCard = ({
             transition={{ duration: 0.5, ease: "easeOut" }}
             className="group bg-white rounded-2xl shadow-md overflow-hidden"
         >
+<<<<<<< HEAD
             <div className="block cursor-default">
+=======
+            <Link href={`/admin/news/${id}`}>
+>>>>>>> c6b5a12ca2fb87bcbe1c0e8702430b6289687674
                 {/* Media */}
                 <div className="relative h-52 w-full overflow-hidden bg-gray-100">
                     <motion.div
@@ -90,6 +113,7 @@ const AdminNewsCard = ({
                         )}
                     </motion.div>
 
+<<<<<<< HEAD
                     {/* Status Badge */}
                     <div className="absolute top-3 left-3 flex flex-col gap-2">
                         <Badge variant={status === "published" ? "default" : status === "archived" ? "secondary" : "destructive"}>
@@ -102,6 +126,12 @@ const AdminNewsCard = ({
                             </span>
                         )}
                     </div>
+=======
+                    {/* Date badge */}
+                    <span className="absolute top-3 left-3 bg-white/90 text-xs font-semibold px-3 py-1 rounded-full">
+                        {date}
+                    </span>
+>>>>>>> c6b5a12ca2fb87bcbe1c0e8702430b6289687674
                 </div>
 
                 {/* Content */}
@@ -130,6 +160,7 @@ const AdminNewsCard = ({
                         ))}
                     </div>
 
+<<<<<<< HEAD
                     <div className="flex items-center justify-between border-t pt-4 mt-4">
                         <Link href={`/admin/news/${id}`} className="text-sm font-semibold text-blue-600 hover:underline flex items-center gap-1">
                             Edit News <span>→</span>
@@ -139,10 +170,18 @@ const AdminNewsCard = ({
                     </div>
                 </div>
             </div>
+=======
+                    <span className="inline-flex items-center text-sm font-semibold text-golden-dark group-hover:gap-2 transition-all">
+                        Edit News <span className="ml-1">→</span>
+                    </span>
+                </div>
+            </Link>
+>>>>>>> c6b5a12ca2fb87bcbe1c0e8702430b6289687674
         </motion.div>
     );
 };
 
+<<<<<<< HEAD
 const NewsActions = ({ id, status }: { id: string; status: string }) => {
     const [updateNews, { isLoading }] = useUpdateNewsMutation();
     const [isPublishDialogOpen, setIsPublishDialogOpen] = useState(false);
@@ -237,4 +276,6 @@ const NewsActions = ({ id, status }: { id: string; status: string }) => {
     );
 };
 
+=======
+>>>>>>> c6b5a12ca2fb87bcbe1c0e8702430b6289687674
 export default AdminNewsCard;

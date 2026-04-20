@@ -56,8 +56,11 @@ const EditNews = () => {
     const [headlineFiles, setHeadlineFiles] = useState<UploadedFileInfo[]>([]);
     const [footerFiles, setFooterFiles] = useState<UploadedFileInfo[]>([]);
     const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
+<<<<<<< HEAD
     const [status, setStatus] = useState<"draft" | "published" | "archived">("draft");
     const [publishedAt, setPublishedAt] = useState("");
+=======
+>>>>>>> c6b5a12ca2fb87bcbe1c0e8702430b6289687674
 
     const { data: tagsData = [] } = useGetTagsQuery();
 
@@ -66,8 +69,13 @@ const EditNews = () => {
         if (!newsResponse) return;
         const news = newsResponse;
 
+<<<<<<< HEAD
         setTitle(news.title || "");
         setAuthor(news.author || "");
+=======
+        setTitle(news.title);
+        setAuthor(news.author);
+>>>>>>> c6b5a12ca2fb87bcbe1c0e8702430b6289687674
 
         // Set tags from tag_links
         if (news.tag_links && news.tag_links.length > 0) {
@@ -75,9 +83,12 @@ const EditNews = () => {
             setSelectedTags(tagIds);
         }
 
+<<<<<<< HEAD
         setStatus(news.status || "draft");
         setPublishedAt(news.published_at ? new Date(news.published_at).toISOString().slice(0, 16) : new Date().toISOString().slice(0, 16));
 
+=======
+>>>>>>> c6b5a12ca2fb87bcbe1c0e8702430b6289687674
         // Set content - handle both Delta and HTML
         if (news.content) {
             console.log("Setting content:", news.content);
@@ -178,9 +189,13 @@ const EditNews = () => {
                     attachment_id: att.attachment_id,
                     category: att.category
                 })),
+<<<<<<< HEAD
                 tag_ids: selectedTags,
                 status,
                 published_at: status === "published" ? new Date(publishedAt).toISOString() : undefined,
+=======
+                tag_ids: selectedTags
+>>>>>>> c6b5a12ca2fb87bcbe1c0e8702430b6289687674
             };
 
             console.log("Submitting payload:", payload);
@@ -261,6 +276,7 @@ const EditNews = () => {
             <div className="bg-white p-6 rounded-lg shadow overflow-y-auto space-y-6">
                 <h1 className="text-2xl font-bold mb-6 text-[#073954]">Edit News</h1>
                 <form onSubmit={handleSubmit} className="space-y-6">
+<<<<<<< HEAD
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label htmlFor="status">Status</Label>
@@ -287,6 +303,8 @@ const EditNews = () => {
                             </div>
                         )}
                     </div>
+=======
+>>>>>>> c6b5a12ca2fb87bcbe1c0e8702430b6289687674
                     <Input
                         value={title}
                         onChange={e => setTitle(e.target.value)}
@@ -469,7 +487,11 @@ const EditNews = () => {
                         {currentMedia.file_type === "image" && (
                             // eslint-disable-next-line @next/next/no-img-element
                             <img
+<<<<<<< HEAD
                                 src={getMediaUrl(currentMedia) || ""}
+=======
+                                src={getMediaUrl(currentMedia)}
+>>>>>>> c6b5a12ca2fb87bcbe1c0e8702430b6289687674
                                 alt={currentMedia.file_name}
                                 className="w-full h-72 object-cover rounded-lg"
                                 onError={(e) => {
@@ -483,7 +505,11 @@ const EditNews = () => {
                                 className="w-full h-72 rounded-lg bg-black"
                                 key={currentMedia.attachment_id}
                             >
+<<<<<<< HEAD
                                 <source src={getMediaUrl(currentMedia) || ""} type="video/mp4" />
+=======
+                                <source src={getMediaUrl(currentMedia)} type="video/mp4" />
+>>>>>>> c6b5a12ca2fb87bcbe1c0e8702430b6289687674
                                 Your browser does not support the video tag.
                             </video>
                         )}
@@ -494,7 +520,11 @@ const EditNews = () => {
                                 <button
                                     type="button"
                                     onClick={() => setCurrentMediaIndex(prev =>
+<<<<<<< HEAD
                                         prev === 0 ? (headlineFiles.length > 0 ? headlineFiles.length - 1 : 0) : prev - 1
+=======
+                                        prev === 0 ? headlineFiles.length - 1 : prev - 1
+>>>>>>> c6b5a12ca2fb87bcbe1c0e8702430b6289687674
                                     )}
                                     className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-gray-700 text-white rounded-full p-2 hover:bg-gray-800 z-10"
                                 >
@@ -503,7 +533,11 @@ const EditNews = () => {
                                 <button
                                     type="button"
                                     onClick={() => setCurrentMediaIndex(prev =>
+<<<<<<< HEAD
                                         prev === (headlineFiles.length > 0 ? headlineFiles.length - 1 : 0) ? 0 : prev + 1
+=======
+                                        prev === headlineFiles.length - 1 ? 0 : prev + 1
+>>>>>>> c6b5a12ca2fb87bcbe1c0e8702430b6289687674
                                     )}
                                     className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gray-700 text-white rounded-full p-2 hover:bg-gray-800 z-10"
                                 >

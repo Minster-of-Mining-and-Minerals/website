@@ -38,8 +38,11 @@ const createNews = async (req, res) => {
                 title,
                 author,
                 content,
+<<<<<<< HEAD
                 status: req.body.status || "draft",
                 published_at: req.body.published_at || (req.body.status === "published" ? new Date() : null),
+=======
+>>>>>>> c6b5a12ca2fb87bcbe1c0e8702430b6289687674
                 created_at: new Date(),
                 updated_at: new Date(),
             },
@@ -100,6 +103,7 @@ const createNews = async (req, res) => {
 // =========================== */
 const getAllNews = async (req, res) => {
     try {
+<<<<<<< HEAD
         const { search, tag, status, isAdmin } = req.query;
 
         const whereClause = { deleted_at: null };
@@ -119,6 +123,13 @@ const getAllNews = async (req, res) => {
             whereClause.published_at = {
                 [Op.lte]: new Date(),
             };
+=======
+        const { search, tag } = req.query;
+
+        const whereClause = {};
+        if (search) {
+            whereClause.description = { [Op.like]: `%${search}%` };
+>>>>>>> c6b5a12ca2fb87bcbe1c0e8702430b6289687674
         }
 
         const includeClause = [
@@ -237,6 +248,7 @@ const updateNews = async (req, res) => {
             return res.status(404).json({ success: false, message: "News not found." });
         }
 
+<<<<<<< HEAD
         const newsData = { title, author, content, updated_at: new Date() };
 
         if (req.body.status) {
@@ -252,6 +264,9 @@ const updateNews = async (req, res) => {
         }
 
         await news.update(newsData, { transaction: t });
+=======
+        await news.update({ title, author, content, updated_at: new Date() }, { transaction: t });
+>>>>>>> c6b5a12ca2fb87bcbe1c0e8702430b6289687674
 
         // Update attachments if provided
         if (Array.isArray(attachment_ids)) {

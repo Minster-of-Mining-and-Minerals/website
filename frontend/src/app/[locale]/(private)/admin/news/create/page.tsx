@@ -225,7 +225,11 @@ const FileUploadField: React.FC<FileUploadFieldProps> = ({
                                 {file.previewUrl && file.file_type === "image" && (
                                     // eslint-disable-next-line @next/next/no-img-element
                                     <img
+<<<<<<< HEAD
                                         src={file.previewUrl || ""}
+=======
+                                        src={file.previewUrl}
+>>>>>>> c6b5a12ca2fb87bcbe1c0e8702430b6289687674
                                         alt={file.file_name}
                                         className="w-10 h-10 object-cover rounded"
                                     />
@@ -270,13 +274,21 @@ const FileUploadField: React.FC<FileUploadFieldProps> = ({
                         )}
                         {previewFile.file_type === "video" && previewFile.previewUrl && (
                             <video controls className="w-full h-auto max-h-[70vh]">
+<<<<<<< HEAD
                                 <source src={previewFile.previewUrl || ""} type="video/mp4" />
+=======
+                                <source src={previewFile.previewUrl} type="video/mp4" />
+>>>>>>> c6b5a12ca2fb87bcbe1c0e8702430b6289687674
                                 Your browser does not support the video tag.
                             </video>
                         )}
                         {previewFile.file_type === "pdf" && previewFile.previewUrl && (
                             <iframe
+<<<<<<< HEAD
                                 src={previewFile.previewUrl || ""}
+=======
+                                src={previewFile.previewUrl}
+>>>>>>> c6b5a12ca2fb87bcbe1c0e8702430b6289687674
                                 className="w-full h-[70vh]"
                                 title={previewFile.file_name}
                             />
@@ -307,8 +319,11 @@ const CreateNews = () => {
     const [headlineFiles, setHeadlineFiles] = useState<UploadedFileInfo[]>([]);
     const [footerFiles, setFooterFiles] = useState<UploadedFileInfo[]>([]);
     const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
+<<<<<<< HEAD
     const [status, setStatus] = useState<"draft" | "published" | "archived">("draft");
     const [publishedAt, setPublishedAt] = useState(new Date().toISOString().slice(0, 16));
+=======
+>>>>>>> c6b5a12ca2fb87bcbe1c0e8702430b6289687674
 
     const [createNews] = useCreateNewsMutation();
     const { data = [], isLoading, isError } = useGetTagsQuery()
@@ -324,10 +339,15 @@ const CreateNews = () => {
                 title,
                 author,
                 tags: selectedTags,
+<<<<<<< HEAD
                 content: contentHtml,
                 attachments: newsAttachments || [],
                 status,
                 published_at: status === "published" ? new Date(publishedAt).toISOString() : undefined,
+=======
+                content: contentHtml, // <-- send HTML instead of JSON
+                attachments: newsAttachments || [],
+>>>>>>> c6b5a12ca2fb87bcbe1c0e8702430b6289687674
             }).unwrap();
 
             alert("News Created Successfully!");
@@ -374,6 +394,7 @@ const CreateNews = () => {
             <div className="bg-white p-6 rounded-lg shadow overflow-y-auto space-y-6">
                 <h1 className="text-2xl font-bold mb-6 text-[#073954]">Create News</h1>
                 <form onSubmit={handleSubmit} className="space-y-6">
+<<<<<<< HEAD
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label htmlFor="status">Status</Label>
@@ -401,6 +422,8 @@ const CreateNews = () => {
                         )}
                     </div>
 
+=======
+>>>>>>> c6b5a12ca2fb87bcbe1c0e8702430b6289687674
                     <Input value={title} onChange={e => setTitle(e.target.value)} placeholder="Title *" />
                     <Input value={author} onChange={e => setAuthor(e.target.value)} placeholder="Author *" />
                     <div className="w-full space-y-2">
@@ -498,7 +521,11 @@ const CreateNews = () => {
                         onChange={(ids, files) => {
                             setNewsAttachments(prev => [
                                 ...prev.filter(a => a.category !== "headline"),
+<<<<<<< HEAD
                                 ...ids.map(id => ({ attachment_id: id, category: "headline" as const })),
+=======
+                                ...ids.map(id => ({ attachment_id: id, category: "headline" })),
+>>>>>>> c6b5a12ca2fb87bcbe1c0e8702430b6289687674
                             ]);
                             if (files) setHeadlineFiles(files);
                             setCurrentMediaIndex(0);
@@ -517,7 +544,11 @@ const CreateNews = () => {
                         onChange={(ids, files) => {
                             setNewsAttachments(prev => [
                                 ...prev.filter(a => a.category !== "footer"),
+<<<<<<< HEAD
                                 ...ids.map(id => ({ attachment_id: id, category: "footer" as const })),
+=======
+                                ...ids.map(id => ({ attachment_id: id, category: "footer" })),
+>>>>>>> c6b5a12ca2fb87bcbe1c0e8702430b6289687674
                             ]);
                             if (files) setFooterFiles(files);
                         }}

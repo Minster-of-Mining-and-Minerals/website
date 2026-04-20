@@ -62,6 +62,7 @@ const createNewsSchema = Joi.object({
         .items(attachmentSchema)
         .optional()
         .default([]),
+<<<<<<< HEAD
 
     status: Joi.string()
         .valid("draft", "published", "archived")
@@ -72,6 +73,8 @@ const createNewsSchema = Joi.object({
         .iso()
         .allow(null)
         .optional(),
+=======
+>>>>>>> c6b5a12ca2fb87bcbe1c0e8702430b6289687674
 });
 
 /* ================= UPDATE NEWS ================= */
@@ -90,6 +93,7 @@ const updateNewsSchema = Joi.object({
     attachment_ids: Joi.array()
         .items(attachmentSchema)
         .optional(),
+<<<<<<< HEAD
 
     status: Joi.string()
         .valid("draft", "published", "archived")
@@ -99,6 +103,8 @@ const updateNewsSchema = Joi.object({
         .iso()
         .allow(null)
         .optional(),
+=======
+>>>>>>> c6b5a12ca2fb87bcbe1c0e8702430b6289687674
 });
 
 /* ================= MIDDLEWARES ================= */

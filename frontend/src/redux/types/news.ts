@@ -13,9 +13,13 @@ export interface TagLink {
 
 export interface News {
     news_id: string;
+<<<<<<< HEAD
     title: string;
     content: any; // Quill Delta JSON
     author?: string;
+=======
+    description: string;
+>>>>>>> c6b5a12ca2fb87bcbe1c0e8702430b6289687674
     created_at: string;
     updated_at: string;
     deleted_at?: string;
@@ -24,8 +28,11 @@ export interface News {
     reactions?: any[];
     reads?: any[];
     metadata?: any;
+<<<<<<< HEAD
     status: "draft" | "published" | "archived";
     published_at?: string;
+=======
+>>>>>>> c6b5a12ca2fb87bcbe1c0e8702430b6289687674
 }
 
 type QuillDelta = {
@@ -37,6 +44,7 @@ type QuillDelta = {
 export interface CreateNewsPayload {
     title: string;
     author?: string;
+<<<<<<< HEAD
     content: any; // Can be Quill Delta or HTML string
     attachments?: Array<{
         attachment_id: string;
@@ -45,6 +53,11 @@ export interface CreateNewsPayload {
     tags?: string[];
     status?: "draft" | "published" | "archived";
     published_at?: string;
+=======
+    content: QuillDelta;
+    attachments?: string[];
+    tags?: string[];
+>>>>>>> c6b5a12ca2fb87bcbe1c0e8702430b6289687674
 }
 
 export interface UpdateNewsPayload {
@@ -56,8 +69,11 @@ export interface UpdateNewsPayload {
         category: "headline" | "footer" | "body";
     }>;
     tag_ids?: string[];
+<<<<<<< HEAD
     status?: "draft" | "published" | "archived";
     published_at?: string;
+=======
+>>>>>>> c6b5a12ca2fb87bcbe1c0e8702430b6289687674
 }
 
 export interface NewsReactionPayload {
