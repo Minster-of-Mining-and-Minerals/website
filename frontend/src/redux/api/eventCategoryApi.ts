@@ -2,14 +2,13 @@ import { baseApi } from "../baseApi";
 import {
   EventCategory,
   CreateEventCategoryPayload,
-  ReplaceEventCategoryPayload,
   UpdateEventCategoryPayload,
 } from "../types/eventCategory";
 
 export const eventCategoryApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     // ===========================
-    // GET ALL
+    // GET ALL (standalone tags)
     // ===========================
     getEventCategories: builder.query<EventCategory[], void>({
       query: () => "/event-categories",
@@ -18,32 +17,20 @@ export const eventCategoryApi = baseApi.injectEndpoints({
     }),
 
     // ===========================
-    // GET BY EVENT
+    // CREATE (standalone tag)
     // ===========================
-    getCategoriesByEvent: builder.query<EventCategory[], string>({
-      query: (event_id) => `/event-categories/${event_id}`,
-      transformResponse: (res: any): EventCategory[] => res.data ?? [],
-      providesTags: ["EventCategory"],
-    }),
-
-    // ===========================
-    // CREATE
-    // ===========================
-    createEventCategory: builder.mutation<
-      EventCategory[],
-      CreateEventCategoryPayload
-    >({
+    createEventCategory: builder.mutation<EventCategory, CreateEventCategoryPayload>({
       query: (body) => ({
         url: "/event-categories",
         method: "POST",
         body,
       }),
-      transformResponse: (res: any): EventCategory[] => res.data,
-      invalidatesTags: ["EventCategory", "Event"],
+      transformResponse: (res: any): EventCategory => res.data,
+      invalidatesTags: ["EventCategory"],
     }),
 
     // ===========================
-    // UPDATE
+    // UPDATE name
     // ===========================
     updateEventCategory: builder.mutation<
       EventCategory,
@@ -55,7 +42,7 @@ export const eventCategoryApi = baseApi.injectEndpoints({
         body: data,
       }),
       transformResponse: (res: any): EventCategory => res.data,
-      invalidatesTags: ["EventCategory", "Event"],
+      invalidatesTags: ["EventCategory"],
     }),
 
     // ===========================
@@ -66,32 +53,14 @@ export const eventCategoryApi = baseApi.injectEndpoints({
         url: `/event-categories/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["EventCategory", "Event"],
-    }),
-
-    // ===========================
-    // REPLACE (IMPORTANT)
-    // ===========================
-    replaceEventCategories: builder.mutation<
-      EventCategory[],
-      ReplaceEventCategoryPayload
-    >({
-      query: (body) => ({
-        url: "/event-categories/replace",
-        method: "POST",
-        body,
-      }),
-      transformResponse: (res: any): EventCategory[] => res.data,
-      invalidatesTags: ["EventCategory", "Event"],
+      invalidatesTags: ["EventCategory"],
     }),
   }),
 });
 
 export const {
   useGetEventCategoriesQuery,
-  useGetCategoriesByEventQuery,
   useCreateEventCategoryMutation,
   useUpdateEventCategoryMutation,
   useDeleteEventCategoryMutation,
-  useReplaceEventCategoriesMutation,
 } = eventCategoryApi;

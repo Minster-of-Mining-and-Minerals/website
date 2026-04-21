@@ -10,10 +10,10 @@ module.exports = (sequelize, DataTypes) => {
         as: "attachments",
       });
 
-      // Categories
-      Event.hasMany(models.EventCategory, {
-        foreignKey: "event_id",
-        as: "categories",
+      // Category (1-N)
+      Event.belongsTo(models.EventCategory, {
+        foreignKey: "event_category_id",
+        as: "category",
       });
     }
   }
@@ -29,6 +29,11 @@ module.exports = (sequelize, DataTypes) => {
       title: {
         type: DataTypes.STRING(255),
         allowNull: false,
+      },
+      
+      event_category_id: {
+        type: DataTypes.UUID,
+        allowNull: true, // Optional
       },
 
       description: {

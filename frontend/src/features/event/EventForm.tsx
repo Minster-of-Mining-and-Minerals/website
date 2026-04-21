@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { XIcon, FileIcon, ChevronDown, Calendar as CalendarIcon, MapPin, Globe } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { getFileUrl } from "@/utils/fileUrl";
 import "quill/dist/quill.snow.css";
@@ -48,6 +49,8 @@ export default function EventForm({ initialData, onSubmit, isLoading: isSubmitti
     const [location, setLocation] = useState("");
     const [virtualLink, setVirtualLink] = useState("");
     const [status, setStatus] = useState<Event["status"]>("draft");
+    const [publishStart, setPublishStart] = useState("");
+    const [publishEnd, setPublishEnd] = useState("");
     const [contentHtml, setContentHtml] = useState("");
     const [isContentLoaded, setIsContentLoaded] = useState(false);
 
@@ -56,9 +59,10 @@ export default function EventForm({ initialData, onSubmit, isLoading: isSubmitti
     const [headlineFiles, setHeadlineFiles] = useState<UploadedFileInfo[]>([]);
     const [footerFiles, setFooterFiles] = useState<UploadedFileInfo[]>([]);
 
-    // Category states
-    const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+    // Category state - single selection
+    const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
     const { data: categoriesData = [] } = useGetEventCategoriesQuery();
+    const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
 
     // Populate initial data
     useEffect(() => {
@@ -71,6 +75,8 @@ export default function EventForm({ initialData, onSubmit, isLoading: isSubmitti
             setLocation(initialData.location || "");
             setVirtualLink(initialData.virtual_link || "");
             setStatus(initialData.status || "draft");
+            setPublishStart(initialData.publish_start ? new Date(initialData.publish_start).toISOString().slice(0, 16) : "");
+            setPublishEnd(initialData.publish_end ? new Date(initialData.publish_end).toISOString().slice(0, 16) : "");
 
             // Handle content
             if (initialData.content) {
@@ -103,16 +109,18 @@ export default function EventForm({ initialData, onSubmit, isLoading: isSubmitti
             }
             setIsContentLoaded(true);
 
-            // Categories
-            if (initialData.categories) {
-                setSelectedCategories(initialData.categories.map(c => c.category));
+            // Category - handle both old link structure and new direct field
+            if (initialData.event_category_id) {
+                setSelectedCategoryId(initialData.event_category_id);
+            } else if (initialData.category_links && initialData.category_links.length > 0) {
+                setSelectedCategoryId(initialData.category_links[0].event_category_id);
             }
 
             // Attachments
             if (initialData.attachments) {
                 const mappedHeadline: UploadedFileInfo[] = [];
                 const mappedFooter: UploadedFileInfo[] = [];
-                
+
                 initialData.attachments.forEach(att => {
                     const info = att.attachment;
                     if (!info) return;
@@ -122,7 +130,7 @@ export default function EventForm({ initialData, onSubmit, isLoading: isSubmitti
                         file_name: info.file_name,
                         file_path: info.file_path,
                         previewUrl: getFileUrl(info.file_path),
-                        category: "headline", // Defaulting to headline for events for now
+                        category: "headline",
                         isBlob: false,
                         file_type: getFileType(info.file_name)
                     };
@@ -136,10 +144,23 @@ export default function EventForm({ initialData, onSubmit, isLoading: isSubmitti
         }
     }, [initialData]);
 
+    // Reset currentMediaIndex when headlineFiles change
+    useEffect(() => {
+        setCurrentMediaIndex(0);
+    }, [headlineFiles.length]);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        // Validation
         if (!title || !organizer || !startTime || !endTime) {
-            toast.error("Please fill required fields");
+            toast.error("Please fill all required fields (*)");
+            return;
+        }
+
+        // Validate dates
+        if (new Date(startTime) >= new Date(endTime)) {
+            toast.error("End time must be after start time");
             return;
         }
 
@@ -152,15 +173,18 @@ export default function EventForm({ initialData, onSubmit, isLoading: isSubmitti
             location,
             virtual_link: virtualLink,
             status,
+            publish_start: publishStart ? new Date(publishStart).toISOString() : null,
+            publish_end: publishEnd ? new Date(publishEnd).toISOString() : null,
             content: contentHtml,
             attachments: attachments.map(a => a.attachment_id),
-            categories: selectedCategories
+            event_category_id: selectedCategoryId,
         };
 
         try {
             await onSubmit(payload);
         } catch (err) {
             console.error(err);
+            toast.error("Failed to save event. Please try again.");
         }
     };
 
@@ -174,29 +198,42 @@ export default function EventForm({ initialData, onSubmit, isLoading: isSubmitti
         ],
     };
 
-    // Predefined suggested categories if none exist in DB
-    const suggestedCategories = ["Webinar", "Workshop", "Conference", "Exhibition", "Meeting"];
-    const uniqueCategories = Array.from(new Set([...suggestedCategories, ...categoriesData.map(c => c.category)]));
+    // Build display for selected category
+    const selectedCategoryObject = categoriesData.find(
+        (c) => c.event_category_id === selectedCategoryId
+    );
+
+    const currentMedia = headlineFiles.length > 0 ? headlineFiles[currentMediaIndex] : null;
 
     return (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div className="bg-white p-6 rounded-xl shadow-sm border space-y-6">
+            <div className="bg-white p-6 rounded-xl shadow-sm border space-y-6 overflow-hidden">
                 <h1 className="text-2xl font-bold text-[#073954]">{pageTitle}</h1>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="space-y-2">
                         <Label>Title *</Label>
-                        <Input value={title} onChange={e => setTitle(e.target.value)} placeholder="Event Title" required />
+                        <Input
+                            value={title}
+                            onChange={e => setTitle(e.target.value)}
+                            placeholder="Event Title"
+                            required
+                        />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label>Organizer *</Label>
-                            <Input value={organizer} onChange={e => setOrganizer(e.target.value)} placeholder="Organization name" required />
+                            <Input
+                                value={organizer}
+                                onChange={e => setOrganizer(e.target.value)}
+                                placeholder="Organization name"
+                                required
+                            />
                         </div>
                         <div className="space-y-2">
                             <Label>Status</Label>
-                            <select 
-                                value={status} 
+                            <select
+                                value={status}
                                 onChange={e => setStatus(e.target.value as any)}
                                 className="w-full border rounded-md h-10 px-3 text-sm focus:ring-2 focus:ring-golden-dark outline-none"
                             >
@@ -213,11 +250,21 @@ export default function EventForm({ initialData, onSubmit, isLoading: isSubmitti
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label>Start Time *</Label>
-                            <Input type="datetime-local" value={startTime} onChange={e => setStartTime(e.target.value)} required />
+                            <Input
+                                type="datetime-local"
+                                value={startTime}
+                                onChange={e => setStartTime(e.target.value)}
+                                required
+                            />
                         </div>
                         <div className="space-y-2">
                             <Label>End Time *</Label>
-                            <Input type="datetime-local" value={endTime} onChange={e => setEndTime(e.target.value)} required />
+                            <Input
+                                type="datetime-local"
+                                value={endTime}
+                                onChange={e => setEndTime(e.target.value)}
+                                required
+                            />
                         </div>
                     </div>
 
@@ -226,64 +273,118 @@ export default function EventForm({ initialData, onSubmit, isLoading: isSubmitti
                             <Label>Location</Label>
                             <div className="relative">
                                 <MapPin className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                                <Input className="pl-10" value={location} onChange={e => setLocation(e.target.value)} placeholder="Physical location" />
+                                <Input
+                                    className="pl-10"
+                                    value={location}
+                                    onChange={e => setLocation(e.target.value)}
+                                    placeholder="Physical location"
+                                />
                             </div>
                         </div>
                         <div className="space-y-2">
                             <Label>Virtual Link</Label>
                             <div className="relative">
                                 <Globe className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                                <Input className="pl-10" value={virtualLink} onChange={e => setVirtualLink(e.target.value)} placeholder="Meeting link" />
+                                <Input
+                                    className="pl-10"
+                                    value={virtualLink}
+                                    onChange={e => setVirtualLink(e.target.value)}
+                                    placeholder="Meeting link"
+                                />
                             </div>
                         </div>
                     </div>
 
+                    {/* Publication Window — shown when Published or Scheduled */}
+                    {(status === "published" || status === "scheduled") && (
+                        <div className="space-y-3 rounded-lg border border-golden-dark/30 bg-amber-50/50 p-4">
+                            <p className="text-xs font-semibold text-golden-dark uppercase tracking-wide flex items-center gap-1">
+                                <CalendarIcon className="h-3.5 w-3.5" />
+                                Publication Window
+                            </p>
+                            <p className="text-xs text-gray-500">
+                                {status === "scheduled"
+                                    ? "The event will automatically go live when Publish Start is reached."
+                                    : "If left blank, the event is visible immediately with no expiry."}
+                            </p>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-1">
+                                    <Label className="text-xs">Publish Start</Label>
+                                    <Input
+                                        type="datetime-local"
+                                        value={publishStart}
+                                        onChange={e => setPublishStart(e.target.value)}
+                                    />
+                                    <p className="text-[10px] text-gray-400">Leave blank to publish immediately.</p>
+                                </div>
+                                <div className="space-y-1">
+                                    <Label className="text-xs">Publish End</Label>
+                                    <Input
+                                        type="datetime-local"
+                                        value={publishEnd}
+                                        onChange={e => setPublishEnd(e.target.value)}
+                                    />
+                                    <p className="text-[10px] text-gray-400">Leave blank for no expiry.</p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     <div className="space-y-2">
                         <Label>Short Description</Label>
-                        <Textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="Brief overview..." rows={2} />
+                        <Textarea
+                            value={description}
+                            onChange={e => setDescription(e.target.value)}
+                            placeholder="Brief overview..."
+                            rows={2}
+                        />
                     </div>
 
                     <div className="space-y-2">
                         <Label>Categories</Label>
                         <Popover>
                             <PopoverTrigger asChild>
-                                <Button variant="outline" className="w-full justify-between font-normal">
+                                <Button
+                                    variant="outline"
+                                    className="w-full justify-between font-normal cursor-pointer"
+                                    type="button"
+                                >
                                     <div className="flex gap-1 flex-wrap">
-                                        {selectedCategories.length === 0 ? "Select categories" : selectedCategories.map(c => (
-                                            <Badge key={c} variant="secondary" className="text-[10px] py-0">{c}</Badge>
-                                        ))}
+                                        {selectedCategoryObject ? (
+                                            <Badge variant="secondary" className="text-[10px] py-0">
+                                                {selectedCategoryObject.name}
+                                            </Badge>
+                                        ) : (
+                                            "Select a category"
+                                        )}
                                     </div>
                                     <ChevronDown className="h-4 w-4 opacity-50" />
                                 </Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-[300px] p-2" align="start">
                                 <div className="space-y-1">
-                                    {uniqueCategories.map(cat => (
-                                        <div 
-                                            key={cat} 
-                                            onClick={() => {
-                                                setSelectedCategories(prev => prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat]);
-                                            }}
-                                            className={`p-2 rounded-md cursor-pointer text-sm ${selectedCategories.includes(cat) ? 'bg-golden-dark/20 text-[#073954]' : 'hover:bg-gray-100'}`}
-                                        >
-                                            {cat}
-                                        </div>
-                                    ))}
-                                    <div className="pt-2 border-t mt-2">
-                                        <Input 
-                                            placeholder="Add custom..." 
-                                            onKeyDown={e => {
-                                                if (e.key === 'Enter') {
-                                                    const val = (e.target as any).value.trim();
-                                                    if (val && !selectedCategories.includes(val)) {
-                                                        setSelectedCategories(prev => [...prev, val]);
-                                                        (e.target as any).value = "";
-                                                    }
-                                                    e.preventDefault();
-                                                }
-                                            }}
-                                        />
-                                    </div>
+                                    {categoriesData.length === 0 ? (
+                                        <p className="text-sm text-muted-foreground text-center py-4">
+                                            No categories yet. Create them in the Event Categories page.
+                                        </p>
+                                    ) : (
+                                        categoriesData.map((cat) => (
+                                            <div
+                                                key={cat.event_category_id}
+                                                onClick={() => {
+                                                    setSelectedCategoryId(prev => 
+                                                        prev === cat.event_category_id ? null : cat.event_category_id
+                                                    );
+                                                }}
+                                                className={`p-2 rounded-md cursor-pointer text-sm ${selectedCategoryId === cat.event_category_id
+                                                        ? "bg-golden-dark/20 text-[#073954]"
+                                                        : "hover:bg-gray-100"
+                                                    }`}
+                                            >
+                                                {cat.name}
+                                            </div>
+                                        ))
+                                    )}
                                 </div>
                             </PopoverContent>
                         </Popover>
@@ -291,7 +392,7 @@ export default function EventForm({ initialData, onSubmit, isLoading: isSubmitti
 
                     <div className="space-y-2">
                         <Label>Event Media</Label>
-                        <EditFileUpload 
+                        <EditFileUpload
                             id="event-media"
                             accept="image/*"
                             multiple
@@ -304,20 +405,33 @@ export default function EventForm({ initialData, onSubmit, isLoading: isSubmitti
                         />
                     </div>
 
+                    {/* Fixed Quill Editor Container */}
                     <div className="space-y-2">
                         <Label>Detailed Content</Label>
-                        {isContentLoaded ? (
-                            <ReactQuill 
-                                value={contentHtml} 
-                                modules={modules} 
-                                onChange={setContentHtml}
-                                className="h-64 mb-12"
-                            />
-                        ) : <div className="h-64 bg-gray-50 animate-pulse rounded-md" />}
+                        <div className="quill-container" style={{ position: 'relative', overflow: 'hidden' }}>
+                            {isContentLoaded ? (
+                                <div style={{ minHeight: '300px' }}>
+                                    <ReactQuill
+                                        value={contentHtml}
+                                        modules={modules}
+                                        onChange={setContentHtml}
+                                        theme="snow"
+                                        style={{ height: '250px', marginBottom: '50px' }}
+                                        className="custom-quill"
+                                    />
+                                </div>
+                            ) : (
+                                <div className="h-64 bg-gray-50 animate-pulse rounded-md" />
+                            )}
+                        </div>
                     </div>
 
-                    <div className="pt-4">
-                        <Button type="submit" disabled={isSubmitting} className="w-full bg-[#094C81] hover:bg-[#073954]">
+                    <div className="pt-4 mt-5">
+                        <Button
+                            type="submit"
+                            disabled={isSubmitting}
+                            className="w-full bg-[#094C81] hover:bg-[#073954] cursor-pointer"
+                        >
                             {isSubmitting ? "Saving..." : "Save Event"}
                         </Button>
                     </div>
@@ -329,20 +443,54 @@ export default function EventForm({ initialData, onSubmit, isLoading: isSubmitti
                 <div className="sticky top-6 bg-gray-50 border rounded-xl p-6 min-h-[600px]">
                     <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-6">Live Preview</h2>
                     <div className="bg-white rounded-xl shadow-md overflow-hidden border">
-                        {headlineFiles.length > 0 ? (
-                            <img src={headlineFiles[0].previewUrl} className="w-full h-48 object-cover" alt="Preview" />
-                        ) : (
-                            <div className="w-full h-48 bg-gray-200 flex items-center justify-center text-gray-400">
-                                <ImageIcon size={48} />
-                            </div>
-                        )}
+                        <div className="relative group">
+                            {headlineFiles.length > 0 && currentMedia ? (
+                                <>
+                                    {currentMedia.file_type === 'video' ? (
+                                        <video src={currentMedia.previewUrl} className="w-full h-48 object-cover rounded-md bg-black" controls />
+                                    ) : (
+                                        <img src={currentMedia.previewUrl} className="w-full h-48 object-cover rounded-md" alt="Preview" />
+                                    )}
+                                    
+                                    {headlineFiles.length > 1 && (
+                                        <>
+                                            <button
+                                                type="button"
+                                                onClick={() => setCurrentMediaIndex(prev => prev === 0 ? headlineFiles.length - 1 : prev - 1)}
+                                                className="absolute left-2 top-1/2 -translate-y-1/2 p-1 rounded-full bg-black/50 text-white hover:bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity"
+                                            >
+                                                <XIcon className="h-4 w-4 rotate-90" />
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => setCurrentMediaIndex(prev => prev === headlineFiles.length - 1 ? 0 : prev + 1)}
+                                                className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-full bg-black/50 text-white hover:bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity"
+                                            >
+                                                <XIcon className="h-4 w-4 -rotate-90" />
+                                            </button>
+                                            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full bg-black/50 text-white text-[10px]">
+                                                {currentMediaIndex + 1} / {headlineFiles.length}
+                                            </div>
+                                        </>
+                                    )}
+                                </>
+                            ) : (
+                                <div className="w-full h-48 bg-gray-200 flex items-center justify-center text-gray-400 rounded-md">
+                                    <ImageIcon size={48} />
+                                </div>
+                            )}
+                        </div>
                         <div className="p-6 space-y-4">
-                            <div className="flex gap-2">
-                                {selectedCategories.map(c => <Badge key={c} variant="outline" className="text-golden-dark border-golden-dark">{c}</Badge>)}
+                            <div className="flex gap-2 flex-wrap min-h-[24px]">
+                                {selectedCategoryObject && (
+                                    <Badge variant="outline" className="text-golden-dark border-golden-dark scale-90 origin-left">
+                                        {selectedCategoryObject.name}
+                                    </Badge>
+                                )}
                             </div>
                             <h1 className="text-2xl font-bold text-[#073954]">{title || "Event Title"}</h1>
                             <p className="text-gray-600 text-sm line-clamp-3">{description || "Event description preview will appear here..."}</p>
-                            
+
                             <div className="grid grid-cols-2 gap-4 py-4 border-y text-sm">
                                 <div className="flex items-center gap-2">
                                     <CalendarIcon className="h-4 w-4 text-golden-dark" />
@@ -364,5 +512,5 @@ export default function EventForm({ initialData, onSubmit, isLoading: isSubmitti
 }
 
 function ImageIcon({ size }: { size: number }) {
-    return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-image"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>;
+    return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-image"><rect width="18" height="18" x="3" y="3" rx="2" ry="2" /><circle cx="9" cy="9" r="2" /><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" /></svg>;
 }

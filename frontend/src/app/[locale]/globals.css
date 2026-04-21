@@ -303,3 +303,36 @@
 .animate-fade-in-up:nth-child(5) {
   animation-delay: 0.4s;
 }
+
+/* Fix Quill editor overflow */
+.quill-container {
+  position: relative;
+  overflow: visible;
+}
+
+.custom-quill .ql-container {
+  min-height: 200px;
+  font-size: 14px;
+  overflow-y: auto;
+}
+
+.custom-quill .ql-editor {
+  min-height: 200px;
+}
+
+/* Ensure all buttons have pointer cursor */
+button,
+[role="button"],
+.cursor-pointer {
+  cursor: pointer;
+}
+
+/* Fix form submission */
+form button[type="submit"]:not(:disabled) {
+  cursor: pointer;
+}
+
+form button[type="submit"]:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}

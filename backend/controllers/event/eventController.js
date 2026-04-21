@@ -1,5 +1,4 @@
 "use strict";
-
 const {
   Event,
   EventAttachment,
@@ -10,6 +9,7 @@ const {
 
 const { v4: uuidv4, validate: isUuid } = require("uuid");
 const { Op } = require("sequelize");
+const { getRelatedEvents } = require("../../utils/relatedEvents");
 
 // ============================================
 // HELPER: AUTO STATUS LOGIC
@@ -17,30 +17,24 @@ const { Op } = require("sequelize");
 const resolveEventStatus = (event) => {
   const now = new Date();
 
+  // Explicit overrides
   if (event.status === "cancelled") return "cancelled";
+  if (event.status === "archived") return "archived";
 
-  if (event.publish_start && now < event.publish_start) {
-    return "scheduled";
+  // Event Progress based on start/end time
+  const startTime = new Date(event.start_time);
+  const endTime = new Date(event.end_time);
+
+  if (now < startTime) {
+    return "upcoming";
   }
 
-  if (
-    event.publish_start &&
-    now >= event.publish_start &&
-    !event.published_at
-  ) {
-    return "published";
-  }
-
-  if (event.start_time && now >= event.start_time && now <= event.end_time) {
+  if (now >= startTime && now <= endTime) {
     return "ongoing";
   }
 
-  if (event.end_time && now > event.end_time) {
+  if (now > endTime) {
     return "completed";
-  }
-
-  if (event.publish_end && now > event.publish_end) {
-    return "archived";
   }
 
   return event.status;
@@ -63,7 +57,7 @@ const createEvent = async (req, res) => {
       organizer,
       content,
       attachments,
-      categories,
+      event_category_id,
       publish_start,
       publish_end,
       status,
@@ -82,6 +76,7 @@ const createEvent = async (req, res) => {
         event_id: uuidv4(),
         title,
         description,
+        event_category_id,
         start_time,
         end_time,
         location,
@@ -109,23 +104,32 @@ const createEvent = async (req, res) => {
       await EventAttachment.bulkCreate(rows, { transaction: t });
     }
 
-    // ================= CATEGORIES =================
-    if (Array.isArray(categories)) {
-      const rows = categories.map((category) => ({
-        event_category_id: uuidv4(),
-        event_id: event.event_id,
-        category,
-      }));
+    // Categories (removed junction logic)
 
-      await EventCategory.bulkCreate(rows, { transaction: t });
-    }
 
     await t.commit();
+    
+    // Reload with associations
+    const fullEvent = await Event.findByPk(event.event_id, {
+      include: [
+        {
+          model: EventCategory,
+          as: "category",
+        },
+        {
+          model: EventAttachment,
+          as: "attachments",
+          include: [{ model: Attachment, as: "attachment" }],
+        },
+      ],
+    });
+
+    const computed_status = resolveEventStatus(fullEvent);
 
     return res.status(201).json({
       success: true,
       message: "Event created successfully",
-      data: event,
+      data: { ...fullEvent.toJSON(), computed_status },
     });
   } catch (error) {
     if (!t.finished) await t.rollback();
@@ -152,8 +156,23 @@ const getAllEvents = async (req, res) => {
     }
 
     if (isAdmin !== "true") {
+      // Public Side: Only 'published' events within the live window
+      // publish_start can be null (immediate publish) or in the past
       where.status = "published";
-      where.publish_start = { [Op.lte]: new Date() };
+      where[Op.and] = [
+        {
+          [Op.or]: [
+            { publish_start: null },
+            { publish_start: { [Op.lte]: new Date() } }
+          ]
+        },
+        {
+          [Op.or]: [
+            { publish_end: null },
+            { publish_end: { [Op.gte]: new Date() } }
+          ]
+        }
+      ];
     } else if (status) {
       where.status = status;
     }
@@ -166,7 +185,10 @@ const getAllEvents = async (req, res) => {
           as: "attachments",
           include: [{ model: Attachment, as: "attachment" }],
         },
-        { model: EventCategory, as: "categories" },
+        {
+          model: EventCategory,
+          as: "category",
+        },
       ],
       order: [["created_at", "DESC"]],
     });
@@ -209,7 +231,10 @@ const getEventById = async (req, res) => {
           as: "attachments",
           include: [{ model: Attachment, as: "attachment" }],
         },
-        { model: EventCategory, as: "categories" },
+        {
+          model: EventCategory,
+          as: "category",
+        },
       ],
     });
 
@@ -220,10 +245,11 @@ const getEventById = async (req, res) => {
     }
 
     const computed_status = resolveEventStatus(event);
+    const relatedEvents = await getRelatedEvents(id, 10);
 
     return res.status(200).json({
       success: true,
-      data: { ...event.toJSON(), computed_status },
+      data: { ...event.toJSON(), computed_status, relatedEvents },
     });
   } catch (error) {
     return res.status(500).json({
@@ -264,13 +290,14 @@ const updateEvent = async (req, res) => {
     await event.update(updateData, { transaction: t });
 
     // ===== attachments =====
-    if (Array.isArray(req.body.attachment_ids)) {
+    const finalAttachmentIds = req.body.attachment_ids || req.body.attachments;
+    if (Array.isArray(finalAttachmentIds)) {
       await EventAttachment.destroy({
         where: { event_id: id },
         transaction: t,
       });
 
-      const rows = req.body.attachment_ids.map((attachment_id) => ({
+      const rows = finalAttachmentIds.map((attachment_id) => ({
         event_attachment_id: uuidv4(),
         event_id: id,
         attachment_id,
@@ -279,25 +306,32 @@ const updateEvent = async (req, res) => {
       await EventAttachment.bulkCreate(rows, { transaction: t });
     }
 
-    // ===== categories =====
-    if (Array.isArray(req.body.categories)) {
-      await EventCategory.destroy({ where: { event_id: id }, transaction: t });
+    // Category updated directly in updateData if event_category_id is in body
 
-      const rows = req.body.categories.map((category) => ({
-        event_category_id: uuidv4(),
-        event_id: id,
-        category,
-      }));
-
-      await EventCategory.bulkCreate(rows, { transaction: t });
-    }
 
     await t.commit();
+
+    // Reload with associations
+    const fullEvent = await Event.findByPk(id, {
+      include: [
+        {
+          model: EventCategory,
+          as: "category",
+        },
+        {
+          model: EventAttachment,
+          as: "attachments",
+          include: [{ model: Attachment, as: "attachment" }],
+        },
+      ],
+    });
+
+    const computed_status = resolveEventStatus(fullEvent);
 
     return res.status(200).json({
       success: true,
       message: "Event updated successfully",
-      data: event,
+      data: { ...fullEvent.toJSON(), computed_status },
     });
   } catch (error) {
     if (!t.finished) await t.rollback();

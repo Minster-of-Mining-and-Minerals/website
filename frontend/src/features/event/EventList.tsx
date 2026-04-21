@@ -17,7 +17,7 @@ import {
     useDeleteEventMutation,
 } from "@/redux/api/eventApi";
 import { Event } from "@/redux/types/event";
-// import { format } from "date-fns";
+import { format } from "date-fns";
 
 /* ----------------------------------
    COMPONENT
@@ -169,7 +169,7 @@ export default function EventList() {
 
                 return (
                     <div className="flex items-center gap-1">
-                        <ComponentGuard anyPermissions={["EVENT:UPDATE"]}>
+                        <ComponentGuard anyPermissions={["EVENTS:UPDATE"]}>
                             <Button
                                 variant="ghost"
                                 size="icon"
@@ -179,7 +179,7 @@ export default function EventList() {
                             </Button>
                         </ComponentGuard>
 
-                        <ComponentGuard anyPermissions={["EVENT:DELETE"]}>
+                        <ComponentGuard anyPermissions={["EVENTS:DELETE"]}>
                             <Button
                                 variant="ghost"
                                 size="icon"
@@ -213,7 +213,7 @@ export default function EventList() {
             icon: <Plus className="h-4 w-4" />,
             variant: "default",
             onClick: () => router.push("/admin/events/create"),
-            permissions: ["EVENT:CREATE"],
+            permissions: ["EVENTS:CREATE"],
         },
     ];
 
@@ -260,7 +260,7 @@ export default function EventList() {
                             <div className="space-y-2 text-sm text-gray-600">
                                 <div className="flex items-center gap-2">
                                     <CalendarIcon className="h-4 w-4 text-golden-dark" />
-                                    <span>{item.start_time ? formatDate(item.start_time, "PPP") : "No date"}</span>
+                                    <span>{item.start_time ? format(item.start_time, "PPP") : "No date"}</span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <MapPin className="h-4 w-4 text-golden-dark" />

@@ -2,15 +2,11 @@
 // EVENT TYPES
 // ===========================
 
+import { EventCategoryLink } from "./eventCategory";
+
 export interface EventAttachmentLink {
   attachment_id: string;
   attachment?: any;
-}
-
-export interface EventCategoryItem {
-  event_category_id: string;
-  event_id: string;
-  category: string;
 }
 
 export interface Event {
@@ -50,7 +46,9 @@ export interface Event {
   deleted_at?: string;
 
   attachments?: EventAttachmentLink[];
-  categories?: EventCategoryItem[];
+  /** Single category association */
+  event_category_id?: string;
+  category?: any;
 }
 
 
@@ -71,8 +69,8 @@ export interface CreateEventPayload {
   organizer: string;
   content?: any;
 
-  attachments?: string[]; // attachment_ids
-  categories?: string[];
+  attachments?: string[];   // attachment_ids
+  event_category_id?: string;  // event_category_id from standalone table
 
   publish_start?: string;
   publish_end?: string;
@@ -94,7 +92,7 @@ export interface UpdateEventPayload {
   content?: any;
 
   attachment_ids?: string[];
-  categories?: string[];
+  event_category_id?: string;  // replaces old category_ids array
 
   publish_start?: string;
   publish_end?: string;

@@ -6,23 +6,16 @@ const router = express.Router();
 const { authenticateToken } = require("../../middlewares/authMiddleware");
 
 const {
-  validateCreateCategory,
-  validateUpdateCategory,
-} = require("../../validators/event/eventCategoryValidator");
-
-const {
   createEventCategory,
   getAllEventCategories,
-  getCategoriesByEvent,
   updateEventCategory,
   deleteEventCategory,
 } = require("../../controllers/event/eventCategoryController");
 
-// ================= CRUD =================
-router.post("/", authenticateToken, validateCreateCategory, createEventCategory);
+// Standalone category CRUD (no event coupling)
+router.post("/", authenticateToken, createEventCategory);
 router.get("/", getAllEventCategories);
-router.get("/:event_id", getCategoriesByEvent);
-router.put("/:id", authenticateToken, validateUpdateCategory, updateEventCategory);
+router.put("/:id", authenticateToken, updateEventCategory);
 router.delete("/:id", authenticateToken, deleteEventCategory);
 
 module.exports = router;

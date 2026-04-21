@@ -69,6 +69,7 @@ const attachmentRoute = require("./routers/attachement/attachementRoutes");
 // ================== Event Routes ==========================
 const eventRoute = require("./routers/event/eventRoutes");
 const eventCategoryRoute = require("./routers/event/eventCategoryRoutes");
+const { initEventScheduler } = require("./utils/eventScheduler");
 
 // ================== System Routes ==========================
 const auditLogRoute = require("./routers/system/auditLogRoutes");
@@ -230,6 +231,7 @@ app.use((err, req, res, next) => {
 const appPort = process.env.PORT || 4000;
 appServer.listen(appPort, () => {
   console.log(` App server running at http://localhost:${appPort}`);
+  initEventScheduler(); // Initialize the background scheduler
 });
 
 // ================== Socket.IO Setup ==================

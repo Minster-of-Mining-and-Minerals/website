@@ -35,9 +35,14 @@ export const extractExcerpt = (content: any, maxLength = 160) => {
 export function extractHeadlineImage(attachments: any[]) {
     if (!attachments || attachments.length === 0) return null;
 
-    const headline = attachments.find(
+    let headline = attachments.find(
         (a) => a.category === "headline" && a.attachment?.file_path
     );
+
+    // Fallback for events that don't have category='headline'
+    if (!headline) {
+        headline = attachments.find((a) => a.attachment?.file_path);
+    }
 
     if (!headline) return null;
 
@@ -60,9 +65,14 @@ export function extractAllHeadlineAttachments(attachments: any[]) {
     if (!attachments || attachments.length === 0) return [];
 
     // Filter only headline attachments that have a valid file path
-    const headlines = attachments.filter(
+    let headlines = attachments.filter(
         (a) => a.category === "headline" && a.attachment?.file_path
     );
+
+    // Fallback for events where attachments lack category
+    if (headlines.length === 0) {
+        headlines = attachments.filter((a) => a.attachment?.file_path);
+    }
 
     return headlines.map((att) => {
         const rawPath = att.attachment.file_path;

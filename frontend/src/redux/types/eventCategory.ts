@@ -2,22 +2,31 @@
 // EVENT CATEGORY TYPES
 // ===========================
 
+/** Standalone category tag (like Tag in news) */
 export interface EventCategory {
   event_category_id: string;
-  event_id: string;
-  category: string;
+  name: string;
+  created_at?: string;
 }
 
+/** Junction record returned when loading event's categories */
+export interface EventCategoryLink {
+  link_id: string;
+  event_id: string;
+  event_category_id: string;
+  category?: EventCategory;
+}
+
+// ===========================
+// PAYLOADS
+// ===========================
+
+/** Create a new standalone category */
 export interface CreateEventCategoryPayload {
-  event_id: string;
-  categories: string[];
+  name: string;
 }
 
-export interface ReplaceEventCategoryPayload {
-  event_id: string;
-  categories: string[];
-}
-
+/** Update category name */
 export interface UpdateEventCategoryPayload {
-  category: string;
+  name: string;
 }

@@ -32,8 +32,7 @@ const createEventSchema = Joi.object({
   content: Joi.alternatives().try(Joi.string(), Joi.object()).optional(),
 
   attachments: Joi.array().items(uuidSchema).optional().default([]),
-
-  categories: Joi.array().items(Joi.string().min(2)).optional().default([]),
+  event_category_id: uuidSchema.optional().allow(null),
 
   publish_start: Joi.date().iso().optional(),
   publish_end: Joi.date().iso().greater(Joi.ref("publish_start")).optional(),
@@ -69,8 +68,8 @@ const updateEventSchema = Joi.object({
   content: Joi.alternatives().try(Joi.string(), Joi.object()).optional(),
 
   attachment_ids: Joi.array().items(uuidSchema).optional(),
-
-  categories: Joi.array().items(Joi.string().min(2)).optional(),
+  attachments: Joi.array().items(uuidSchema).optional(),
+  event_category_id: uuidSchema.optional().allow(null),
 
   publish_start: Joi.date().iso().optional(),
   publish_end: Joi.date().iso().optional(),
