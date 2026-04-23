@@ -41,10 +41,10 @@ const columns: ColumnDef<Role>[] = [
   {
     id: "actions",
     header: "Actions",
-    cell: () => (
+    cell: ({ row }) => (
       <ComponentGuard anyPermissions={["ROLES:UPDATE", "ROLES:DELETE"]}>
-        <Button variant="ghost" size="icon">
-          <MoreHorizontal />
+        <Button variant="ghost" size="sm" asChild>
+          <a href={`/admin/users/roles/${row.original.role_id}`}>Edit</a>
         </Button>
       </ComponentGuard>
     ),

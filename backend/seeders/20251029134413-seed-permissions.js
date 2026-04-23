@@ -39,6 +39,8 @@ module.exports = {
       },
       { resource: "attachments", actions: ["create", "read", "delete"] },
       { resource: "audit_logs", actions: ["read", "delete"] },
+      { resource: "routes", actions: ["read", "update"] },
+      { resource: "navigation", actions: crudActions },
     ];
 
     const permissions = resourcesWithActions.flatMap((r) =>

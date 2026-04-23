@@ -61,6 +61,14 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.DATE,
         allowNull: true,
       },
+      reset_password_otp: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      reset_password_otp_expires: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
       is_active: {
         type: DataTypes.BOOLEAN,
         defaultValue: true,

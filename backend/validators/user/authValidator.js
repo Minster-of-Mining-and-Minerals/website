@@ -40,3 +40,36 @@ exports.validateLogout = (req, res, next) => {
   }
   next();
 };
+
+const requestOTPSchema = Joi.object({
+  email: Joi.string().email().required(),
+});
+
+const verifyOTPSchema = Joi.object({
+  email: Joi.string().email().required(),
+  otp: Joi.string().length(6).required(),
+});
+
+const resetPasswordSchema = Joi.object({
+  email: Joi.string().email().required(),
+  otp: Joi.string().length(6).required(),
+  newPassword: Joi.string().min(8).required(),
+});
+
+exports.validateRequestOTP = (req, res, next) => {
+  const { error } = requestOTPSchema.validate(req.body);
+  if (error) return res.status(400).json({ errors: error.details.map((err) => err.message) });
+  next();
+};
+
+exports.validateVerifyOTP = (req, res, next) => {
+  const { error } = verifyOTPSchema.validate(req.body);
+  if (error) return res.status(400).json({ errors: error.details.map((err) => err.message) });
+  next();
+};
+
+exports.validateResetPassword = (req, res, next) => {
+  const { error } = resetPasswordSchema.validate(req.body);
+  if (error) return res.status(400).json({ errors: error.details.map((err) => err.message) });
+  next();
+};

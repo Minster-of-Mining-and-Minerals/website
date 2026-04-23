@@ -6,8 +6,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy: "jwt",
-    maxAge: 10 * 60, // 10 minutes
-    updateAge: 60,   // update every 1 minute
+    maxAge: 24 * 60 * 60, // 24 hours
+    updateAge: 2 * 60 * 60, // 2 hours
   },
   pages: {
     signIn: "/login",
@@ -26,10 +26,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         };
       }
 
-      if (token.exp && (token.exp as number) < Date.now() / 1000) {
-        console.log("Token expired");
-        return null;
-      }
       return token;
     },
     async session({ session, token }) {

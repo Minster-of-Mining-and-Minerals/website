@@ -1,7 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const authController = require("../../controllers/user/authController");
-const { validateLogin } = require("../../validators/user/authValidator");
+const { 
+  validateLogin, 
+  validateRequestOTP, 
+  validateVerifyOTP, 
+  validateResetPassword 
+} = require("../../validators/user/authValidator");
 /**
  * @swagger
  * tags:
@@ -50,5 +55,8 @@ router.post("/login", validateLogin, authController.login);
  *         description: Logout successful
  */
 router.post("/logout", authController.logout);
+router.post("/request-otp", validateRequestOTP, authController.requestOTP);
+router.post("/verify-otp", validateVerifyOTP, authController.verifyOTP);
+router.post("/reset-password", validateResetPassword, authController.resetPassword);
 
 module.exports = router;

@@ -13,18 +13,21 @@ import {
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { IconX } from "@tabler/icons-react";
-import { usePathname } from "@/i18n/navigation"; // ✅ add this
+import { usePathname } from "@/i18n/navigation";
+import { useRouter } from "@/i18n/navigation"; // ✅ add this
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
+import Link from "next/link"; // ✅ import Next.js Link
 
 export default function PublicNavbar() {
     const t = useTranslations();
-    const pathname = usePathname(); // current route
+    const pathname = usePathname();
+    const router = useRouter(); // ✅ add router
     const [openMobileIndex, setOpenMobileIndex] = useState<number | null>(null);
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     const navItems = [
         { name: t("nav.home"), link: "/" },
-
         {
             name: t("nav.sector"),
             children: [
@@ -33,7 +36,6 @@ export default function PublicNavbar() {
                 { name: t("nav.petroleum"), link: "/petroleum" },
             ],
         },
-
         { name: t("nav.about"), link: "/about" },
         { name: t("nav.asm"), link: "/asm" },
         { name: t("nav.investigating-in-ethiopia"), link: "/investigating-in-ethiopia" },
@@ -43,7 +45,12 @@ export default function PublicNavbar() {
         { name: t("nav.contact"), link: "/contact" },
     ];
 
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    // ✅ Function to handle navigation
+    const handleNavigation = (link: string) => {
+        router.push(link);
+        setIsMobileMenuOpen(false);
+        setOpenMobileIndex(null);
+    };
 
     return (
         <Navbar className="lg:py-3 z-[1000]">
@@ -87,31 +94,38 @@ export default function PublicNavbar() {
                         return (
                             <div key={`mobile-item-${idx}`} className="flex flex-col">
                                 {/* Top-level item */}
-                                <button
-                                    onClick={() => {
-                                        if (item.children) {
+                                {item.children ? (
+                                    <button
+                                        onClick={() => {
                                             setOpenMobileIndex(isOpen ? null : idx);
-                                        } else {
-                                            setIsMobileMenuOpen(false);
-                                        }
-                                    }}
-                                    className={`flex w-full items-center justify-between text-lg font-medium px-3 py-2 rounded-lg transition-colors
-          ${isActive
-                                            ? "text-golden-dark dark:text-white font-semibold border border-golden-dark30 bg-golden-dark20"
-                                            : "text-gray-600 dark:text-neutral-200 hover:text-golden-dark hover:bg-golden-dark10"
-                                        }`}
-                                >
-                                    <span>{item.name}</span>
-
-                                    {item.children && (
+                                        }}
+                                        className={`flex w-full items-center justify-between text-lg font-medium px-3 py-2 rounded-lg transition-colors
+                                            ${isActive
+                                                ? "text-golden-dark dark:text-white font-semibold border border-golden-dark30 bg-golden-dark20"
+                                                : "text-gray-600 dark:text-neutral-200 hover:text-golden-dark hover:bg-golden-dark10"
+                                            }`}
+                                    >
+                                        <span>{item.name}</span>
                                         <span
                                             className={`transition-transform ${isOpen ? "rotate-180" : ""
                                                 }`}
                                         >
                                             <ChevronDown />
                                         </span>
-                                    )}
-                                </button>
+                                    </button>
+                                ) : (
+                                    <Link
+                                        href={item.link}
+                                        onClick={() => setIsMobileMenuOpen(false)}
+                                        className={`flex w-full items-center justify-between text-lg font-medium px-3 py-2 rounded-lg transition-colors
+                                            ${isActive
+                                                ? "text-golden-dark dark:text-white font-semibold border border-golden-dark30 bg-golden-dark20"
+                                                : "text-gray-600 dark:text-neutral-200 hover:text-golden-dark hover:bg-golden-dark10"
+                                            }`}
+                                    >
+                                        <span>{item.name}</span>
+                                    </Link>
+                                )}
 
                                 <AnimatePresence initial={false}>
                                     {item.children && isOpen && (
@@ -130,18 +144,18 @@ export default function PublicNavbar() {
                                                 const isChildActive = pathname.startsWith(child.link);
 
                                                 return (
-                                                    <a
+                                                    <Link
                                                         key={`mobile-child-${idx}-${cIdx}`}
                                                         href={child.link}
                                                         onClick={() => setIsMobileMenuOpen(false)}
                                                         className={`px-3 py-2 rounded-md text-base transition-colors
-              ${isChildActive
+                                                            ${isChildActive
                                                                 ? "text-golden-dark font-semibold bg-golden-dark10"
                                                                 : "text-gray-600 dark:text-neutral-300 hover:text-golden-dark hover:bg-golden-dark10"
                                                             }`}
                                                     >
                                                         {child.name}
-                                                    </a>
+                                                    </Link>
                                                 );
                                             })}
                                         </motion.div>

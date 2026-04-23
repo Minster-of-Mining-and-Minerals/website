@@ -1,22 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import createMiddleware from "next-intl/middleware";
 import { routing } from "./i18n/routing";
+import { auth } from "./auth";
 
 const intlMiddleware = createMiddleware(routing);
 
 const publicRoutes = [
   "/",
   "/login",
-  "/feedback",
-  "/complaint",
-  "/track-complaint",
 ];
 const authRoutes = ["/login"];
 
-export default function middleware(req: NextRequest) {
+export default async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
+  
   // Apply intl middleware first
-
   const intlResponse = intlMiddleware(req);
 
   // Get locale
@@ -27,35 +25,22 @@ export default function middleware(req: NextRequest) {
   const pathnameWithoutLocale =
     pathname.replace(new RegExp(`^/${locale}`), "") || "/";
 
-  // 🔥 FIXED: Check for ANY cookie that starts with session token patterns
-  const allCookies = req.cookies.getAll();
-
-  // Look for any cookie that starts with these prefixes (handles chunked cookies)
-  let hasSessionToken = false;
-
-  for (const cookie of allCookies) {
-    if (
-      cookie.name.startsWith("next-auth.session-token") ||
-      cookie.name.startsWith("__Secure-next-auth.session-token") ||
-      cookie.name.startsWith("authjs.session-token") ||
-      cookie.name.startsWith("__Secure-authjs.session-token")
-    ) {
-      hasSessionToken = true;
-      break;
-    }
-  }
+  // Use auth() to get the actual session
+  const session = await auth();
+  const hasSessionToken = !!session;
 
   const isPublicRoute = publicRoutes.includes(pathnameWithoutLocale);
   const isAuthRoute = authRoutes.includes(pathnameWithoutLocale);
   const isAdminRoute = pathnameWithoutLocale.startsWith("/admin");
+
   console.log("🔐 MIDDLEWARE DEBUG:");
   console.log("  Path:", pathnameWithoutLocale);
-  console.log(
-    "  Found cookies:",
-    allCookies.map((c) => c.name),
-  );
-  console.log("  Has session token:", hasSessionToken);
+  console.log("  Has valid session:", hasSessionToken);
   console.log("  Is public route:", isPublicRoute);
+  if (hasSessionToken) {
+    console.log("  User ID:", session.user?.id);
+    console.log("  Is First Login:", session.user?.is_first_logged_in);
+  }
 
   // 🔐 Rule 1: If logged in and trying to access login page, redirect to dashboard
   if (isAuthRoute && hasSessionToken) {
@@ -67,9 +52,20 @@ export default function middleware(req: NextRequest) {
   if (isAdminRoute && !hasSessionToken) {
     console.log("  Redirecting unauthenticated user to login");
     const loginUrl = new URL(`/${locale}/login`, req.url);
-    // Use the full pathname, not pathnameWithoutLocale
     loginUrl.searchParams.set("callbackUrl", req.nextUrl.pathname);
-    return NextResponse.redirect(loginUrl);
+    
+    // IMPORTANT: Clear any stale cookies if session is null but we are on an admin route
+    const response = NextResponse.redirect(loginUrl);
+    // You can't easily clear "all" next-auth cookies here without knowing their names,
+    // but usually NextAuth handles this if signOut was successful.
+    // However, if we are here, it means hasSessionToken is false.
+    return response;
+  }
+
+  // 🛡️ Rule 3: Forced password change for first-time login
+  if (hasSessionToken && session.user?.is_first_logged_in && pathnameWithoutLocale !== "/change-password") {
+    console.log("  Forcing password change for new user");
+    return NextResponse.redirect(new URL(`/${locale}/change-password`, req.url));
   }
 
   // ✅ Allow access

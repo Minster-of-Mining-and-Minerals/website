@@ -292,7 +292,7 @@ export const routePermissions: RouteConfig[] = [
         label: "System",
         icon: "ShieldCheck",
         permissions: {
-            anyPermissions: ["AUDIT_LOGS:READ"],
+            anyPermissions: ["AUDIT_LOGS:READ", "ROUTES:READ"],
         },
         children: [
             {
@@ -300,6 +300,12 @@ export const routePermissions: RouteConfig[] = [
                 label: "Audit Logs",
                 icon: "ClipboardList",
                 permissions: { anyPermissions: ["AUDIT_LOGS:READ"] },
+            },
+            {
+                path: "/admin/system/routes",
+                label: "Routes Management",
+                icon: "Map",
+                // permissions: { anyPermissions: ["ROUTES:READ"] },
             },
         ],
     },

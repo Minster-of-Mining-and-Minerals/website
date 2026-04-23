@@ -34,8 +34,12 @@ export function NavUser({ user }: NavUserProps) {
     .slice(0, 2);
 
   const handleLogout = async () => {
-    await logout()
-    // signOut({ redirectTo: "/login" });
+    // Clear local storage first
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("user");
+    
+    // Call the server action to sign out
+    await logout();
   };
 
 

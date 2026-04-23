@@ -120,7 +120,7 @@ router.get("/:id", getUserById);
  *       200:
  *         description: User profile
  */
-router.get("/profile/me", getProfile);
+router.get("/profile/me", authenticateToken, getProfile);
 
 /**
  * @swagger

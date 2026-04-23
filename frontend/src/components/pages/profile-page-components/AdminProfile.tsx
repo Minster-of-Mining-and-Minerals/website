@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { User as UserIcon, Mail, Phone, Shield, Building2, Briefcase } from "lucide-react";
+import { useGetUserRolesAndPermissionsQuery } from "@/redux/api/userApi";
 
 export default function AdminProfile() {
   const { data: session } = useSession();

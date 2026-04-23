@@ -133,6 +133,19 @@ export const userApi = baseApi.injectEndpoints({
       transformResponse: (response: any) => response.data ?? { permissions: [], roles: [] },
       providesTags: ["User"],
     }),
+
+    // CHANGE PASSWORD
+
+    changePassword: builder.mutation<{ message: string }, { current_password: string; new_password: string; confirm_password: string; confirm_change?: boolean }>({
+      query: (body) => ({
+        url: `/change-password`,
+        method: "PUT",
+        body,
+      }),
+      transformResponse: (response: any) => response,
+      invalidatesTags: ["User"],
+    }),
+
   }),
 });
 
@@ -148,4 +161,5 @@ export const {
   useGetUserTypesQuery,
   useGetUserPositionsQuery,
   useGetUserRolesAndPermissionsQuery,
+  useChangePasswordMutation,
 } = userApi;

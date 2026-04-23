@@ -87,8 +87,8 @@ export default function CreateRole() {
 
   // Populate form when role data is loaded (edit mode)
   useEffect(() => {
-    if (isEditMode && roleResponse?.data && resourceGroups.length > 0) {
-      const role = roleResponse.data;
+    if (isEditMode && roleResponse && resourceGroups.length > 0) {
+      const role = roleResponse;
 
       // Normalize role_type to lowercase internal/external
       const type =
@@ -113,7 +113,7 @@ export default function CreateRole() {
 
         // Set selected permissions to true
         role.rolePermissions.forEach((rp: any) => {
-          if (rp.permission && rp.is_active) {
+          if (rp.permission) {
             const permissionId = rp.permission.permission_id;
             const permission = resourceGroups
               .flatMap((g) => g.permissions)
@@ -252,7 +252,7 @@ export default function CreateRole() {
         }).unwrap();
 
         toast.success("Role updated successfully!");
-        router.push("/role");
+        router.push("/admin/users/roles");
       } else {
         await createRole({
           name: name.trim(),
@@ -262,12 +262,12 @@ export default function CreateRole() {
 
         toast.success("Role created successfully!");
         resetForm();
-        router.push("/users/roles");
+        router.push("/admin/users/roles");
       }
     } catch (error: any) {
       toast.error(
         error?.data?.message ||
-          `Failed to ${isEditMode ? "update" : "create"} role`
+        `Failed to ${isEditMode ? "update" : "create"} role`
       );
     }
   };

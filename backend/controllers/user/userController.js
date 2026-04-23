@@ -105,8 +105,7 @@ const createUser = async (req, res) => {
     }
 
     // ====== Generate password ======
-    // const password = generateRandomPassword();
-    const password = "password";
+    const password = generateRandomPassword();
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // ====== Create User ======
@@ -142,24 +141,34 @@ const createUser = async (req, res) => {
       await UserRoles.bulkCreate(roleAssignments, { transaction: t });
     }
 
-    await t.commit();
-
     // ====== Send welcome email ======
-    await sendEmail(
-      email,
-      `Welcome to ${process.env.APP_NAME}!`,
-      `
+    try {
+      await sendEmail(
+        email,
+        `Welcome to ${process.env.APP_NAME}!`,
+        `
       Dear ${full_name},
       Your account has been successfully created.
       Email: ${email}
       Temporary Password: ${password}
       Please change your password after first login.
     `
-    );
+      );
+    } catch (emailError) {
+      if (!t.finished) await t.commit();
+      console.error("Welcome email failed, but user was created:", emailError);
+      return res.status(201).json({
+        success: true,
+        message: `User registered successfully, but the welcome email could not be sent due to a network issue. Please provide this temporary password to the user manually: ${password}`,
+        data: user,
+      });
+    }
+
+    if (!t.finished) await t.commit();
 
     return res.status(201).json({
       success: true,
-      message: "User registered globally (no roles assigned yet)",
+      message: "User registered successfully and welcome email sent.",
       data: user,
     });
   } catch (error) {
@@ -510,20 +519,29 @@ const resetUserPassword = async (req, res) => {
       { transaction: t }
     );
 
-    await t.commit();
-
     // Send email notification
-    await sendEmail(
-      user.email,
-      `Password Reset - ${process.env.APP_NAME}`,
-      `
+    try {
+      await sendEmail(
+        user.email,
+        `Password Reset - ${process.env.APP_NAME}`,
+        `
       Dear ${user.full_name},
       Your password has been reset successfully.
       Email: ${user.email}
       New Temporary Password: ${newPassword}
       Please change your password after logging in.
       `
-    );
+      );
+    } catch (emailError) {
+      if (!t.finished) await t.commit();
+      console.error("Reset password email failed, but password was changed:", emailError);
+      return res.status(200).json({
+        success: true,
+        message: `Password reset successfully, but the notification email failed. Please provide this new password to the user manually: ${newPassword}`,
+      });
+    }
+
+    if (!t.finished) await t.commit();
 
     return res.status(200).json({
       success: true,
@@ -531,7 +549,8 @@ const resetUserPassword = async (req, res) => {
         "Password reset successfully. The new password has been sent via email.",
     });
   } catch (error) {
-    await t.rollback();
+    if (!t.finished) await t.rollback();
+    console.error("Error resetting user password:", error);
     return res.status(500).json({
       success: false,
       message: "Error resetting user password",
