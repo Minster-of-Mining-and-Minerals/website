@@ -1,5 +1,5 @@
 import { baseApi } from "../baseApi";
-import { UserType, UserPosition, User } from "../types/user";
+import { UserPosition, User } from "../types/user";
 import {
   CreateUserPayload,
   UpdateUserPayload,
@@ -13,7 +13,7 @@ export const userApi = baseApi.injectEndpoints({
      * --------------------------- */
     getUsers: builder.query<
       User[],
-      { user_type_id?: string; is_active?: boolean; search?: string } | void
+      { is_active?: boolean; search?: string } | void
     >({
       query: (params) =>
         params ? { url: "/users", params } : { url: "/users" },
@@ -107,14 +107,6 @@ export const userApi = baseApi.injectEndpoints({
       invalidatesTags: ["User"],
     }),
 
-    /** ---------------------------
-     * GET USER TYPES
-     * --------------------------- */
-    getUserTypes: builder.query<UserType[], void>({
-      query: () => "/users/types",
-      transformResponse: (response: any): UserType[] => response.data ?? [],
-      providesTags: ["User"],
-    }),
 
     /** ---------------------------
      * GET USER POSITIONS
@@ -158,7 +150,6 @@ export const {
   useDeleteUserMutation,
   useToggleUserStatusMutation,
   useResetUserPasswordMutation,
-  useGetUserTypesQuery,
   useGetUserPositionsQuery,
   useGetUserRolesAndPermissionsQuery,
   useChangePasswordMutation,

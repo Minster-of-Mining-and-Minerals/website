@@ -9,7 +9,6 @@ const {
   toggleUserActiveStatus,
   resetUserPassword,
   getProfile,
-  getUserTypes,
   getUserPositions,
   getUserPermissions,
 } = require("../../controllers/user/userController");
@@ -24,17 +23,6 @@ const { authenticateToken } = require("../../middlewares/authMiddleware");
  *   description: User management and retrieval
  */
 
-/**
- * @swagger
- * /users/types:
- *   get:
- *     summary: Get all user types
- *     tags: [Users]
- *     responses:
- *       200:
- *         description: List of user types
- */
-router.get("/types", getUserTypes);
 
 /**
  * @swagger

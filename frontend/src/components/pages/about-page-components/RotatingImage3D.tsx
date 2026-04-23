@@ -70,11 +70,11 @@ function ShadowPlane() {
 export default function GlobeTwoSided({ frontUrl, backUrl }: { frontUrl: string; backUrl: string }) {
     return (
         <div
-            style={{
-                width: "clamp(300px, 40vw, 600px)",
-                height: "clamp(280px, 40vh, 600px)",
-            }}
-            className="w-full  flex items-center justify-center">
+            // style={{
+            //     width: "clamp(300px, 40vw, 600px)",
+            //     height: "clamp(280px, 40vh, 600px)",
+            // }}
+            className="w-full  flex items-center justify-center   h-[clamp(260px,50vw,500px)] md:h-[clamp(280px,40vh,600px)] md:w-[clamp(300px,40vw,600px)]">
             <Canvas
                 camera={{ position: [0, 0, 10], fov: 50 }}
                 shadows

@@ -9,8 +9,7 @@ import { toast } from "sonner";
 import {
     useCreateUserMutation,
     useUpdateUserMutation,
-    useGetUserByIdQuery,
-    useGetUserTypesQuery
+    useGetUserByIdQuery
 } from "@/redux/api/userApi";
 import { useGetRolesQuery } from "@/redux/api/roleApi";
 import { Label } from "@/components/ui/label";
@@ -28,7 +27,6 @@ const UserForm = ({ userId }: UserFormProps) => {
 
     /* API Hooks */
     const { data: userData, isLoading: isUserLoading } = useGetUserByIdQuery(userId as string, { skip: !isEdit });
-    const { data: userTypes = [] } = useGetUserTypesQuery();
     const { data: rolesData = [] } = useGetRolesQuery({ is_active: true });
 
     const [createUser, { isLoading: isCreating }] = useCreateUserMutation();
@@ -38,7 +36,6 @@ const UserForm = ({ userId }: UserFormProps) => {
     const [fullName, setFullName] = useState("");
     const [email, setEmail] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
-    const [userTypeId, setUserTypeId] = useState("");
     const [selectedRoleIds, setSelectedRoleIds] = useState<string[]>([]);
     const [isActive, setIsActive] = useState(true);
     const [isPopoverOpen, setIsPopoverOpen] = useState(false);
@@ -52,7 +49,6 @@ const UserForm = ({ userId }: UserFormProps) => {
             setFullName(userData.full_name || "");
             setEmail(userData.email || "");
             setPhoneNumber(userData.phone_number || "");
-            setUserTypeId(userData.user_type_id || "");
             setIsActive(userData.is_active);
 
             if (userData.roles && userData.roles.length > 0) {
@@ -66,8 +62,8 @@ const UserForm = ({ userId }: UserFormProps) => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!fullName || !email || !userTypeId) {
-            toast.error("Please fill in all required fields (Name, Email, User Type)");
+        if (!fullName || !email) {
+            toast.error("Please fill in all required fields (Name, Email)");
             return;
         }
 
@@ -75,7 +71,6 @@ const UserForm = ({ userId }: UserFormProps) => {
             full_name: fullName,
             email,
             phone_number: phoneNumber,
-            user_type_id: userTypeId,
             role_ids: selectedRoleIds,
             is_active: isActive
         };
@@ -204,25 +199,7 @@ const UserForm = ({ userId }: UserFormProps) => {
                                 </div>
                             </div>
 
-                            <div className="space-y-2">
-                                <Label htmlFor="userType" className="text-sm font-medium flex items-center gap-1.5 text-golden-dark/80">
-                                    User Type <span className="text-red-500">*</span>
-                                </Label>
-                                <select
-                                    id="userType"
-                                    className="w-full flex h-10 rounded-md border border-golden-dark/20 bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-golden-dark/30 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                                    value={userTypeId}
-                                    onChange={(e) => setUserTypeId(e.target.value)}
-                                    required
-                                >
-                                    <option value="">Select User Type</option>
-                                    {userTypes.map((type) => (
-                                        <option key={type.user_type_id} value={type.user_type_id}>
-                                            {type.name}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
+
                         </div>
                     </div>
 
