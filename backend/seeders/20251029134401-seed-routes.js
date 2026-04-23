@@ -5,10 +5,6 @@ module.exports = {
   async up(queryInterface, Sequelize) {
     const now = new Date();
 
-    // =============================
-    // DEFINE ROUTES STRUCTURE
-    // =============================
-
     const routesData = [
       {
         key: "home",
@@ -31,6 +27,7 @@ module.exports = {
           {
             key: "mining",
             path: "/mining",
+            order: 1,
             translations: {
               en: "Mining",
               am: "ማዕድን",
@@ -39,6 +36,7 @@ module.exports = {
           {
             key: "geothermal",
             path: "/geothermal",
+            order: 2,
             translations: {
               en: "Geothermal",
               am: "ጂኦተርማል",
@@ -47,6 +45,7 @@ module.exports = {
           {
             key: "petroleum",
             path: "/petroleum",
+            order: 3,
             translations: {
               en: "Petroleum",
               am: "ነዳጅ",
@@ -121,26 +120,24 @@ module.exports = {
 
     const routes = [];
     const translations = [];
-
-    // =============================
-    // BUILD ROUTES + TRANSLATIONS
-    // =============================
+    const allRouteIds = new Set(); // Track all created route IDs
 
     for (const route of routesData) {
       const routeId = uuidv4();
+      allRouteIds.add(routeId);
 
+      // ================= ROOT ROUTE =================
       routes.push({
         route_id: routeId,
         path: route.path,
         parent_id: null,
-        order: route.order || 0,
-        is_active: true, // ✅ controlled later by admin
+        order: route.order,
+        is_active: true,
         show_in_navbar: true,
         created_at: now,
         updated_at: now,
       });
 
-      // translations
       Object.entries(route.translations).forEach(([lang, label]) => {
         translations.push({
           route_translation_id: uuidv4(),
@@ -152,18 +149,17 @@ module.exports = {
         });
       });
 
-      // =============================
-      // CHILDREN (SECTOR)
-      // =============================
-      if (route.children) {
-        route.children.forEach((child, index) => {
+      // ================= CHILD ROUTES =================
+      if (route.children?.length) {
+        route.children.forEach((child) => {
           const childId = uuidv4();
+          allRouteIds.add(childId);
 
           routes.push({
             route_id: childId,
             path: child.path,
-            parent_id: routeId,
-            order: index + 1,
+            parent_id: routeId, // This links to parent
+            order: child.order,
             is_active: true,
             show_in_navbar: true,
             created_at: now,
@@ -184,17 +180,13 @@ module.exports = {
       }
     }
 
-    // =============================
-    // INSERT INTO DB
-    // =============================
+    // Clear existing data first to avoid duplicates
+    await queryInterface.bulkDelete("route_translations", null, {});
+    await queryInterface.bulkDelete("routes", null, {});
 
-    await queryInterface.bulkInsert("routes", routes, {
-      ignoreDuplicates: true,
-    });
-
-    await queryInterface.bulkInsert("route_translations", translations, {
-      ignoreDuplicates: true,
-    });
+    // Insert fresh data
+    await queryInterface.bulkInsert("routes", routes);
+    await queryInterface.bulkInsert("route_translations", translations);
   },
 
   async down(queryInterface) {
