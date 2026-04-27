@@ -97,10 +97,10 @@ const Footer = () => {
 
             // Map Sections to match existing UI structure (title, links, id)
             const mappedSections = (f.sections || []).map((s: any) => ({
-                id: s.footer_section_id || crypto.randomUUID(),
+                id: s.footer_section_id || Math.random().toString(36).substring(2, 9),
                 title: s.section_name,
                 links: (s.links || []).map((l: any) => ({
-                    id: crypto.randomUUID(),
+                    id: Math.random().toString(36).substring(2, 9),
                     label: l.label,
                     href: l.url,
                 })),

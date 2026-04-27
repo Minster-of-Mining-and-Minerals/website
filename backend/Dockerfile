@@ -22,4 +22,4 @@ RUN mkdir -p uploads && chmod -R 777 uploads
 EXPOSE 4000
 
 # Start command with migration
-CMD ["sh", "-c", "npx knex migrate:latest && npm start"]
+CMD ["sh", "-c", "npx sequelize-cli db:migrate && npm start"]

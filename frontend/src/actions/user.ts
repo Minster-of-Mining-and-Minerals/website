@@ -18,28 +18,28 @@ export const login = async (email: string, password: string) => {
 
     // If we get here, signIn succeeded
     return { success: true };
-  } catch (error) {
-    if (error instanceof AuthError) {
-      console.error("Auth error type:", error.type);
-      console.error("Auth error cause:", error.cause);
+  } catch (error: any) {
+    // Check if it's a redirect error from Auth.js (normal behavior)
+    if (error?.message === "NEXT_REDIRECT") {
+        return { success: true };
+    }
 
-      // The error type might be different from what you expect
-      // Let's check all possible auth errors
+    if (error instanceof AuthError) {
+      console.error("Auth error occurred:", error.type, error.message);
+
       switch (error.type) {
         case "CredentialsSignin":
           return { error: "Invalid email or password." };
         case "CallbackRouteError":
-          // This often means the credentials provider rejected the login
           return { error: "Invalid email or password." };
         default:
-          console.error("Unhandled auth error:", error);
-          return { error: "Something went wrong. Please try again." };
+          return { error: "Authentication failed. Please check your credentials." };
       }
     }
 
     // For non-AuthError errors
-    console.error("Non-auth error:", error);
-    return { error: "An unexpected error occurred." };
+    console.error("Server Action Login Error:", error.message || error);
+    return { error: "Internal server error occurred during login." };
   }
 };
 

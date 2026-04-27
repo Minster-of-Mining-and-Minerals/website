@@ -3,7 +3,8 @@ import authConfig from "./auth.config";
 import { JWT } from "next-auth/jwt";
 export const { handlers, signIn, signOut, auth } = NextAuth({
   ...authConfig,
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET,
+  trustHost: true,
   session: {
     strategy: "jwt",
     maxAge: 24 * 60 * 60, // 24 hours

@@ -45,9 +45,9 @@ export default function AdminFooterManager() {
         content: "",
         attachment_id: "",
         sections: [
-            { id: crypto.randomUUID(), title: "Section 1", links: [] },
-            { id: crypto.randomUUID(), title: "Section 2", links: [] },
-            { id: crypto.randomUUID(), title: "Section 3", links: [] },
+            { id: Math.random().toString(36).substring(2, 9), title: "Section 1", links: [] },
+            { id: Math.random().toString(36).substring(2, 9), title: "Section 2", links: [] },
+            { id: Math.random().toString(36).substring(2, 9), title: "Section 3", links: [] },
         ] as FooterSection[],
     });
 
@@ -63,12 +63,12 @@ export default function AdminFooterManager() {
 
             const mappedSections =
                 f.sections?.map((s: any) => ({
-                    id: crypto.randomUUID(), // Local UI ID
+                    id: Math.random().toString(36).substring(2, 9), // Local UI ID
                     footer_section_id: s.footer_section_id, // Store the actual DB ID
                     title: s.section_name,
                     links:
                         s.links?.map((l: any) => ({
-                            id: crypto.randomUUID(),
+                            id: Math.random().toString(36).substring(2, 9),
                             label: l.label,
                             href: l.url,
                         })) ?? [],
@@ -78,7 +78,7 @@ export default function AdminFooterManager() {
             const finalSections: FooterSection[] = [...mappedSections];
             while (finalSections.length < 3) {
                 finalSections.push({
-                    id: crypto.randomUUID(),
+                    id: Math.random().toString(36).substring(2, 9),
                     title: `Section ${finalSections.length + 1}`,
                     links: [],
                     footer_section_id: undefined,
@@ -192,7 +192,7 @@ export default function AdminFooterManager() {
                         links: [
                             ...s.links,
                             {
-                                id: crypto.randomUUID(),
+                                id: Math.random().toString(36).substring(2, 9),
                                 label: "New Link",
                                 href: "#",
                             },
