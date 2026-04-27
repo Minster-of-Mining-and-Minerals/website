@@ -23,7 +23,7 @@ export function PermissionGuard({
     allPermissions,
     onlyPermissions,
     fallback,
-    redirectTo = "/dashboard", // Default redirect if no access
+    redirectTo = "/admin/profile", // Default to profile which is generally safe
 }: PermissionGuardProps) {
     const { status } = useSession();
     const router = useRouter();
@@ -46,7 +46,12 @@ export function PermissionGuard({
         });
 
         if (!hasAccess) {
-            router.push(redirectTo);
+            const currentPath = window.location.pathname;
+            // Only redirect if we're not already heading to the redirectTo path
+            if (!currentPath.includes(redirectTo)) {
+                console.log(`🚫 PermissionGuard: No access to ${currentPath}, redirecting to ${redirectTo}`);
+                router.push(redirectTo);
+            }
         }
     }, [isLoading, status, userPermissions, anyPermissions, allPermissions, onlyPermissions, redirectTo, router, check]);
 

@@ -26,9 +26,9 @@ services:
       - DB_NAME=${DB_NAME:-mom_website}
       - PORT=4000
       - JWT_SECRET=${JWT_SECRET:-thisisoursecretcodefortoken}
-      - FRONTEND_URL=http://localhost:3000
-    ports:
-      - "4000:4000"
+      - FRONTEND_URL=http://mom.gov.et
+    expose:
+      - "4000"
     depends_on:
       - db
 
@@ -37,13 +37,25 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        - NEXT_PUBLIC_BASE_URL=http://localhost:4000/api
-        - NEXT_PUBLIC_BASE=http://localhost:4000
+        - NEXT_PUBLIC_BASE_URL=http://mom.gov.et/api
+        - NEXT_PUBLIC_BASE=http://mom.gov.et
     container_name: mom_frontend
     restart: always
-    ports:
-      - "3000:3000"
+    expose:
+      - "3000"
     depends_on:
+      - backend
+
+  nginx:
+    image: nginx:stable-alpine
+    container_name: mom_nginx
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - frontend
       - backend
 
 volumes:

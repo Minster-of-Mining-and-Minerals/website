@@ -43,7 +43,11 @@ export default async function middleware(req: NextRequest) {
   }
 
   // 🔐 Rule 1: If logged in and trying to access login page, redirect to dashboard
-  if (isAuthRoute && hasSessionToken) {
+  // Only auto-redirect if there's no callbackUrl or error, which suggests they were forced here.
+  const hasCallbackUrl = req.nextUrl.searchParams.has("callbackUrl");
+  const hasError = req.nextUrl.searchParams.has("error");
+
+  if (isAuthRoute && hasSessionToken && !hasCallbackUrl && !hasError) {
     console.log("  Redirecting authenticated user to dashboard");
     return NextResponse.redirect(new URL(`/${locale}/admin/dashboard`, req.url));
   }
@@ -56,9 +60,12 @@ export default async function middleware(req: NextRequest) {
     
     // IMPORTANT: Clear any stale cookies if session is null but we are on an admin route
     const response = NextResponse.redirect(loginUrl);
-    // You can't easily clear "all" next-auth cookies here without knowing their names,
-    // but usually NextAuth handles this if signOut was successful.
-    // However, if we are here, it means hasSessionToken is false.
+    
+    // 🧹 Clear session cookies to prevent loops if the session is stale
+    response.cookies.delete("next-auth.session-token");
+    response.cookies.delete("__Secure-next-auth.session-token");
+    response.cookies.delete("next-auth.pkce.code_verifier");
+    
     return response;
   }
 
