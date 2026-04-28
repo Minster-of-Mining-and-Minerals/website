@@ -158,12 +158,15 @@ export default function PublicNavbar() {
                     isOpen={isMobileMenuOpen}
                     onClose={() => setIsMobileMenuOpen(false)}
                 >
-                    <div className="flex items-center justify-between mb-6">
-                        <NavbarLogo />
-                        <button onClick={() => setIsMobileMenuOpen(false)}>
-                            <IconX className="w-6 h-6 text-black dark:text-white" />
-                        </button>
-                    </div>
+                    <div className="flex flex-col pb-10">
+                        <div className="flex items-center justify-between mb-6">
+                            <NavbarLogo />
+                            <button onClick={() => setIsMobileMenuOpen(false)}>
+                                <IconX className="w-6 h-6 text-black dark:text-white" />
+                            </button>
+                        </div>
+
+                        <div className="flex flex-col gap-2">
 
                     {navItems.map((item: NavItem, idx: number) => {
                         const isOpen = openMobileIndex === idx;
@@ -239,8 +242,9 @@ export default function PublicNavbar() {
                                     )}
                                 </AnimatePresence>
                             </div>
-                        );
-                    })}
+                        })}
+                        </div>
+                    </div>
                 </MobileNavMenu>
             </MobileNav>
         </Navbar>

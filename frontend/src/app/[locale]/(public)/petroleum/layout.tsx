@@ -41,32 +41,24 @@ export default function Layout({
             {/* Main container with relative positioning for overlay */}
             <div className="relative">
                 {/* Overlay Search Bar - positioned to cover half of the PageHeader */}
-                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-7xl z-[999]">
-                    <div className="pt-5 pb-10 w-full bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden space-y-6 px-7">
-                        <h1 className="text-2xl font-bold text-golden-dark text-center">More On Mining</h1>
+                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-7xl z-[999] px-4 md:px-6">
+                    <div className="pt-5 pb-6 md:pb-10 w-full bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden space-y-6 px-4 md:px-7">
+                        <h1 className="text-xl md:text-2xl font-bold text-golden-dark text-center uppercase tracking-wider">More On Petroleum</h1>
 
-
-                        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-7xl z-[999]">
-                            <div className="pt-5 pb-10 w-full bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden space-y-6 px-7">
-                                <h1 className="text-2xl font-bold text-golden-dark text-center">More On Mining</h1>
-
-
-                                <div className="bg-white justify-center items-center flex gap-4 overflow-x-auto whitespace-nowrap px-2 hide-scrollbar">
-                                    {items.map((item) => {
-                                        const active = normalizedPathname === item.slug;
-                                        return (
-                                            <Button
-                                                key={item.slug}
-                                                onClick={() => router.push(item.slug)}
-                                                className={`p-6 cursor-pointer transition-colors bg-gray-100 border border-gray-200  ${active ? "bg-golden-dark text-white font-semibold border-l-4 border-golden-dark shadow-xl hover:bg-golden" : "text-gray-700 hover:bg-gray-50"
-                                                    }`}
-                                            >
-                                                {item.label}
-                                            </Button>
-                                        );
-                                    })}
-                                </div>
-                            </div>
+                        <div className="bg-white flex items-center justify-start md:justify-center gap-2 md:gap-4 overflow-x-auto whitespace-nowrap px-2 hide-scrollbar">
+                            {items.map((item) => {
+                                const active = normalizedPathname === item.slug;
+                                return (
+                                    <Button
+                                        key={item.slug}
+                                        onClick={() => router.push(item.slug)}
+                                        className={`p-4 md:p-6 cursor-pointer transition-colors bg-gray-100 border border-gray-200  ${active ? "bg-golden-dark text-white font-semibold border-l-4 border-golden-dark shadow-xl hover:bg-golden" : "text-gray-700 hover:bg-gray-50"
+                                            }`}
+                                    >
+                                        {item.label}
+                                    </Button>
+                                );
+                            })}
                         </div>
                     </div>
                 </div>

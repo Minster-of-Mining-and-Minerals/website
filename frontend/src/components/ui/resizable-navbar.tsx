@@ -366,7 +366,7 @@ export const MobileNavMenu = ({
                         exit={{ x: "-100%" }}      // 👉 exit to left
                         transition={{ type: "spring", stiffness: 260, damping: 30 }}
                         className={cn(
-                            "fixed top-0 left-0 z-50 h-full w-[100%] max-w-sm bg-white dark:bg-neutral-950 px-6 py-5 shadow-xl flex flex-col gap-6",
+                            "fixed top-0 left-0 z-50 h-full w-[100%] max-w-sm bg-white dark:bg-neutral-950 px-6 py-5 shadow-xl flex flex-col gap-6 overflow-y-auto",
                             className
                         )}
                     >
