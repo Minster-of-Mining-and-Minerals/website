@@ -242,7 +242,8 @@ export default function PublicNavbar() {
                                     )}
                                 </AnimatePresence>
                             </div>
-                        })}
+                        );
+                    })}
                         </div>
                     </div>
                 </MobileNavMenu>
