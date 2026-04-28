@@ -22,12 +22,9 @@ const nextConfig: NextConfig = {
   experimental: {
     serverActions: {
       allowedOrigins: [
-        "10.0.71.61:8080",
         "localhost:8080",
-        "mom.gov.et:8080",
-        "172.31.102.106:8080",
-        "10.0.71.61",
         "mom.gov.et",
+        "www.mom.gov.et",
         "172.31.102.106"
       ]
     }
