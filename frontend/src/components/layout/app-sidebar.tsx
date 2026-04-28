@@ -291,7 +291,7 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon" variant="floating">
       {/* ---------- HEADER ---------- */}
-      <SidebarHeader className="py-10">
+      <SidebarHeader className="py-4">
         <SidebarMenu>
           <SidebarMenuItem>
             <Link href="/admin/dashboard" className="flex flex-col items-center">
