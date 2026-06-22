@@ -89,6 +89,11 @@ export default function AdminContactMessages() {
         setPageSize(size);
     };
 
+    const paginatedMessages = mappedMessages.slice(
+        pageIndex * pageSize,
+        pageIndex * pageSize + pageSize
+    );
+
     if (isLoading) {
         return (
             <div className="flex justify-center items-center h-[300px]">
@@ -104,7 +109,7 @@ export default function AdminContactMessages() {
         >
             <DataTable
                 columns={columns}
-                data={mappedMessages}
+                data={paginatedMessages}
                 totalPageCount={Math.ceil(mappedMessages.length / pageSize)}
                 handlePagination={handlePagination}
                 tablePageSize={pageSize}

@@ -4,7 +4,6 @@ import {
 	ColumnDef,
 	flexRender,
 	getCoreRowModel,
-	getPaginationRowModel,
 	useReactTable,
 } from "@tanstack/react-table";
 
@@ -18,7 +17,6 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
-import { useEffect } from "react";
 import {
 	Select,
 	SelectContent,
@@ -52,31 +50,22 @@ export function DataTable<TData, TValue>({
 		data,
 		columns,
 		getCoreRowModel: getCoreRowModel(),
-		getPaginationRowModel: getPaginationRowModel(),
 		manualPagination: true,
 		pageCount: totalPageCount,
-		initialState: {
-			pagination: {
-				pageIndex: currentIndex,
-				pageSize: tablePageSize,
-			},
-		},
 		state: {
 			pagination: {
 				pageIndex: currentIndex,
 				pageSize: tablePageSize,
 			},
 		},
+		onPaginationChange: (updater) => {
+			const next =
+				typeof updater === "function"
+					? updater({ pageIndex: currentIndex, pageSize: tablePageSize })
+					: updater;
+			handlePagination(next.pageIndex, next.pageSize);
+		},
 	});
-
-	useEffect(() => {
-		const { pageIndex, pageSize } = table.getState().pagination;
-		handlePagination(pageIndex, pageSize);
-	}, [
-		table.getState().pagination.pageIndex,
-		table.getState().pagination.pageSize,
-		handlePagination,
-	]);
 
 	return (
 		<div className="overflow-auto w-full">

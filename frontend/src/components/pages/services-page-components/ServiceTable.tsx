@@ -76,6 +76,11 @@ export default function ServiceTable({
         },
     ];
 
+    const paginatedServices = services.slice(
+        pageIndex * pageSize,
+        pageIndex * pageSize + pageSize
+    );
+
     return (
         <TableLayout
             title="Services Management"
@@ -90,7 +95,7 @@ export default function ServiceTable({
         >
             <DataTable
                 columns={columns}
-                data={services}
+                data={paginatedServices}
                 totalPageCount={Math.ceil(services.length / pageSize)}
                 handlePagination={onPagination}
                 tablePageSize={pageSize}

@@ -130,6 +130,11 @@ export default function AdminContactRegionalOffices() {
         setPageSize(size);
     };
 
+    const paginatedOffices = offices.slice(
+        pageIndex * pageSize,
+        pageIndex * pageSize + pageSize
+    );
+
     const handleAdd = () => {
         setCurrentOffice({
             id: Date.now().toString(),
@@ -424,7 +429,7 @@ export default function AdminContactRegionalOffices() {
         >
             <DataTable
                 columns={columns}
-                data={offices}
+                data={paginatedOffices}
                 totalPageCount={Math.ceil(offices.length / pageSize)}
                 handlePagination={handlePagination}
                 tablePageSize={pageSize}

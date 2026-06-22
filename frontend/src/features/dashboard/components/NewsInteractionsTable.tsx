@@ -72,6 +72,11 @@ export function NewsInteractionsTable({ data }: NewsInteractionsTableProps) {
     setPageSize(size);
   };
 
+  const paginatedData = data.slice(
+    pageIndex * pageSize,
+    pageIndex * pageSize + pageSize
+  );
+
   return (
     <TableLayout
       title="News Performance"
@@ -80,7 +85,7 @@ export function NewsInteractionsTable({ data }: NewsInteractionsTableProps) {
     >
       <DataTable
         columns={columns}
-        data={data}
+        data={paginatedData}
         totalPageCount={Math.ceil(data.length / pageSize)}
         handlePagination={handlePagination}
         tablePageSize={pageSize}

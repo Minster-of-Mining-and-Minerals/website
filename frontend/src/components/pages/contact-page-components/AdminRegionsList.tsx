@@ -85,6 +85,11 @@ export default function AdminRegionList() {
         setPageSize(size);
     };
 
+    const paginatedRegions = regions.slice(
+        pageIndex * pageSize,
+        pageIndex * pageSize + pageSize
+    );
+
     const handleAdd = () => {
         setCurrentRegion({
             region_id: "",
@@ -254,7 +259,7 @@ export default function AdminRegionList() {
         >
             <DataTable
                 columns={columns}
-                data={regions}
+                data={paginatedRegions}
                 totalPageCount={Math.ceil(regions.length / pageSize)}
                 handlePagination={handlePagination}
                 tablePageSize={pageSize}
