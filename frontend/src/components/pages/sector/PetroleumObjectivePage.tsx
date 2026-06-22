@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import { useGetPetroleumObjectivesQuery } from "@/redux/api/petroleumObjectiveApi";
 import { getFileUrl } from "@/utils/fileUrl";
 import { Loader2, ChevronLeft, ChevronRight } from "lucide-react";
+import PublicEmptyState from "@/components/common/PublicEmptyState";
+import { useTranslations } from "next-intl";
 
 /** 
  * Improved Image Slider component with proper image display and thumbnail navigation
@@ -104,6 +106,7 @@ const ImageSlider = ({ attachments, title }: { attachments: any[], title: string
 
 const PetroleumObjectivePage = () => {
     const { data: objectives = [], isLoading } = useGetPetroleumObjectivesQuery();
+    const t = useTranslations("empty_state");
 
     if (isLoading) {
         return (
@@ -121,9 +124,8 @@ const PetroleumObjectivePage = () => {
     // If no dynamic data exists, we could show a placeholder or empty state
     if (objectives.length === 0) {
         return (
-            <div className="max-w-7xl mx-auto px-6 py-20 text-center">
-                <h1 className="text-2xl font-bold text-gray-400">Petroleum Insights Coming Soon</h1>
-                <p className="text-gray-500 mt-2">Our content team is currently preparing the latest updates for this section.</p>
+            <div className="max-w-7xl mx-auto px-6 py-20">
+                <PublicEmptyState title={t("petroleum_objectives_title")} />
             </div>
         );
     }

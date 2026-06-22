@@ -5,9 +5,12 @@ import { Search, Sparkles, Gem, MapPin, Filter, ChevronDown, Loader2, Calendar }
 import { useGetGamestonesQuery } from "@/redux/api/gamestoneApi";
 import { Gamestone } from "@/redux/types/gamestone";
 import { getFileUrl } from "@/utils/fileUrl";
+import PublicEmptyState from "@/components/common/PublicEmptyState";
+import { useTranslations } from "next-intl";
 
 const GemstonesPage = () => {
     const { data: gemstones = [], isLoading, isError } = useGetGamestonesQuery();
+    const t = useTranslations("empty_state");
 
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedLocation, setSelectedLocation] = useState("All");
@@ -211,13 +214,18 @@ const GemstonesPage = () => {
                     })}
 
                     {filtered.length === 0 && (
-                        <div className="text-center py-16 bg-white rounded-xl border border-gray-200">
-                            <Gem className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                            <h3 className="text-xl font-bold text-gray-900 mb-2">No gemstones found</h3>
-                            <p className="text-gray-500 max-w-md mx-auto">
-                                Try adjusting your search or filters.
-                            </p>
-                        </div>
+                        <PublicEmptyState
+                            title={
+                                rootGemstones.length === 0
+                                    ? t("gemstones_title")
+                                    : t("gemstones_filter_title")
+                            }
+                            description={
+                                rootGemstones.length > 0
+                                    ? t("filter_description")
+                                    : undefined
+                            }
+                        />
                     )}
                 </div>
             )}

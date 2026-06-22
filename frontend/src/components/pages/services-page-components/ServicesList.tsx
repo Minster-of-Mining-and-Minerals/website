@@ -5,10 +5,13 @@ import * as LucideIcons from "lucide-react"; // Import all icons
 import ServiceCard from "./ServiceCard";
 import { useGetServicesQuery } from "@/redux/api/serviceApi";
 import { Service } from "@/redux/types/service";
+import PublicEmptyState from "@/components/common/PublicEmptyState";
+import { useTranslations } from "next-intl";
 
 const ServicesList = () => {
     const { data: apiData = [], isLoading, isError } = useGetServicesQuery();
     const [services, setServices] = useState<Service[]>([]);
+    const t = useTranslations("empty_state");
 
     useEffect(() => {
         if (apiData.length > 0) {
@@ -21,7 +24,18 @@ const ServicesList = () => {
     }
 
     if (isError) {
-        return <p className="text-center py-10 text-red-500">Failed to load services.</p>;
+        return (
+            <PublicEmptyState
+                title={t("services_title")}
+                description={t("error_description")}
+            />
+        );
+    }
+
+    if (services.length === 0) {
+        return (
+            <PublicEmptyState title={t("services_title")} />
+        );
     }
 
     return (

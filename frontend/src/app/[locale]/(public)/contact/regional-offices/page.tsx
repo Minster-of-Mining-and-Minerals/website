@@ -13,6 +13,8 @@ import { useGetRegionalOfficesQuery } from "@/redux/api/regionalOfficeApi";
 import { useGetRegionsQuery } from "@/redux/api/regionApi";
 import { RegionalOfficeContactCenter } from "@/redux/types/regionalOffice";
 import { Region } from "@/redux/types/region";
+import PublicEmptyState from "@/components/common/PublicEmptyState";
+import { useTranslations } from "next-intl";
 
 // Extended type to match the UI structure
 interface RegionalOfficeDisplay {
@@ -30,6 +32,7 @@ interface RegionalOfficeDisplay {
 }
 
 const RegionalOfficesPage = () => {
+    const t = useTranslations("empty_state");
     // Fetch regional offices and regions from API
     const {
         data: apiOffices = [],
@@ -95,15 +98,18 @@ const RegionalOfficesPage = () => {
     if (officesError) {
         return (
             <section className="container max-w-7xl mx-auto px-4 py-12">
-                <div className="flex flex-col justify-center items-center min-h-[400px] text-center">
-                    <p className="text-red-500 mb-4">Failed to load regional offices</p>
-                    <button
-                        onClick={() => refetch()}
-                        className="px-4 py-2 bg-golden-dark text-white rounded-md hover:bg-golden-darkHover transition"
-                    >
-                        Try Again
-                    </button>
-                </div>
+                <PublicEmptyState
+                    title={t("regional_offices_title")}
+                    description={t("error_description")}
+                    action={
+                        <button
+                            onClick={() => refetch()}
+                            className="px-4 py-2 bg-golden-dark text-white rounded-md hover:bg-golden-darkHover transition"
+                        >
+                            Try Again
+                        </button>
+                    }
+                />
             </section>
         );
     }
@@ -163,9 +169,7 @@ const RegionalOfficesPage = () => {
                         </div>
                     ))
                 ) : (
-                    <div className="col-span-full text-center py-12 text-gray-500">
-                        No regional offices found.
-                    </div>
+                    <PublicEmptyState title={t("regional_offices_title")} />
                 )}
             </div>
         </section>

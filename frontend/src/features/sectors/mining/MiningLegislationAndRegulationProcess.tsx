@@ -3,6 +3,8 @@ import * as LucideIcons from "lucide-react";
 import { CheckCircle, Download, FileText, Scale } from "lucide-react";
 import { useGetMiningRegulationProcessesQuery } from "@/redux/api/miningRegulationProcessApi";
 import { getFileUrl } from "@/utils/fileUrl";
+import PublicEmptyState from "@/components/common/PublicEmptyState";
+import { useTranslations } from "next-intl";
 
 // Helper function for formatting bytes
 const formatBytes = (bytes: number, decimals = 2) => {
@@ -22,6 +24,7 @@ const DynamicIcon = ({ name, className }: { name: string; className?: string }) 
 
 const MiningLegislationAndRegulationProcess = () => {
     const { data: processes, isLoading, error } = useGetMiningRegulationProcessesQuery({ published: true });
+    const t = useTranslations("empty_state");
 
     // Get the first published process
     const processData = processes?.[0];
@@ -37,9 +40,11 @@ const MiningLegislationAndRegulationProcess = () => {
     if (error || !processData) {
         return (
             <div className="container mx-auto py-12 flex justify-center items-center min-h-[400px]">
-                <div className="text-red-500">
-                    {error ? "Failed to load legislation data." : "No published mining regulation process found."}
-                </div>
+                <PublicEmptyState
+                    title={t("mining_legislation_title")}
+                    description={error ? t("error_description") : undefined}
+                    icon={Scale}
+                />
             </div>
         );
     }

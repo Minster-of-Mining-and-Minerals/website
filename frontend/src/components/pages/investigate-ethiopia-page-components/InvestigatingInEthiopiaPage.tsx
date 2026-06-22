@@ -10,6 +10,8 @@ import {
 } from 'lucide-react';
 import { useGetInvestigateEthiopiasQuery } from '@/redux/api/investigateEthiopiaApi';
 import { getFileUrl } from '@/utils/fileUrl';
+import PublicEmptyState from '@/components/common/PublicEmptyState';
+import { useTranslations } from 'next-intl';
 
 const DynamicIcon = ({ name, className }: { name: string; className?: string }) => {
     const IconComponent = (LucideIcons as any)[name];
@@ -19,6 +21,7 @@ const DynamicIcon = ({ name, className }: { name: string; className?: string }) 
 
 const InvestigatingInEthiopiaPage = () => {
     const { data: records, isLoading } = useGetInvestigateEthiopiasQuery();
+    const t = useTranslations("empty_state");
 
     if (isLoading) {
         return (
@@ -32,8 +35,8 @@ const InvestigatingInEthiopiaPage = () => {
 
     if (!data) {
         return (
-            <div className="flex min-h-screen items-center justify-center text-gray-500 italic text-xl">
-                No information available at the moment.
+            <div className="flex min-h-[60vh] items-center justify-center px-6">
+                <PublicEmptyState title={t("investment_title")} icon={Briefcase} />
             </div>
         );
     }

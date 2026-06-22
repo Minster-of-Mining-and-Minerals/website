@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button';
 import { useGetMiningApplicationProcessesQuery } from '@/redux/api/miningApplicationProcessApi';
 import * as LucideIcons from 'lucide-react';
 import { getFileUrl } from '@/utils/fileUrl';
+import PublicEmptyState from '@/components/common/PublicEmptyState';
+import { useTranslations } from 'next-intl';
 
 const DynamicIcon = ({ name, className }: { name: string; className?: string }) => {
     const IconComponent = (LucideIcons as any)[name];
@@ -105,6 +107,7 @@ const HeroSlider = ({ attachments }: { attachments: any[] }) => {
 
 const MiningApplicationPortal = () => {
     const { data: records, isLoading } = useGetMiningApplicationProcessesQuery({ published: true });
+    const t = useTranslations("empty_state");
 
     if (isLoading) {
         return (
@@ -121,20 +124,19 @@ const MiningApplicationPortal = () => {
 
     if (!process) {
         return (
-            <div className='min-h-screen flex items-center justify-center bg-gray-50 px-6'>
-                <div className='text-center max-w-md'>
-                    <div className='bg-white p-8 rounded-2xl shadow-sm border border-gray-100'>
-                        <AlertCircle className='w-16 h-16 text-amber-500 mx-auto mb-4' />
-                        <h2 className='text-2xl font-bold text-gray-900 mb-2'>Portal Maintenance</h2>
-                        <p className='text-gray-600 mb-6'>
-                            The mining application portal is currently undergoing updates. Please check back later or contact the Ministry for assistance.
-                        </p>
-                        <Link href="/">
-                            <Button className='bg-golden-dark text-white hover:bg-golden-dark/90'>
-                                Return Home
-                            </Button>
-                        </Link>
-                    </div>
+            <div className="min-h-screen flex items-center justify-center bg-gray-50 px-6">
+                <div className="max-w-md w-full">
+                    <PublicEmptyState
+                        title={t("mining_application_portal_title")}
+                        icon={AlertCircle}
+                        action={
+                            <Link href="/">
+                                <Button className="bg-golden-dark text-white hover:bg-golden-dark/90">
+                                    Return Home
+                                </Button>
+                            </Link>
+                        }
+                    />
                 </div>
             </div>
         );

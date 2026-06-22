@@ -2,6 +2,9 @@
 import { useGetStrategiesQuery } from "@/redux/api/strategyApi";
 import InfoCard from "./InfoCard";
 import { getFileUrl } from "@/utils/fileUrl";
+import PublicEmptyState from "@/components/common/PublicEmptyState";
+import { Loader2, Target } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 const splitTitle = (title = "") => {
     const words = title.trim().split(/\s+/);
@@ -21,18 +24,34 @@ const splitTitle = (title = "") => {
 };
 
 export default function VisionMissionValues() {
-    // Fetch strategies and get the first one
     const { data: strategies, isLoading, error } = useGetStrategiesQuery();
-    const strategy = strategies?.[0]; // Get the first strategy from index 0
+    const t = useTranslations("empty_state");
+    const strategy = strategies?.[0];
 
     // Extract sections from the strategy data
     const missionSection = strategy?.sections?.find(s => s.type === "mission");
     const visionSection = strategy?.sections?.find(s => s.type === "vision");
     const coreValuesSection = strategy?.sections?.find(s => s.type === "core_values");
 
-    const [firstPart, secondPart] = splitTitle(strategy?.title || "");
+    if (isLoading) {
+        return (
+            <div className="flex justify-center items-center min-h-[400px]">
+                <Loader2 className="h-10 w-10 animate-spin text-golden-dark" />
+            </div>
+        );
+    }
 
-    // Prepare data objects matching the existing structure
+    if (error || !strategy) {
+        return (
+            <PublicEmptyState
+                title={t("strategy_title")}
+                description={error ? t("error_description") : undefined}
+                icon={Target}
+            />
+        );
+    }
+
+    const [firstPart, secondPart] = splitTitle(strategy.title || "");
     const missionVision = {
         mission: {
             icon: missionSection?.attachment?.file_path
@@ -57,21 +76,6 @@ export default function VisionMissionValues() {
         title: "Values",
         values: coreValuesSection?.core_values?.map(v => v.content) || [],
     };
-
-    // Loading state
-    if (isLoading) {
-        return (
-            <div className="flex justify-center items-center min-h-[400px]">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-900"></div>
-            </div>
-        );
-    }
-
-    // Error state
-    if (error) {
-        console.error("Failed to load strategy data:", error);
-        // Still render with default data if there's an error
-    }
 
     return (
         <div className="flex flex-col mt-20 mb-20 p-6">

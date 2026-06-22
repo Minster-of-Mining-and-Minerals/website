@@ -2,8 +2,10 @@
 
 import React, { useMemo } from "react";
 import { useGetPetroleumRegulationProcessesQuery } from "@/redux/api/petroleumRegulationProcessApi";
-import { Loader2, ChevronRight, ExternalLink, BookOpen, FileText, List } from "lucide-react";
+import { Loader2, ChevronRight, ExternalLink, BookOpen, FileText, List, Scale } from "lucide-react";
 import { getFileUrl } from "@/utils/fileUrl";
+import PublicEmptyState from "@/components/common/PublicEmptyState";
+import { useTranslations } from "next-intl";
 import {
     PetroleumRegulation,
     PetroleumDirective,
@@ -207,6 +209,7 @@ function AttachmentsBlock({ attachments }: { attachments: PetroleumRegulationAtt
 ----------------------------------------------------------------------- */
 export default function PetroleumLegislationContent() {
     const { data = [], isLoading } = useGetPetroleumRegulationProcessesQuery({ published: true });
+    const t = useTranslations("empty_state");
 
     const publishedProcess = useMemo(() => data[0] ?? null, [data]);
 
@@ -218,7 +221,11 @@ export default function PetroleumLegislationContent() {
         );
     }
 
-    if (!publishedProcess) return null;
+    if (!publishedProcess) {
+        return (
+            <PublicEmptyState title={t("petroleum_legislation_title")} icon={Scale} />
+        );
+    }
 
     const { regulations = [], directives = [], attachments = [] } = publishedProcess;
 

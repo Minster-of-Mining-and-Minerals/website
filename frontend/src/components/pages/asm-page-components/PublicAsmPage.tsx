@@ -15,6 +15,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useGetASMsQuery } from "@/redux/api/asmApi";
 import { getFileUrl } from "@/utils/fileUrl";
+import PublicEmptyState from "@/components/common/PublicEmptyState";
+import { useTranslations } from "next-intl";
 
 const RenderIcon = ({ name, className }: { name?: string; className?: string }) => {
     if (!name) return null;
@@ -25,6 +27,7 @@ const RenderIcon = ({ name, className }: { name?: string; className?: string }) 
 
 const PublicAsmPage = () => {
     const { data: asms = [], isLoading } = useGetASMsQuery();
+    const t = useTranslations("empty_state");
     const asm = asms[0];
 
     if (isLoading) {
@@ -38,8 +41,8 @@ const PublicAsmPage = () => {
 
     if (!asm) {
         return (
-            <div className="container max-w-7xl mx-auto px-6 py-16 text-center text-gray-500">
-                No ASM information available at the moment.
+            <div className="container max-w-7xl mx-auto px-6 py-16">
+                <PublicEmptyState title={t("asm_title")} icon={Gem} />
             </div>
         );
     }

@@ -86,5 +86,34 @@
                 }
             ]
         }
+    },
+    "empty_state": {
+        "default_description": "ይህ መረጃ በቅርቡ ይታተማል። እባክዎ በኋላ ይመለከቱ።",
+        "error_description": "ይህን መረጃ መጫን አልተቻለም። እባክዎ ቆይተው እንደገና ይሞክሩ።",
+        "leadership_title": "የአመራር መረጃ ገና አልተገኘም",
+        "background_title": "የታሪክ መረጃ ገና አልተገኘም",
+        "strategy_title": "የተልዕኮ እና የራዕይ መረጃ ገና አልተገኘም",
+        "asm_title": "የአነስተኛ ማዕድን መረጃ ገና አልተገኘም",
+        "investment_title": "የኢንቨስትመንት መረጃ ገና አልተገኘም",
+        "mining_title": "የማዕድን ዘርፍ መረጃ ገና አልተገኘም",
+        "geothermal_title": "የጂኦቴርማል ዘርፍ መረጃ ገና አልተገኘም",
+        "petroleum_objectives_title": "የነዳጅ መረጃ ገና አልተገኘም",
+        "petroleum_process_title": "የነዳጅ ሂደት መረጃ ገና አልተገኘም",
+        "mining_legislation_title": "የማዕድን ህግ መረጃ ገና አልተገኘም",
+        "petroleum_legislation_title": "የነዳጅ ህግ መረጃ ገና አልተገኘም",
+        "mining_application_portal_title": "የማዕድን ማመልከቻ ፖርታል መረጃ ገና አልተገኘም",
+        "resources_title": "የመረጃ ምንጮች ገና አልተገኘም",
+        "services_title": "የአገልግሎት መረጃ ገና አልተገኘም",
+        "regional_offices_title": "የክልል ጽ/ቤት መረጃ ገና አልተገኘም",
+        "tenders_title": "የጨረታ እና የባዶ ቦታ መረጃ ገና አልተገኘም",
+        "news_title": "የዜና መረጃ ገና አልተገኘም",
+        "news_filter_title": "ምንም የዜና ጽሑፍ አልተገኘም",
+        "events_title": "የክስተት መረጃ ገና አልተገኘም",
+        "events_filter_title": "ምንም ክስተት አልተገኘም",
+        "gemstones_title": "የውድር ድንጋይ መረጃ ገና አልተገኘም",
+        "gemstones_filter_title": "ምንም ውድር ድንጋይ ከፍለጋዎ ጋር አይዛመድም",
+        "filter_description": "ፍለጋዎን ወይም ማጣሪያዎችዎን ለመለወጥ ይሞክሩ።",
+        "related_news_title": "ተዛማጅ ዜና የለም",
+        "related_events_title": "ተዛማጅ ክስተት የለም"
     }
 }

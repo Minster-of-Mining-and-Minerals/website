@@ -9,10 +9,13 @@ import { useGetEventCategoriesQuery } from "@/redux/api/eventCategoryApi";
 import EventCard from "@/components/pages/events-page-components/EventCard";
 import { extractExcerpt } from "@/utils/newsMapper";
 import { getFileUrl } from "@/utils/fileUrl";
+import PublicEmptyState from "@/components/common/PublicEmptyState";
+import { useTranslations } from "next-intl";
 
 const EventsPage = () => {
     const { data: eventsData = [], isLoading, isError } = useGetEventsQuery({ status: "published" });
     const { data: categoriesData = [] } = useGetEventCategoriesQuery();
+    const t = useTranslations("empty_state");
 
     const [activeCategory, setActiveCategory] = useState<string>("All Events");
 
@@ -68,7 +71,23 @@ const EventsPage = () => {
 
                 {/* Events grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {filteredEvents.map((item: any) => {
+                    {filteredEvents.length === 0 ? (
+                        <div className="col-span-full">
+                            <PublicEmptyState
+                                title={
+                                    eventsData.length === 0
+                                        ? t("events_title")
+                                        : t("events_filter_title")
+                                }
+                                description={
+                                    eventsData.length > 0
+                                        ? t("filter_description")
+                                        : undefined
+                                }
+                            />
+                        </div>
+                    ) : (
+                        filteredEvents.map((item: any) => {
                         const excerpt = extractExcerpt(item.content) || item.description || "";
                         const attachment = item.attachments?.[0]?.attachment;
                         const mediaUrl = attachment?.file_path ? getFileUrl(attachment.file_path) : null;
@@ -92,7 +111,8 @@ const EventsPage = () => {
                                 status={item.computed_status || item.status}
                             />
                         );
-                    })}
+                    })
+                    )}
                 </div>
             </section>
         </>

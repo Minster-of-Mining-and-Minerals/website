@@ -2,8 +2,10 @@
 
 import React, { useMemo } from "react";
 import { useGetPetroleumProcessesQuery } from "@/redux/api/petroleumProcessApi";
-import { Loader2 } from "lucide-react";
+import { Loader2, FileText } from "lucide-react";
 import { getFileUrl } from "@/utils/fileUrl";
+import PublicEmptyState from "@/components/common/PublicEmptyState";
+import { useTranslations } from "next-intl";
 
 const hasRealContent = (html: string) => {
     if (!html) return false;
@@ -15,6 +17,7 @@ const hasRealContent = (html: string) => {
 
 export default function PetroleumApplicationProcess() {
     const { data, isLoading } = useGetPetroleumProcessesQuery();
+    const t = useTranslations("empty_state");
 
     const publishedProcess = useMemo(() => {
         return data?.find((p) => p.published === true);
@@ -37,13 +40,8 @@ export default function PetroleumApplicationProcess() {
 
     if (!publishedProcess) {
         return (
-            <div className="container mx-auto py-20 text-center space-y-4">
-                <h1 className="text-3xl font-bold text-gray-800">
-                    No Petroleum Process Published
-                </h1>
-                <p className="text-gray-500">
-                    Please check back later for updates.
-                </p>
+            <div className="container mx-auto py-20">
+                <PublicEmptyState title={t("petroleum_process_title")} icon={FileText} />
             </div>
         );
     }

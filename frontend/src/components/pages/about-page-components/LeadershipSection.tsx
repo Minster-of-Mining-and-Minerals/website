@@ -3,22 +3,36 @@
 import { useGetLeadershipsQuery } from "@/redux/api/leadershipApi";
 import HierarchyNode from "./HierarchyNode";
 import { buildLeadershipTree } from "@/utils/buildLeadershipTree";
+import PublicEmptyState from "@/components/common/PublicEmptyState";
+import { Loader2, Users } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export default function LeadershipSection() {
     const { data, isLoading, isError } = useGetLeadershipsQuery();
+    const t = useTranslations("empty_state");
 
     if (isLoading) {
-        return <div className="text-center py-20">Loading leadership...</div>;
+        return (
+            <div className="flex flex-col items-center justify-center py-20 gap-4 min-h-[400px]">
+                <Loader2 className="h-8 w-8 animate-spin text-golden-dark" />
+            </div>
+        );
     }
 
     if (isError || !data) {
-        return <div className="text-center py-20 text-red-600">Failed to load leadership</div>;
+        return (
+            <PublicEmptyState
+                title={t("leadership_title")}
+                description={t("error_description")}
+                icon={Users}
+            />
+        );
     }
 
     const leadershipTree = buildLeadershipTree(data);
 
     if (!leadershipTree) {
-        return <div className="text-center py-20">No leadership data</div>;
+        return <PublicEmptyState title={t("leadership_title")} icon={Users} />;
     }
 
     return (

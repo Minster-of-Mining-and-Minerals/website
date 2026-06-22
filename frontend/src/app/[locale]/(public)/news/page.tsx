@@ -8,10 +8,13 @@ import { useGetNewsQuery } from "@/redux/api/newsApi";
 import { useGetTagsQuery } from "@/redux/api/tagApi";
 import NewsCard from "@/components/pages/news-page-components/NewsCard";
 import { calculateReadingTime, extractExcerpt, extractHeadlineImage, extractTags } from "@/utils/newsMapper";
+import PublicEmptyState from "@/components/common/PublicEmptyState";
+import { useTranslations } from "next-intl";
 
 const NewsPage = () => {
     const { data: newsData = [], isLoading, isError } = useGetNewsQuery();
     const { data: tagsData = [] } = useGetTagsQuery();
+    const t = useTranslations("empty_state");
 
     const [activeTag, setActiveTag] = useState<string>("All News");
 
@@ -71,7 +74,23 @@ const NewsPage = () => {
 
                 {/* News grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {filteredNews.map((item) => {
+                    {filteredNews.length === 0 ? (
+                        <div className="col-span-full">
+                            <PublicEmptyState
+                                title={
+                                    newsData.length === 0
+                                        ? t("news_title")
+                                        : t("news_filter_title")
+                                }
+                                description={
+                                    newsData.length > 0
+                                        ? t("filter_description")
+                                        : undefined
+                                }
+                            />
+                        </div>
+                    ) : (
+                        filteredNews.map((item) => {
                         const excerpt = extractExcerpt(item.content);
                         const tags = extractTags(item.tag_links);
                         return (
@@ -87,7 +106,8 @@ const NewsPage = () => {
                                 readingTime={() => calculateReadingTime(excerpt)}
                             />
                         );
-                    })}
+                    })
+                    )}
                 </div>
             </section>
         </>

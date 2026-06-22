@@ -4,18 +4,26 @@ import React from "react";
 import { useGetBackgroundsQuery } from "@/redux/api/backgroundApi";
 import RotatingImage3D from "./RotatingImage3D";
 import * as LucideIcons from "lucide-react";
+import PublicEmptyState from "@/components/common/PublicEmptyState";
+import { Loader2, ImageIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BASE ?? "http://localhost:4000";
 
 const BackgroundPage = () => {
-    const { data: backgrounds, isLoading } = useGetBackgroundsQuery();
+    const { data: backgrounds, isLoading, isError } = useGetBackgroundsQuery();
+    const t = useTranslations("empty_state");
 
     if (isLoading) {
-        return <p className="text-center py-20">Loading backgrounds...</p>;
+        return (
+            <div className="flex flex-col items-center justify-center py-20 gap-4 min-h-[400px]">
+                <Loader2 className="h-8 w-8 animate-spin text-golden-dark" />
+            </div>
+        );
     }
 
-    if (!backgrounds || backgrounds.length === 0) {
-        return <p className="text-center py-20">No backgrounds available</p>;
+    if (isError || !backgrounds || backgrounds.length === 0) {
+        return <PublicEmptyState title={t("background_title")} icon={ImageIcon} />;
     }
 
     // Always use the first background

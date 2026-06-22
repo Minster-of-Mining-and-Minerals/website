@@ -87,5 +87,34 @@
                 }
             ]
         }
+    },
+    "empty_state": {
+        "default_description": "This content will be published soon. Please check back later.",
+        "error_description": "Unable to load this content. Please try again later.",
+        "leadership_title": "Leadership information is not available yet",
+        "background_title": "Background information is not available yet",
+        "strategy_title": "Mission and vision information is not available yet",
+        "asm_title": "ASM information is not available yet",
+        "investment_title": "Investment information is not available yet",
+        "mining_title": "Mining sector information is not available yet",
+        "geothermal_title": "Geothermal sector information is not available yet",
+        "petroleum_objectives_title": "Petroleum information is not available yet",
+        "petroleum_process_title": "Petroleum process information is not available yet",
+        "mining_legislation_title": "Mining legislation information is not available yet",
+        "petroleum_legislation_title": "Petroleum legislation information is not available yet",
+        "mining_application_portal_title": "Mining application portal information is not available yet",
+        "resources_title": "Resources information is not available yet",
+        "services_title": "Services information is not available yet",
+        "regional_offices_title": "Regional office information is not available yet",
+        "tenders_title": "Tenders and vacancies information is not available yet",
+        "news_title": "News information is not available yet",
+        "news_filter_title": "No news articles found",
+        "events_title": "Events information is not available yet",
+        "events_filter_title": "No events found",
+        "gemstones_title": "Gemstones information is not available yet",
+        "gemstones_filter_title": "No gemstones match your search",
+        "filter_description": "Try adjusting your search or filters.",
+        "related_news_title": "No related news available",
+        "related_events_title": "No related events available"
     }
 }

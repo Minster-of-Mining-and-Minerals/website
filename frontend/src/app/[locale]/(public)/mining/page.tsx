@@ -2,9 +2,12 @@
 import { useGetSnapshotsQuery } from "@/redux/api/snapshotApi";
 import { getFileUrl } from "@/utils/fileUrl";
 import { Loader2 } from "lucide-react";
+import PublicEmptyState from "@/components/common/PublicEmptyState";
+import { useTranslations } from "next-intl";
 
 const MiningPage = () => {
     const { data: snapshots = [], isLoading } = useGetSnapshotsQuery({ sector: "mining", publishedOnly: true });
+    const t = useTranslations("empty_state");
 
     // Use the first published snapshot found for this sector
     const snapshot = snapshots[0];
@@ -19,10 +22,9 @@ const MiningPage = () => {
     }
 
     if (!snapshot) {
-        // Fallback to static content if no snapshot exists in DB
         return (
-            <div className='w-full max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-7 gap-8 px-4'>
-                No snapshot found
+            <div className="w-full max-w-7xl mx-auto px-4">
+                <PublicEmptyState title={t("mining_title")} />
             </div>
         );
     }
@@ -74,11 +76,6 @@ const MiningPage = () => {
                         </div>
                     </div>
                 ))}
-                {(!snapshot.sections || snapshot.sections.length === 0) && (
-                    <div className="text-gray-400 italic text-sm py-4 border-t border-gray-100">
-                        No strategic details available.
-                    </div>
-                )}
             </div>
         </div>
     );

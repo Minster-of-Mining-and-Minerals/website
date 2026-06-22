@@ -107,7 +107,7 @@ const NewsCard = ({
                     </div>
 
                     <span className="inline-flex items-center text-sm font-semibold text-golden-dark group-hover:gap-2 transition-all">
-                        Edit News <span className="ml-1">→</span>
+                        News Detail<span className="ml-1">→</span>
                     </span>
                 </div>
             </Link>

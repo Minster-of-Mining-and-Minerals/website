@@ -2,6 +2,8 @@
 
 import React, { useState } from "react";
 import { Calendar, FileText, ExternalLink } from "lucide-react";
+import PublicEmptyState from "@/components/common/PublicEmptyState";
+import { useTranslations } from "next-intl";
 
 const tendersData = [
     {
@@ -44,6 +46,7 @@ const tendersData = [
 
 const TenderAndVacanciesPage = () => {
     const [activeTab, setActiveTab] = useState<"tender" | "vacancy">("tender");
+    const t = useTranslations("empty_state");
 
     const filteredData = tendersData.filter(
         (item) => item.type === activeTab
@@ -87,7 +90,7 @@ const TenderAndVacanciesPage = () => {
 
             {/* Content */}
             {filteredData.length === 0 ? (
-                <p className="text-gray-500">No records available.</p>
+                <PublicEmptyState title={t("tenders_title")} />
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {filteredData.map((item, index) => (

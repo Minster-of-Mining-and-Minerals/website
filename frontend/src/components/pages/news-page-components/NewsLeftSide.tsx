@@ -1,5 +1,9 @@
+"use client";
+
 import { ChevronRight, UserCircle2, MessageSquare } from "lucide-react";
 import { NewsFeedback } from "@/redux/types/news";
+import PublicEmptyState from "@/components/common/PublicEmptyState";
+import { useTranslations } from "next-intl";
 
 type RelatedNewsItem = {
     id: string | number;
@@ -16,6 +20,7 @@ type NewsSidebarProps = {
 };
 
 const NewsLeftSide = ({ relatedNews, feedbacks = [] }: NewsSidebarProps) => {
+    const t = useTranslations("empty_state");
     const displayedFeedbacks = feedbacks.slice(0, 5);
     const hasMoreFeedbacks = feedbacks.length > 5;
 
@@ -74,7 +79,11 @@ const NewsLeftSide = ({ relatedNews, feedbacks = [] }: NewsSidebarProps) => {
                             </a>
                         ))
                     ) : (
-                        <p className="text-sm text-gray-500 italic">No related news found.</p>
+                        <PublicEmptyState
+                            variant="inline"
+                            title={t("related_news_title")}
+                            hideDescription
+                        />
                     )}
                 </div>
 

@@ -2,8 +2,12 @@
 
 import React, { useMemo, useState } from 'react';
 import { useGetResourcesQuery, useRecordResourceAccessMutation } from '@/redux/api/resourceApi';
+import PublicEmptyState from '@/components/common/PublicEmptyState';
+import { Loader2, FolderOpen } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 const ResourcePage = () => {
+    const t = useTranslations("empty_state");
     // Fetch resources from API (filter by sector = mining)
     const { data: resources, isLoading, error } = useGetResourcesQuery({
         sector: 'petroleum'
@@ -151,38 +155,30 @@ const ResourcePage = () => {
         }));
     };
 
-    // Loading state
     if (isLoading) {
         return (
-            <div className='min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6 flex items-center justify-center'>
-                <div className='text-center'>
-                    <div className='text-2xl font-bold text-golden-dark mb-4'>Loading Resources...</div>
-                    <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-golden-dark mx-auto'></div>
-                </div>
+            <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6 flex items-center justify-center">
+                <Loader2 className="h-10 w-10 animate-spin text-golden-dark" />
             </div>
         );
     }
 
-    // Error state
     if (error) {
         return (
-            <div className='bg-gradient-to-br from-gray-50 to-gray-100 p-6 flex'>
-                <div className='text-center bg-white rounded-lg p-8 shadow-lg'>
-                    <div className='text-4xl mb-4'>⚠️</div>
-                    <div className='text-xl font-bold text-red-600 mb-2'>Error Loading Resources</div>
-                    <div className='text-gray-600'>Please try again later</div>
-                </div>
+            <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6 flex items-center justify-center">
+                <PublicEmptyState
+                    title={t("resources_title")}
+                    description={t("error_description")}
+                    icon={FolderOpen}
+                />
             </div>
         );
     }
 
     if (resourceCategories.length === 0) {
         return (
-            <div className='min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6 flex items-center justify-center'>
-                <div className='text-center'>
-                    <div className='text-2xl font-bold text-golden-dark mb-4'>No Resources Found</div>
-                    <div className='text-gray-600'>Please try again later</div>
-                </div>
+            <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6 flex items-center justify-center">
+                <PublicEmptyState title={t("resources_title")} icon={FolderOpen} />
             </div>
         );
     }

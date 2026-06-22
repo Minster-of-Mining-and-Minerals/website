@@ -1,4 +1,8 @@
+"use client";
+
 import { ChevronRight, Calendar as CalendarIcon } from "lucide-react";
+import PublicEmptyState from "@/components/common/PublicEmptyState";
+import { useTranslations } from "next-intl";
 
 type RelatedEventItem = {
     id: string | number;
@@ -14,6 +18,7 @@ type EventSidebarProps = {
 };
 
 const EventLeftSide = ({ relatedEvents }: EventSidebarProps) => {
+    const t = useTranslations("empty_state");
 
     return (
         <div className="space-y-8">
@@ -70,7 +75,11 @@ const EventLeftSide = ({ relatedEvents }: EventSidebarProps) => {
                             </a>
                         ))
                     ) : (
-                        <p className="text-sm text-gray-500 italic">No related events found.</p>
+                        <PublicEmptyState
+                            variant="inline"
+                            title={t("related_events_title")}
+                            hideDescription
+                        />
                     )}
                 </div>
 
