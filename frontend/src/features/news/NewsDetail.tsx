@@ -113,7 +113,7 @@ const NewsDetail = () => {
                                 news_id={newsId}
                                 initialLikes={newsItem.metadata?.like_count || 0}
                                 initialDislikes={newsItem.metadata?.dislike_count || 0}
-                            // userReaction={newsItem?.reactions?.length > 0 ? newsItem.reactions[0].reaction : null}
+                                userReaction={newsItem.user_reaction ?? null}
                             />
 
                             {/* Content */}

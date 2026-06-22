@@ -23,7 +23,12 @@ export interface News {
     tag_links?: TagLink[];
     reactions?: any[];
     reads?: any[];
-    metadata?: any;
+    metadata?: {
+        like_count?: number;
+        dislike_count?: number;
+        read_count?: number;
+    };
+    user_reaction?: "like" | "dislike" | null;
     status: "draft" | "published" | "archived";
     published_at?: string;
 }

@@ -77,6 +77,7 @@ const dashboardRoute = require("./routers/system/dashboardRoutes");
 const routesRoute = require("./routers/route/routeRoute");
 
 const app = express();
+app.set("trust proxy", 1);
 const appServer = http.createServer(app);
 
 app.use(

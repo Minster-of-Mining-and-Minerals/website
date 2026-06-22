@@ -44,47 +44,26 @@ const NewsMediaGallery: React.FC<NewsMediaGalleryProps> = ({
     const headlineMedia = extractAllHeadlineAttachments(attachments);
 
     const handleReaction = async (reaction: 'like' | 'dislike') => {
-        if (isProcessing) return;
+        if (isProcessing || userReaction === reaction) return;
 
         setIsProcessing(true);
 
-        // Store previous state for rollback
         const previousLikes = likes;
         const previousDislikes = dislikes;
         const previousUserReaction = userReaction;
 
         try {
-            // Optimistic update
-            if (userReaction === reaction) {
-                // Remove reaction
-                if (reaction === 'like') setLikes(prev => prev - 1);
-                else setDislikes(prev => prev - 1);
-                setUserReaction(null);
-            } else {
-                // Add new reaction or switch
-                if (userReaction === 'like') {
-                    setLikes(prev => prev - 1);
-                } else if (userReaction === 'dislike') {
-                    setDislikes(prev => prev - 1);
-                }
-
-                if (reaction === 'like') setLikes(prev => prev + 1);
-                else setDislikes(prev => prev + 1);
-
-                setUserReaction(reaction);
-            }
-
-            // API call
             const response = await reactToNews({ news_id, reaction }).unwrap();
 
-            // Update with actual counts from server if available
             if (response?.metadata) {
-                setLikes(response.metadata.like_count);
-                setDislikes(response.metadata.dislike_count);
+                setLikes(response.metadata.like_count ?? likes);
+                setDislikes(response.metadata.dislike_count ?? dislikes);
             }
 
+            if (response?.user_reaction !== undefined) {
+                setUserReaction(response.user_reaction);
+            }
         } catch (error) {
-            // Revert optimistic update on error
             setLikes(previousLikes);
             setDislikes(previousDislikes);
             setUserReaction(previousUserReaction);
@@ -186,7 +165,7 @@ const NewsMediaGallery: React.FC<NewsMediaGalleryProps> = ({
                     {/* Like Button */}
                     <button
                         onClick={() => handleReaction('like')}
-                        disabled={isProcessing}
+                        disabled={isProcessing || userReaction === 'like'}
                         className={`flex items-center gap-1 transition-colors ${userReaction === 'like'
                             ? 'text-blue-600'
                             : 'text-gray-600 hover:text-blue-600'
@@ -199,7 +178,7 @@ const NewsMediaGallery: React.FC<NewsMediaGalleryProps> = ({
                     {/* Dislike Button */}
                     <button
                         onClick={() => handleReaction('dislike')}
-                        disabled={isProcessing}
+                        disabled={isProcessing || userReaction === 'dislike'}
                         className={`flex items-center gap-1 transition-colors ${userReaction === 'dislike'
                             ? 'text-red-600'
                             : 'text-gray-600 hover:text-red-600'

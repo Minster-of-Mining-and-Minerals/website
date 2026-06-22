@@ -205,12 +205,25 @@ const getNewsById = async (req, res) => {
             return res.status(404).json({ success: false, message: "News not found." });
         }
 
+        const ip_address = req.ip;
+        const userReactionRow = await NewsReaction.findOne({
+            where: { news_id: id, ip_address },
+            attributes: ["reaction"],
+        });
+
         const relatedNews = await getRelatedNews(id, 10);
+
+        const newsData = news.toJSON();
+        delete newsData.reactions;
 
         return res.status(200).json({
             success: true,
             message: "News fetched successfully",
-            data: { ...news.toJSON(), relatedNews },
+            data: {
+                ...newsData,
+                user_reaction: userReactionRow?.reaction ?? null,
+                relatedNews,
+            },
         });
     } catch (error) {
         console.error("Get News Error:", error);
@@ -335,87 +348,76 @@ const reactToNews = async (req, res) => {
             return res.status(400).json({ success: false, message: "Invalid reaction type." });
         }
 
-        // Find existing reaction for this IP
         const existingReaction = await NewsReaction.findOne({
             where: { news_id, ip_address },
-            transaction
+            transaction,
         });
 
-        let previousReaction = null;
-
         if (existingReaction) {
-            previousReaction = existingReaction.reaction;
-
             if (existingReaction.reaction === reaction) {
-                // User is removing their reaction (clicking same button)
-                await existingReaction.destroy({ transaction });
-
-                // Update metadata counts
-                if (reaction === 'like') {
-                    await NewsMetadata.decrement('like_count', {
-                        where: { news_id },
-                        transaction
-                    });
-                } else {
-                    await NewsMetadata.decrement('dislike_count', {
-                        where: { news_id },
-                        transaction
-                    });
-                }
-
                 await transaction.commit();
+
+                const metadata = await NewsMetadata.findOne({
+                    where: { news_id },
+                    attributes: ["like_count", "dislike_count"],
+                });
+
                 return res.status(200).json({
                     success: true,
-                    message: `News ${reaction} removed successfully`,
-                    data: null,
+                    message: "Reaction already recorded",
+                    data: {
+                        user_reaction: reaction,
+                        metadata,
+                    },
                 });
-            } else {
-                // User is switching from like to dislike or vice versa
-                await existingReaction.update({ reaction }, { transaction });
+            }
 
-                // Update metadata counts for the switch
-                if (reaction === 'like') {
-                    // Switching from dislike to like
-                    await NewsMetadata.increment('like_count', { where: { news_id }, transaction });
-                    await NewsMetadata.decrement('dislike_count', { where: { news_id }, transaction });
-                } else {
-                    // Switching from like to dislike
-                    await NewsMetadata.increment('dislike_count', { where: { news_id }, transaction });
-                    await NewsMetadata.decrement('like_count', { where: { news_id }, transaction });
-                }
+            await existingReaction.update({ reaction }, { transaction });
+
+            if (reaction === "like") {
+                await NewsMetadata.increment("like_count", { where: { news_id }, transaction });
+                await NewsMetadata.decrement("dislike_count", { where: { news_id }, transaction });
+            } else {
+                await NewsMetadata.increment("dislike_count", { where: { news_id }, transaction });
+                await NewsMetadata.decrement("like_count", { where: { news_id }, transaction });
             }
         } else {
-            // New reaction
-            await NewsReaction.create({
-                news_reaction_id: uuidv4(),
-                news_id,
-                ip_address,
-                reaction,
-                created_at: new Date()
-            }, { transaction });
+            await NewsReaction.create(
+                {
+                    news_reaction_id: uuidv4(),
+                    news_id,
+                    ip_address,
+                    reaction,
+                    created_at: new Date(),
+                },
+                { transaction }
+            );
 
-            // Update metadata counts for new reaction
-            if (reaction === 'like') {
-                await NewsMetadata.increment('like_count', { where: { news_id }, transaction });
+            if (reaction === "like") {
+                await NewsMetadata.increment("like_count", { where: { news_id }, transaction });
             } else {
-                await NewsMetadata.increment('dislike_count', { where: { news_id }, transaction });
+                await NewsMetadata.increment("dislike_count", { where: { news_id }, transaction });
             }
         }
 
         await transaction.commit();
 
-        // Fetch updated metadata to return
-        const updatedMetadata = await NewsMetadata.findOne({
+        const metadata = await NewsMetadata.findOne({
             where: { news_id },
-            attributes: ['like_count', 'dislike_count']
+            attributes: ["like_count", "dislike_count"],
+        });
+
+        const currentReaction = await NewsReaction.findOne({
+            where: { news_id, ip_address },
+            attributes: ["reaction"],
         });
 
         return res.status(200).json({
             success: true,
             message: `News ${reaction}d successfully`,
             data: {
-                reaction: existingReaction || await NewsReaction.findOne({ where: { news_id, ip_address } }),
-                metadata: updatedMetadata
+                user_reaction: currentReaction?.reaction ?? null,
+                metadata,
             },
         });
     } catch (error) {

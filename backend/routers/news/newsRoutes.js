@@ -36,7 +36,7 @@ router.delete("/:id", authenticateToken, deleteNews);
 // ===========================
 // News Reactions & Reads
 // ===========================
-router.post("/react", authenticateToken, reactToNews);
+router.post("/react", reactToNews);
 router.post("/read", recordNewsRead);
 router.post("/feedback", authenticateToken, recordNewsFeedback);
 router.get("/feedback/:news_id", getNewsFeedbacks);
