@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import {
@@ -11,6 +11,7 @@ import {
     FileIcon,
     Loader2,
     ChevronRight,
+    ChevronDown,
     Eye,
     Clock,
     Award,
@@ -24,13 +25,46 @@ import { getFileUrl } from "@/utils/fileUrl";
 /* ================================================
    SUB-CLASS CARD - Enhanced Design
 ================================================ */
+const SUBCLASS_DESCRIPTION_COLLAPSED_HEIGHT = 72; // matches max-h-[4.5rem]
+
 function SubClassCard({ item }: { item: Gamestone }) {
+    const [expanded, setExpanded] = useState(false);
+    const [canExpand, setCanExpand] = useState(false);
+    const descriptionRef = useRef<HTMLDivElement>(null);
+
     const imageUrl = item.attachment?.file_path
         ? getFileUrl(item.attachment.file_path)
         : null;
 
+    const hasDescription = Boolean(item.description?.trim());
+
+    useEffect(() => {
+        const el = descriptionRef.current;
+        if (!el || !hasDescription) {
+            setCanExpand(false);
+            return;
+        }
+
+        const checkOverflow = () => {
+            // scrollHeight is the full content height regardless of max-height,
+            // so this stays accurate after expand/collapse toggles.
+            setCanExpand(el.scrollHeight > SUBCLASS_DESCRIPTION_COLLAPSED_HEIGHT + 1);
+        };
+
+        checkOverflow();
+
+        const observer = new ResizeObserver(checkOverflow);
+        observer.observe(el);
+        window.addEventListener("resize", checkOverflow);
+
+        return () => {
+            observer.disconnect();
+            window.removeEventListener("resize", checkOverflow);
+        };
+    }, [item.description, hasDescription]);
+
     return (
-        <div className="group relative bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col h-full">
+        <div className="group relative bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col h-full">
             {/* Image Container */}
             <div className="relative h-52 bg-gradient-to-br from-amber-50 to-yellow-100 overflow-hidden">
                 {imageUrl ? (
@@ -78,11 +112,32 @@ function SubClassCard({ item }: { item: Gamestone }) {
                     </div>
                 )}
 
-                {item.description && (
-                    <div
-                        className="text-gray-600 text-sm leading-relaxed line-clamp-3"
-                        dangerouslySetInnerHTML={{ __html: item.description }}
-                    />
+                {hasDescription && (
+                    <div className="mt-1">
+                        <div
+                            ref={descriptionRef}
+                            className={`rich-text-content text-gray-600 text-sm leading-relaxed break-normal overflow-hidden transition-[max-height] duration-300 ease-in-out ${
+                                expanded ? "max-h-[2000px]" : "max-h-[4.5rem]"
+                            }`}
+                            dangerouslySetInnerHTML={{ __html: item.description! }}
+                        />
+
+                        {canExpand && (
+                            <button
+                                type="button"
+                                onClick={() => setExpanded((prev) => !prev)}
+                                className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-amber-700 hover:text-amber-800 transition-colors"
+                                aria-expanded={expanded}
+                            >
+                                {expanded ? "View less" : "View more"}
+                                <ChevronDown
+                                    className={`w-4 h-4 transition-transform duration-300 ${
+                                        expanded ? "rotate-180" : ""
+                                    }`}
+                                />
+                            </button>
+                        )}
+                    </div>
                 )}
             </div>
 
@@ -288,7 +343,7 @@ export default function GemstoneDetailPage() {
     const docs: { attachment: any }[] = gemstone.attachments ?? [];
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-amber-50/20">
+        <div className="not-prose min-h-screen bg-gradient-to-br from-gray-50 via-white to-amber-50/20">
             {/* Decorative Background Elements */}
             <div className="fixed inset-0 pointer-events-none overflow-hidden">
                 <div className="absolute top-0 right-0 w-96 h-96 bg-amber-100 rounded-full blur-3xl opacity-20" />
@@ -358,20 +413,21 @@ export default function GemstoneDetailPage() {
                     )}
 
                     {/* Content Section */}
-                    <div className="p-6 md:p-8 lg:p-10">
+                    <div className="p-6 md:p-8 lg:p-10 min-w-0">
                         {/* Stats Cards */}
                         <StatsCard gemstone={gemstone} />
 
                         {/* Description */}
                         {gemstone.description && (
-                            <div className="mb-10">
+                            <div className="mb-10 min-w-0">
                                 <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
                                     <Eye className="w-6 h-6 text-amber-600" />
                                     About this Gemstone
                                 </h2>
-                                <div className="prose prose-lg max-w-none text-gray-700 leading-relaxed">
-                                    <div dangerouslySetInnerHTML={{ __html: gemstone.description }} />
-                                </div>
+                                <div
+                                    className="rich-text-content prose prose-lg max-w-full min-w-0 w-full text-gray-700 leading-relaxed break-normal"
+                                    dangerouslySetInnerHTML={{ __html: gemstone.description }}
+                                />
                             </div>
                         )}
                     </div>
