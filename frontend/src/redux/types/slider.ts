@@ -4,6 +4,10 @@ export interface Slider {
     description?: string | null;
     attachment_id?: string | null;
     order: number;
+    button_name?: string | null;
+    button_url?: string | null;
+    button2_name?: string | null;
+    button2_url?: string | null;
     attachment?: {
         attachment_id: string;
         file_path?: string;
@@ -17,6 +21,10 @@ export interface CreateSliderPayload {
     description?: string;
     attachment_id?: string;
     order?: number;
+    button_name?: string;
+    button_url?: string;
+    button2_name?: string;
+    button2_url?: string;
 }
 
 export interface UpdateSliderPayload {
@@ -24,4 +32,8 @@ export interface UpdateSliderPayload {
     description?: string;
     attachment_id?: string;
     order?: number;
+    button_name?: string;
+    button_url?: string;
+    button2_name?: string;
+    button2_url?: string;
 }

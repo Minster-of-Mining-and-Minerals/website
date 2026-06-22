@@ -43,12 +43,12 @@ const defaultTree: LeaderNode = {
     id: "minister-habtamu",
     level: 0,
     name: "H.E. Engineer Habtamu Tegegn",
-    title: "Minister of Mines",
+    title: "Ministry of Mines",
     image: "/habtamu-tegegn-profile.jpg",
     shortDescription:
         "Senior public servant with extensive leadership experience.",
     fullDescription:
-        "H.E. Engineer Habtamu Tegegn is the current Minister of Mines...",
+        "H.E. Engineer Habtamu Tegegn is the current Ministry of Mines...",
     children: [],
 };
 

@@ -8,7 +8,7 @@ import { AnimatePresence, motion } from "framer-motion";
 
 const items = [
     { label: "MoM Background", slug: "/about" },
-    { label: "Minister of Mines", slug: "/about/minister" },
+    { label: "Ministry of Mines", slug: "/about/minister" },
     { label: "Mission, Vision and Values", slug: "/about/mission-vision-and-values" },
     { label: "Organizational Structure", slug: "/about/organizational-structure" },
 

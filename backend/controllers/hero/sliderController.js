@@ -25,7 +25,16 @@ const createSlider = async (req, res) => {
     const t = await sequelize.transaction();
 
     try {
-        const { title, description, attachment_id, order } = req.body;
+        const {
+            title,
+            description,
+            attachment_id,
+            order,
+            button_name,
+            button_url,
+            button2_name,
+            button2_url,
+        } = req.body;
 
         if (!title) {
             await t.rollback();
@@ -44,6 +53,10 @@ const createSlider = async (req, res) => {
                 description,
                 attachment_id,
                 order,
+                button_name,
+                button_url,
+                button2_name,
+                button2_url,
                 created_at: new Date(),
                 updated_at: new Date(),
             },
@@ -76,7 +89,16 @@ const updateSlider = async (req, res) => {
 
     try {
         const { id } = req.params;
-        const { title, description, attachment_id, order } = req.body;
+        const {
+            title,
+            description,
+            attachment_id,
+            order,
+            button_name,
+            button_url,
+            button2_name,
+            button2_url,
+        } = req.body;
 
         if (!isUuid(id)) {
             await t.rollback();
@@ -109,6 +131,10 @@ const updateSlider = async (req, res) => {
                 description,
                 attachment_id,
                 order,
+                button_name,
+                button_url,
+                button2_name,
+                button2_url,
                 updated_at: new Date(),
             },
             { transaction: t }

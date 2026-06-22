@@ -2,12 +2,12 @@ export const leadershipTree = {
   id: "minister-habtamu",
   level: 0,
   name: "H.E. Engineer Habtamu Tegegn",
-  title: "Minister of Mines",
+  title: "Ministry of Mines",
   image: "/habtamu-tegegn-profile.jpg",
   shortDescription:
     "Senior public servant with extensive leadership experience.",
   fullDescription:
-    "H.E. Engineer Habtamu Tegegn is the current Minister of Mines of Ethiopia. He is a seasoned public servant with extensive experience in the mining sector and a strong focus on sustainable development, governance, and investment promotion. His leadership aims to transform Ethiopia’s mining industry into a globally competitive sector that contributes significantly to the national economy.",
+    "H.E. Engineer Habtamu Tegegn is the current Ministry of Mines of Ethiopia. He is a seasoned public servant with extensive experience in the mining sector and a strong focus on sustainable development, governance, and investment promotion. His leadership aims to transform Ethiopia’s mining industry into a globally competitive sector that contributes significantly to the national economy.",
   children: [
     {
       id: "director-a",

@@ -29,6 +29,26 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull: true,
             },
 
+            button_name: {
+                type: DataTypes.STRING(100),
+                allowNull: true,
+            },
+
+            button_url: {
+                type: DataTypes.STRING(500),
+                allowNull: true,
+            },
+
+            button2_name: {
+                type: DataTypes.STRING(100),
+                allowNull: true,
+            },
+
+            button2_url: {
+                type: DataTypes.STRING(500),
+                allowNull: true,
+            },
+
             // ✅ Single Image (like Footer)
             attachment_id: {
                 type: DataTypes.UUID,

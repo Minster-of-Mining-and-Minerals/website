@@ -4,7 +4,7 @@
 import HierarchyD3Tree from "@/utils/hierarchyD3";
 
 export const sampleSectorNodes = [
-    { sector_node_id: "1", parent_id: null, name: "Minister of Mines" },
+    { sector_node_id: "1", parent_id: null, name: "Ministry of Mines" },
 
     /* ───────────── Top Leadership ───────────── */
     { sector_node_id: "2", parent_id: "1", name: "State Minister" },

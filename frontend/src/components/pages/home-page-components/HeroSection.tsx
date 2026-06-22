@@ -2,9 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import clsx from "clsx";
-import { Activity, ArrowRight, ChevronDown } from "lucide-react";
+import { ArrowRight, Briefcase, ChevronDown } from "lucide-react";
 import { Button } from "../../ui/button";
 import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useGetSlidersQuery } from "@/redux/api/sliderApi";
@@ -24,6 +25,14 @@ export type Slide = {
     image: string;
     bg: string;
 };
+
+type HeroButtonConfig = {
+    label: string;
+    href: string;
+};
+
+const DEFAULT_PRIMARY_HREF = "/investigating-in-ethiopia";
+const DEFAULT_SECONDARY_HREF = "/services";
 
 const slideVariants = {
     initial: (direction: number) => ({
@@ -68,6 +77,13 @@ const textVariants = {
 export default function HeroSection() {
     const { data: apiSliders, isLoading } = useGetSlidersQuery();
     const [slides, setSlides] = useState<Slide[]>([]);
+    const [heroButtons, setHeroButtons] = useState<{
+        primary: HeroButtonConfig;
+        secondary: HeroButtonConfig;
+    }>({
+        primary: { label: "", href: DEFAULT_PRIMARY_HREF },
+        secondary: { label: "", href: DEFAULT_SECONDARY_HREF },
+    });
     const [current, setCurrent] = useState(0);
     const [direction, setDirection] = useState(0); // 1 for next, -1 for prev
     const [locale, setLocale] = useState<keyof LocalizedText>("en");
@@ -83,6 +99,19 @@ export default function HeroSection() {
     // Update slides when API data arrives
     useEffect(() => {
         if (apiSliders && apiSliders.length > 0) {
+            const firstSlide = apiSliders[0];
+
+            setHeroButtons({
+                primary: {
+                    label: firstSlide.button_name?.trim() || "",
+                    href: firstSlide.button_url?.trim() || DEFAULT_PRIMARY_HREF,
+                },
+                secondary: {
+                    label: firstSlide.button2_name?.trim() || "",
+                    href: firstSlide.button2_url?.trim() || DEFAULT_SECONDARY_HREF,
+                },
+            });
+
             const mappedSlides: Slide[] = apiSliders.map((s, index) => ({
                 id: index + 1,
                 title: { en: s.title, am: s.title },
@@ -127,6 +156,12 @@ export default function HeroSection() {
 
     if (slides.length === 0) return null;
 
+    const primaryLabel = heroButtons.primary.label || t("hero.button");
+    const primaryHref = heroButtons.primary.href || DEFAULT_PRIMARY_HREF;
+    const secondaryLabel = heroButtons.secondary.label || t("hero.button2");
+    const secondaryHref = heroButtons.secondary.href || DEFAULT_SECONDARY_HREF;
+    const isExternalLink = (href: string) => href.startsWith("http://") || href.startsWith("https://");
+
     return (
         <section className="relative w-full h-[80vh] overflow-hidden bg-black">
             <AnimatePresence initial={false} custom={direction}>
@@ -154,7 +189,7 @@ export default function HeroSection() {
 
                         {/* Content Overlay */}
                         <div className="relative z-20 w-full h-full flex items-center justify-center mb-10">
-                            <div className="max-w-7xl w-full px-6">
+                            <div className="max-w-7xl w-full px-4 sm:px-6">
                                 <motion.div
                                     variants={textVariants}
                                     initial="hidden"
@@ -184,7 +219,7 @@ export default function HeroSection() {
                                     initial="hidden"
                                     animate="visible"
                                     custom={2}
-                                    className="text-white/90 text-lg sm:text-xl mb-12 md:max-w-[60%] leading-relaxed drop-shadow-sm"
+                                    className="text-white/90 text-base sm:text-lg md:text-xl mb-8 sm:mb-12 md:max-w-[60%] leading-relaxed drop-shadow-sm"
                                 >
                                     {slides[current].description[locale] || slides[current].description['en']}
                                 </motion.p>
@@ -194,13 +229,34 @@ export default function HeroSection() {
                                     initial="hidden"
                                     animate="visible"
                                     custom={3}
-                                    className="flex flex-col sm:flex-row gap-5 mt-4"
+                                    className="flex w-full flex-col gap-3 sm:flex-row sm:gap-4 md:gap-5 mt-2 sm:mt-4"
                                 >
-                                    <Button className="bg-golden-dark hover:bg-golden-dark/90 text-white px-8 h-14 text-lg rounded-lg transition-all transform hover:scale-105 active:scale-95 flex items-center gap-2 shadow-xl shadow-golden-dark/20 border-none">
-                                        {t("hero.button")} <ArrowRight className="w-5 h-5" />
+                                    <Button
+                                        asChild
+                                        className="w-full sm:w-auto min-h-12 sm:min-h-14 h-auto py-3 sm:py-0 bg-golden-dark hover:bg-golden-dark/90 text-white px-5 sm:px-8 text-base sm:text-lg rounded-lg transition-all sm:hover:scale-105 active:scale-[0.98] shadow-xl shadow-golden-dark/20 border-none whitespace-normal sm:whitespace-nowrap"
+                                    >
+                                        <Link
+                                            href={primaryHref}
+                                            target={isExternalLink(primaryHref) ? "_blank" : undefined}
+                                            rel={isExternalLink(primaryHref) ? "noopener noreferrer" : undefined}
+                                        >
+                                            <span className="text-center">{primaryLabel}</span>
+                                            <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
+                                        </Link>
                                     </Button>
-                                    <Button variant="outline" className="bg-white/10 backdrop-blur-md text-white border-white/30 hover:bg-white/20 h-14 px-8 text-lg rounded-lg transition-all transform hover:scale-105 active:scale-95 flex items-center gap-2">
-                                        <Activity className="w-5 h-5" /> {t("hero.button2")}
+                                    <Button
+                                        asChild
+                                        variant="outline"
+                                        className="w-full sm:w-auto min-h-12 sm:min-h-14 h-auto py-3 sm:py-0 bg-white/10 backdrop-blur-md text-white border-white/30 hover:bg-white/20 hover:text-white px-5 sm:px-8 text-base sm:text-lg rounded-lg transition-all sm:hover:scale-105 active:scale-[0.98] whitespace-normal sm:whitespace-nowrap"
+                                    >
+                                        <Link
+                                            href={secondaryHref}
+                                            target={isExternalLink(secondaryHref) ? "_blank" : undefined}
+                                            rel={isExternalLink(secondaryHref) ? "noopener noreferrer" : undefined}
+                                        >
+                                            <Briefcase className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
+                                            <span className="text-center">{secondaryLabel}</span>
+                                        </Link>
                                     </Button>
                                 </motion.div>
                             </div>
@@ -247,4 +303,4 @@ export default function HeroSection() {
             )}
         </section>
     );
-}
+}

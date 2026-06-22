@@ -158,7 +158,7 @@ export default function LeadershipAdminPage() {
             title: node.title,
             description: node.fullDescription,
             parent_id: node.parent_id || null,
-            header: node.header || "Minister of Mines",
+            header: node.header || "Ministry of Mines",
             level: node.level,
             attachments: node.attachment_id ? [{ attachment_id: node.attachment_id }] : [],
         });

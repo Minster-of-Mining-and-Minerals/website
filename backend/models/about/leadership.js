@@ -32,7 +32,7 @@ module.exports = (sequelize, DataTypes) => {
             header: {
                 type: DataTypes.STRING(255),
                 allowNull: false,
-                defaultValue: "Minister of Mines",
+                defaultValue: "Ministry of Mines",
             },
             parent_id: {
                 type: DataTypes.UUID,

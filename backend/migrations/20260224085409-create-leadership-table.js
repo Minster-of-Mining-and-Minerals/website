@@ -12,7 +12,7 @@ module.exports = {
       header: {
         type: Sequelize.STRING(255),
         allowNull: false,
-        defaultValue: "Minister of Mines",
+        defaultValue: "Ministry of Mines",
       },
       parent_id: {
         type: Sequelize.UUID,

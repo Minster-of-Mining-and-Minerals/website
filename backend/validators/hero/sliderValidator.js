@@ -13,6 +13,10 @@ const createSliderSchema = Joi.object({
     description: Joi.string().allow(null, "").optional(),
     attachment_id: uuidSchema.allow(null).optional(),
     order: Joi.number().integer().min(0).optional(),
+    button_name: Joi.string().max(100).allow(null, "").optional(),
+    button_url: Joi.string().max(500).allow(null, "").optional(),
+    button2_name: Joi.string().max(100).allow(null, "").optional(),
+    button2_url: Joi.string().max(500).allow(null, "").optional(),
 });
 
 const updateSliderSchema = Joi.object({
@@ -20,6 +24,10 @@ const updateSliderSchema = Joi.object({
     description: Joi.string().allow(null, "").optional(),
     attachment_id: uuidSchema.allow(null).optional(),
     order: Joi.number().integer().min(0).optional(),
+    button_name: Joi.string().max(100).allow(null, "").optional(),
+    button_url: Joi.string().max(500).allow(null, "").optional(),
+    button2_name: Joi.string().max(100).allow(null, "").optional(),
+    button2_url: Joi.string().max(500).allow(null, "").optional(),
 }).min(1);
 
 exports.validateCreateSlider = (req, res, next) => {
