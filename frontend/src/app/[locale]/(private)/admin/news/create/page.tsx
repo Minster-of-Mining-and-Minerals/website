@@ -17,6 +17,11 @@ import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useGetTagsQuery } from "@/redux/api/tagApi";
 import { QuillDeltaToHtmlConverter } from "quill-delta-to-html";
+import {
+    fromDatetimeLocalInput,
+    toDatetimeLocalInput,
+    TIMEZONE_LABEL,
+} from "@/utils/datetime";
 // Dynamic import for Quill
 const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
 
@@ -308,7 +313,7 @@ const CreateNews = () => {
     const [footerFiles, setFooterFiles] = useState<UploadedFileInfo[]>([]);
     const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
     const [status, setStatus] = useState<"draft" | "published" | "archived">("draft");
-    const [publishedAt, setPublishedAt] = useState(new Date().toISOString().slice(0, 16));
+    const [publishedAt, setPublishedAt] = useState(() => toDatetimeLocalInput(new Date().toISOString()));
 
     const [createNews] = useCreateNewsMutation();
     const { data = [], isLoading, isError } = useGetTagsQuery()
@@ -327,7 +332,7 @@ const CreateNews = () => {
                 content: contentHtml,
                 attachments: newsAttachments || [],
                 status,
-                published_at: status === "published" ? new Date(publishedAt).toISOString() : undefined,
+                published_at: status === "published" ? fromDatetimeLocalInput(publishedAt) ?? undefined : undefined,
             }).unwrap();
 
             alert("News Created Successfully!");
@@ -397,6 +402,7 @@ const CreateNews = () => {
                                     value={publishedAt}
                                     onChange={(e) => setPublishedAt(e.target.value)}
                                 />
+                                <p className="text-xs text-gray-500">{TIMEZONE_LABEL}</p>
                             </div>
                         )}
                     </div>

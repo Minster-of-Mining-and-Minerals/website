@@ -7,6 +7,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Archive, EyeOff, Send } from "lucide-react";
 import { useState } from "react";
+import {
+    fromDatetimeLocalInput,
+    formatDateTime,
+    toDatetimeLocalInput,
+    TIMEZONE_LABEL,
+} from "@/utils/datetime";
 import { 
     Dialog,
     DialogContent,
@@ -98,7 +104,7 @@ const AdminNewsCard = ({
                         {publishedAt && (
                             <span className="bg-white/90 text-[10px] font-semibold px-2 py-0.5 rounded-full flex items-center gap-1">
                                 <Calendar className="h-3 w-3" />
-                                {new Date(publishedAt).toLocaleString()}
+                                {formatDateTime(publishedAt)}
                             </span>
                         )}
                     </div>
@@ -146,7 +152,7 @@ const AdminNewsCard = ({
 const NewsActions = ({ id, status }: { id: string; status: string }) => {
     const [updateNews, { isLoading }] = useUpdateNewsMutation();
     const [isPublishDialogOpen, setIsPublishDialogOpen] = useState(false);
-    const [publishDate, setPublishDate] = useState(new Date().toISOString().slice(0, 16));
+    const [publishDate, setPublishDate] = useState(() => toDatetimeLocalInput(new Date().toISOString()));
 
     const handleStatusUpdate = async (newStatus: string, published_at?: string) => {
         try {
@@ -223,11 +229,12 @@ const NewsActions = ({ id, status }: { id: string; status: string }) => {
                             <p className="text-xs text-muted-foreground">
                                 Leave it as now to publish immediately, or choose a future date to schedule.
                             </p>
+                            <p className="text-xs text-muted-foreground">{TIMEZONE_LABEL}</p>
                         </div>
                     </div>
                     <DialogFooter>
                         <Button variant="outline" onClick={() => setIsPublishDialogOpen(false)}>Cancel</Button>
-                        <Button onClick={() => handleStatusUpdate("published", new Date(publishDate).toISOString())} disabled={isLoading}>
+                        <Button onClick={() => handleStatusUpdate("published", fromDatetimeLocalInput(publishDate) ?? undefined)} disabled={isLoading}>
                             Confirm Publish
                         </Button>
                     </DialogFooter>

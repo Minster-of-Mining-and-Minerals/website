@@ -8,6 +8,12 @@ const pool = {
   idle: 10000,
 };
 
+const baseConfig = {
+  dialect: process.env.DB_DIALECT || "postgres",
+  pool,
+  timezone: "+00:00",
+};
+
 module.exports = {
   development: {
     username: process.env.DB_USER,
@@ -15,8 +21,7 @@ module.exports = {
     database: process.env.DB_NAME,
     host: process.env.DB_HOST,
     port: process.env.DB_PORT || 5432,
-    dialect: process.env.DB_DIALECT || "postgres",
-    pool,
+    ...baseConfig,
   },
   test: {
     username: process.env.DB_USER,
@@ -24,8 +29,7 @@ module.exports = {
     database: process.env.DB_NAME,
     host: process.env.DB_HOST,
     port: process.env.DB_PORT || 5432,
-    dialect: process.env.DB_DIALECT || "postgres",
-    pool,
+    ...baseConfig,
   },
   production: {
     username: process.env.DB_USER,
@@ -33,7 +37,6 @@ module.exports = {
     database: process.env.DB_NAME,
     host: process.env.DB_HOST,
     port: process.env.DB_PORT || 5432,
-    dialect: process.env.DB_DIALECT || "postgres",
-    pool,
+    ...baseConfig,
   },
 };

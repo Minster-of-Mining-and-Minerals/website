@@ -8,6 +8,7 @@ import { useGetNewsQuery } from "@/redux/api/newsApi";
 import { useGetTagsQuery } from "@/redux/api/tagApi";
 import NewsCard from "@/components/pages/news-page-components/NewsCard";
 import { calculateReadingTime, extractExcerpt, extractHeadlineImage, extractTags } from "@/utils/newsMapper";
+import { formatDate } from "@/utils/datetime";
 import PublicEmptyState from "@/components/common/PublicEmptyState";
 import { useTranslations } from "next-intl";
 
@@ -100,7 +101,7 @@ const NewsPage = () => {
                                 title={item.title}
                                 excerpt={excerpt}
                                 media={extractHeadlineImage(item.attachments)}
-                                date={new Date(item.created_at).toLocaleDateString()}
+                                date={formatDate(item.created_at)}
                                 category={tags[0] || "General"}
                                 tags={tags}
                                 readingTime={() => calculateReadingTime(excerpt)}

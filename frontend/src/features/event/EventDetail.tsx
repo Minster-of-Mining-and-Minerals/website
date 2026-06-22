@@ -4,6 +4,7 @@ import { Calendar, MapPin, ArrowLeft, Clock, User, Globe } from "lucide-react";
 import React from "react";
 import { useParams } from "next/navigation";
 import { mapRelatedNews } from "@/utils/mapRelatedNews";
+import { formatLongDate, formatTime } from "@/utils/datetime";
 import EventMediaGallery from "./components/EventMediaGallery";
 import NewsContentRenderer from "@/features/components/NewsContentRenderer";
 import NewsDocuments from "../components/NewsDocuments";
@@ -31,25 +32,6 @@ const EventDetail = () => {
         );
     }
 
-    const formatDate = (dateString: string) => {
-        if (!dateString) return "";
-        const date = new Date(dateString);
-        return date.toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-        });
-    };
-
-    const formatTime = (dateString: string) => {
-        if (!dateString) return "";
-        const date = new Date(dateString);
-        return date.toLocaleTimeString("en-US", {
-            hour: "2-digit",
-            minute: "2-digit",
-        });
-    };
-    
     // Status color mapping
     const getStatusColor = (status: string) => {
         switch(status?.toLowerCase()) {
@@ -80,7 +62,7 @@ const EventDetail = () => {
                     </span>
                     <div className="flex items-center gap-1 text-gray-500 text-sm border-l md:pl-4 pl-0 border-transparent md:border-gray-300">
                         <Calendar size={14} className="text-golden-dark" />
-                        <span>{formatDate(eventItem.start_time)}</span>
+                        <span>{formatLongDate(eventItem.start_time)}</span>
                     </div>
                 </div>
             </header>
@@ -116,11 +98,11 @@ const EventDetail = () => {
                                         <div>
                                             <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-1">Time</p>
                                             <p className="text-sm font-medium text-gray-900">
-                                                {formatDate(eventItem.start_time)} at {formatTime(eventItem.start_time)}
+                                                {formatLongDate(eventItem.start_time)} at {formatTime(eventItem.start_time)}
                                             </p>
                                             {(eventItem.start_time !== eventItem.end_time) && (
                                                 <p className="text-sm text-gray-600">
-                                                    to {formatDate(eventItem.end_time)} at {formatTime(eventItem.end_time)}
+                                                    to {formatLongDate(eventItem.end_time)} at {formatTime(eventItem.end_time)}
                                                 </p>
                                             )}
                                         </div>

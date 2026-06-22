@@ -9,6 +9,7 @@ import { useGetEventCategoriesQuery } from "@/redux/api/eventCategoryApi";
 import EventCard from "@/components/pages/events-page-components/EventCard";
 import { extractExcerpt } from "@/utils/newsMapper";
 import { getFileUrl } from "@/utils/fileUrl";
+import { formatDate, formatTimeShort } from "@/utils/datetime";
 import PublicEmptyState from "@/components/common/PublicEmptyState";
 import { useTranslations } from "next-intl";
 
@@ -93,9 +94,8 @@ const EventsPage = () => {
                         const mediaUrl = attachment?.file_path ? getFileUrl(attachment.file_path) : null;
                         const media = mediaUrl ? { url: mediaUrl, type: "image" as "image" | "video" } : null; // assuming images for simplicity
                         
-                        const startDate = new Date(item.start_time);
-                        const displayDate = startDate.toLocaleDateString();
-                        const displayTime = startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                        const displayDate = formatDate(item.start_time);
+                        const displayTime = formatTimeShort(item.start_time);
 
                         return (
                             <EventCard

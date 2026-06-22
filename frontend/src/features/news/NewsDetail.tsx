@@ -9,6 +9,7 @@ import NewsMediaGallery from "../components/NewsMediaGallery";
 import NewsContentRenderer from "../components/NewsContentRenderer";
 import NewsDocuments from "../components/NewsDocuments";
 import NewsFeedback from "../components/NewsFeedback";
+import { formatLongDate } from "@/utils/datetime";
 
 const NewsDetail = () => {
     const params = useParams();
@@ -34,8 +35,6 @@ const NewsDetail = () => {
     const [comments, setComments] = useState<
         { name: string; comment: string; date: string; rating: number }[]
     >([]);
-
-    console.log(newsItem)
 
     if (isLoading) return <div className="text-center py-12">Loading...</div>;
     if (isError || !newsItem)
@@ -69,15 +68,6 @@ const NewsDetail = () => {
         alert("Thank you for your feedback! Your comment has been submitted.");
     };
 
-    const formatDate = (dateString: string) => {
-        const date = new Date(dateString);
-        return date.toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-        });
-    };
-
     return (
         <div className="min-h-screen bg-gray-50">
             {/* Header */}
@@ -91,7 +81,7 @@ const NewsDetail = () => {
                 <div className="flex md:items-center flex-col md:flex-row md:gap-2 mt-1">
                     <div className="flex items-center gap-1 text-gray-500 text-sm">
                         <Calendar size={14} />
-                        <span>{formatDate(newsItem.created_at)}</span>
+                        <span>{formatLongDate(newsItem.created_at)}</span>
                     </div>
                     <span className="text-gray-500 text-sm hidden md:block">•</span>
                     <div className="flex items-center gap-1 text-gray-500 text-sm">

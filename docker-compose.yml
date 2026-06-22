@@ -7,6 +7,7 @@ services:
       POSTGRES_USER: ${DB_USER:-postgres}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-root}
       POSTGRES_DB: ${DB_NAME:-mom_website}
+      TZ: UTC
     ports:
       - "5432:5432"
     volumes:
@@ -27,6 +28,8 @@ services:
       - PORT=4000
       - JWT_SECRET=${JWT_SECRET:-thisisoursecretcodefortoken}
       - FRONTEND_URL=https://www.mom.gov.et
+      - TZ=UTC
+      - APP_TIMEZONE=Africa/Addis_Ababa
     expose:
       - "4000"
     depends_on:
@@ -39,11 +42,13 @@ services:
       args:
         - NEXT_PUBLIC_BASE_URL=https://www.mom.gov.et/api
         - NEXT_PUBLIC_BASE=https://www.mom.gov.et
+        - NEXT_PUBLIC_TIMEZONE=Africa/Addis_Ababa
     container_name: mom_frontend
     restart: always
     environment:
       - NEXT_PUBLIC_BASE_URL=https://www.mom.gov.et/api
       - NEXT_PUBLIC_BASE=https://www.mom.gov.et
+      - NEXT_PUBLIC_TIMEZONE=Africa/Addis_Ababa
       - AUTH_SECRET=random-secret-at-least-32-characters-long
       - AUTH_URL=https://www.mom.gov.et/api/auth
       - NEXTAUTH_SECRET=random-secret-at-least-32-characters-long

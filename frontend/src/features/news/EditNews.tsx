@@ -18,6 +18,11 @@ import { FileUploadField, UploadedFileInfo } from "@/components/common/FileUppla
 import Quill from 'quill';
 import { useGetTagsQuery } from "@/redux/api/tagApi";
 import { EditFileUpload } from "@/components/common/EditFileUpload";
+import {
+    fromDatetimeLocalInput,
+    toDatetimeLocalInput,
+    TIMEZONE_LABEL,
+} from "@/utils/datetime";
 
 // Dynamic import for Quill
 const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
@@ -76,7 +81,11 @@ const EditNews = () => {
         }
 
         setStatus(news.status || "draft");
-        setPublishedAt(news.published_at ? new Date(news.published_at).toISOString().slice(0, 16) : new Date().toISOString().slice(0, 16));
+        setPublishedAt(
+            news.published_at
+                ? toDatetimeLocalInput(news.published_at)
+                : toDatetimeLocalInput(new Date().toISOString())
+        );
 
         // Set content - handle both Delta and HTML
         if (news.content) {
@@ -180,7 +189,7 @@ const EditNews = () => {
                 })),
                 tag_ids: selectedTags,
                 status,
-                published_at: status === "published" ? new Date(publishedAt).toISOString() : undefined,
+                published_at: status === "published" ? fromDatetimeLocalInput(publishedAt) ?? undefined : undefined,
             };
 
             console.log("Submitting payload:", payload);
@@ -284,6 +293,7 @@ const EditNews = () => {
                                     value={publishedAt}
                                     onChange={(e) => setPublishedAt(e.target.value)}
                                 />
+                                <p className="text-xs text-gray-500">{TIMEZONE_LABEL}</p>
                             </div>
                         )}
                     </div>

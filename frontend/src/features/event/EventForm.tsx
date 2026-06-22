@@ -18,6 +18,12 @@ import Quill from 'quill';
 import { useGetEventCategoriesQuery } from "@/redux/api/eventCategoryApi";
 import { CreateEventPayload, UpdateEventPayload, Event } from "@/redux/types/event";
 import { UploadedFileInfo } from "@/components/common/FileUpplaodFiled";
+import {
+    fromDatetimeLocalInput,
+    toDatetimeLocalInput,
+    formatDate,
+    TIMEZONE_LABEL,
+} from "@/utils/datetime";
 
 // Dynamic import for Quill
 const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
@@ -70,13 +76,13 @@ export default function EventForm({ initialData, onSubmit, isLoading: isSubmitti
             setTitle(initialData.title || "");
             setDescription(initialData.description || "");
             setOrganizer(initialData.organizer || "");
-            setStartTime(initialData.start_time ? new Date(initialData.start_time).toISOString().slice(0, 16) : "");
-            setEndTime(initialData.end_time ? new Date(initialData.end_time).toISOString().slice(0, 16) : "");
+            setStartTime(toDatetimeLocalInput(initialData.start_time));
+            setEndTime(toDatetimeLocalInput(initialData.end_time));
             setLocation(initialData.location || "");
             setVirtualLink(initialData.virtual_link || "");
             setStatus(initialData.status || "draft");
-            setPublishStart(initialData.publish_start ? new Date(initialData.publish_start).toISOString().slice(0, 16) : "");
-            setPublishEnd(initialData.publish_end ? new Date(initialData.publish_end).toISOString().slice(0, 16) : "");
+            setPublishStart(toDatetimeLocalInput(initialData.publish_start));
+            setPublishEnd(toDatetimeLocalInput(initialData.publish_end));
 
             // Handle content
             if (initialData.content) {
@@ -168,13 +174,13 @@ export default function EventForm({ initialData, onSubmit, isLoading: isSubmitti
             title,
             description,
             organizer,
-            start_time: new Date(startTime).toISOString(),
-            end_time: new Date(endTime).toISOString(),
+            start_time: fromDatetimeLocalInput(startTime)!,
+            end_time: fromDatetimeLocalInput(endTime)!,
             location,
             virtual_link: virtualLink,
             status,
-            publish_start: publishStart ? new Date(publishStart).toISOString() : null,
-            publish_end: publishEnd ? new Date(publishEnd).toISOString() : null,
+            publish_start: fromDatetimeLocalInput(publishStart),
+            publish_end: fromDatetimeLocalInput(publishEnd),
             content: contentHtml,
             attachments: attachments.map(a => a.attachment_id),
             event_category_id: selectedCategoryId,
@@ -256,6 +262,7 @@ export default function EventForm({ initialData, onSubmit, isLoading: isSubmitti
                                 onChange={e => setStartTime(e.target.value)}
                                 required
                             />
+                            <p className="text-xs text-gray-500">{TIMEZONE_LABEL}</p>
                         </div>
                         <div className="space-y-2">
                             <Label>End Time *</Label>
@@ -265,6 +272,7 @@ export default function EventForm({ initialData, onSubmit, isLoading: isSubmitti
                                 onChange={e => setEndTime(e.target.value)}
                                 required
                             />
+                            <p className="text-xs text-gray-500">{TIMEZONE_LABEL}</p>
                         </div>
                     </div>
 
@@ -316,6 +324,7 @@ export default function EventForm({ initialData, onSubmit, isLoading: isSubmitti
                                         onChange={e => setPublishStart(e.target.value)}
                                     />
                                     <p className="text-[10px] text-gray-400">Leave blank to publish immediately.</p>
+                                    <p className="text-[10px] text-gray-400">{TIMEZONE_LABEL}</p>
                                 </div>
                                 <div className="space-y-1">
                                     <Label className="text-xs">Publish End</Label>
@@ -325,6 +334,7 @@ export default function EventForm({ initialData, onSubmit, isLoading: isSubmitti
                                         onChange={e => setPublishEnd(e.target.value)}
                                     />
                                     <p className="text-[10px] text-gray-400">Leave blank for no expiry.</p>
+                                    <p className="text-[10px] text-gray-400">{TIMEZONE_LABEL}</p>
                                 </div>
                             </div>
                         </div>
@@ -494,7 +504,7 @@ export default function EventForm({ initialData, onSubmit, isLoading: isSubmitti
                             <div className="grid grid-cols-2 gap-4 py-4 border-y text-sm">
                                 <div className="flex items-center gap-2">
                                     <CalendarIcon className="h-4 w-4 text-golden-dark" />
-                                    <span className="font-medium">{startTime ? new Date(startTime).toLocaleDateString() : "Date TBD"}</span>
+                                    <span className="font-medium">{startTime ? formatDate(fromDatetimeLocalInput(startTime) ?? startTime) : "Date TBD"}</span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <MapPin className="h-4 w-4 text-golden-dark" />

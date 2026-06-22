@@ -9,6 +9,7 @@ import { useGetEventsQuery } from "@/redux/api/eventApi";
 import { getFileUrl } from "@/utils/fileUrl";
 import Link from "next/link";
 import { extractExcerpt } from "@/utils/newsMapper";
+import { formatDate, formatTimeShort } from "@/utils/datetime";
 
 type EventItem = {
     id: string;
@@ -38,15 +39,14 @@ export default function LatestEventSection() {
 
             const mapped: EventItem[] = upcomingEvents.slice(0, 6).map((e: any) => {
                 const attachment = e.attachments?.[0]?.attachment;
-                const startDate = new Date(e.start_time);
                 
                 return {
                     id: e.event_id,
                     title: e.title,
                     description: (extractExcerpt(e.content) || e.description || "").substring(0, 200) + "...",
                     image: attachment?.file_path ? getFileUrl(attachment.file_path) : "/placeholder-news.jpg",
-                    date: startDate.toLocaleDateString(),
-                    time: startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                    date: formatDate(e.start_time),
+                    time: formatTimeShort(e.start_time),
                     location: e.location || "Location not specified",
                     status: e.computed_status || e.status
                 };
@@ -57,15 +57,14 @@ export default function LatestEventSection() {
                  const recentEvents = [...apiEvents].sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
                  const recentMapped: EventItem[] = recentEvents.slice(0, 6).map((e: any) => {
                     const attachment = e.attachments?.[0]?.attachment;
-                    const startDate = new Date(e.start_time);
                     
                     return {
                         id: e.event_id,
                         title: e.title,
                         description: (extractExcerpt(e.content) || e.description || "").substring(0, 200) + "...",
                         image: attachment?.file_path ? getFileUrl(attachment.file_path) : "/placeholder-news.jpg",
-                        date: startDate.toLocaleDateString(),
-                        time: startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                        date: formatDate(e.start_time),
+                        time: formatTimeShort(e.start_time),
                         location: e.location || "Location not specified",
                         status: e.computed_status || e.status
                     };

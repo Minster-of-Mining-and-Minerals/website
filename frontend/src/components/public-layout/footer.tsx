@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useMemo } from "react";
 import Link from "next/link";
 import {
     Facebook,
@@ -77,66 +77,60 @@ const DEFAULT_FOOTER_DATA = {
 };
 
 const Footer = () => {
-    const { data: footers, isLoading: isFootersLoading } = useGetFootersQuery();
-    const { data: socialMedias = [], isLoading: isSocialLoading, isError: isSocialError } = useGetSocialMediasQuery();
+    const { data: footers } = useGetFootersQuery();
+    const { data: socialMedias = [] } = useGetSocialMediasQuery();
     const { data: attachmentsResponse } = useGetAttachmentsQuery();
 
-    // Fallback data structure for safety
-    const [footerData, setFooterData] = useState(DEFAULT_FOOTER_DATA);
-    const [socialLinks, setSocialLinks] = useState<any[]>([]);
-
-    useEffect(() => {
-        if (footers && footers.length > 0) {
-            const f = footers[0]; // Assuming we're using the latest one
-
-            // Resolve Logo URL if attachment_id exists
-            let logoUrl = DEFAULT_FOOTER_DATA.about.logo;
-            if (f.attachment?.file_path) {
-                logoUrl = `${process.env.NEXT_PUBLIC_BASE}/${f.attachment.file_path.replace(/\\/g, "/")}`;
-            }
-
-            // Map Sections to match existing UI structure (title, links, id)
-            const mappedSections = (f.sections || []).map((s: any) => ({
-                id: s.footer_section_id || Math.random().toString(36).substring(2, 9),
-                title: s.section_name,
-                links: (s.links || []).map((l: any) => ({
-                    id: Math.random().toString(36).substring(2, 9),
-                    label: l.label,
-                    href: l.url,
-                })),
-            }));
-
-            // If fewer than 3 sections, pad with defaults
-            if (mappedSections.length < 3) {
-                const defaults = DEFAULT_FOOTER_DATA.sections.slice(mappedSections.length);
-                mappedSections.push(...defaults);
-            }
-
-            setFooterData({
-                about: {
-                    logo: logoUrl,
-                    title: f.title || DEFAULT_FOOTER_DATA.about.title,
-                },
-                sections: mappedSections.slice(0, 3),
-                copyright: f.text || DEFAULT_FOOTER_DATA.copyright,
-            });
+    const footerData = useMemo(() => {
+        if (!footers?.length) {
+            return DEFAULT_FOOTER_DATA;
         }
+
+        const f = footers[0];
+
+        let logoUrl = DEFAULT_FOOTER_DATA.about.logo;
+        if (f.attachment?.file_path) {
+            logoUrl = `${process.env.NEXT_PUBLIC_BASE}/${f.attachment.file_path.replace(/\\/g, "/")}`;
+        }
+
+        const mappedSections = (f.sections || []).map((s: any, sectionIndex: number) => ({
+            id: s.footer_section_id || `section-${sectionIndex}`,
+            title: s.section_name,
+            links: (s.links || []).map((l: any, linkIndex: number) => ({
+                id: l.footer_section_link_id || `${sectionIndex}-${linkIndex}`,
+                label: l.label,
+                href: l.url,
+            })),
+        }));
+
+        const sections =
+            mappedSections.length >= 3
+                ? mappedSections.slice(0, 3)
+                : [
+                      ...mappedSections,
+                      ...DEFAULT_FOOTER_DATA.sections.slice(mappedSections.length),
+                  ];
+
+        return {
+            about: {
+                logo: logoUrl,
+                title: f.title || DEFAULT_FOOTER_DATA.about.title,
+            },
+            sections,
+            copyright: f.text || DEFAULT_FOOTER_DATA.copyright,
+        };
     }, [footers, attachmentsResponse]);
 
-    // Transform social media data for display
-    useEffect(() => {
-        if (socialMedias && socialMedias.length > 0) {
-            const transformedLinks = socialMedias.map((social: any) => ({
+    const socialLinks = useMemo(
+        () =>
+            socialMedias.map((social: any) => ({
                 id: social.social_media_id,
                 platform_name: social.platform_name,
                 icon: social.icon,
                 url: social.url,
-            }));
-            setSocialLinks(transformedLinks);
-        } else {
-            setSocialLinks([]);
-        }
-    }, [socialMedias]);
+            })),
+        [socialMedias]
+    );
 
     return (
         <footer className="bg-gray-800 bg-blur-md text-gray-300">

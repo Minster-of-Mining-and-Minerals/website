@@ -8,6 +8,7 @@ import { Button } from "../../ui/button";
 import { useGetNewsQuery } from "@/redux/api/newsApi";
 import { getFileUrl } from "@/utils/fileUrl";
 import Link from "next/link";
+import { formatDate } from "@/utils/datetime";
 
 type NewsItem = {
     id: string;
@@ -43,7 +44,7 @@ export default function LatestNewsSection() {
                     title: n.title,
                     description: deltaToPlainText(n.content).substring(0, 200) + "...",
                     image: headlineAttachment?.file_path ? getFileUrl(headlineAttachment.file_path) : "/placeholder-news.jpg",
-                    date: new Date(n.created_at).toLocaleDateString(),
+                    date: formatDate(n.created_at),
                 };
             });
             setNewsItems(mapped);

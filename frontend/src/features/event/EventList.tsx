@@ -17,7 +17,7 @@ import {
     useDeleteEventMutation,
 } from "@/redux/api/eventApi";
 import { Event } from "@/redux/types/event";
-import { format } from "date-fns";
+import { formatDate } from "@/utils/datetime";
 
 /* ----------------------------------
    COMPONENT
@@ -116,7 +116,7 @@ export default function EventList() {
             header: "Date",
             cell: ({ row }) => {
                 const date = row.original.start_time;
-                return date ? format(new Date(date), "MMM d, yyyy") : "N/A";
+                return date ? formatDate(date) : "N/A";
             },
         },
         {
@@ -260,7 +260,7 @@ export default function EventList() {
                             <div className="space-y-2 text-sm text-gray-600">
                                 <div className="flex items-center gap-2">
                                     <CalendarIcon className="h-4 w-4 text-golden-dark" />
-                                    <span>{item.start_time ? format(item.start_time, "PPP") : "No date"}</span>
+                                    <span>{item.start_time ? formatDate(item.start_time) : "No date"}</span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <MapPin className="h-4 w-4 text-golden-dark" />
