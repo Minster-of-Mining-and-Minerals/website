@@ -121,6 +121,9 @@ app.use(
       res.set("Access-Control-Allow-Origin", "*");
       res.set("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS");
       res.set("Access-Control-Allow-Headers", "Content-Type");
+      if (/\.(webp|jpe?g|png|gif|svg)$/i.test(filePath)) {
+        res.set("Cache-Control", "public, max-age=31536000, immutable");
+      }
     },
   }),
 );

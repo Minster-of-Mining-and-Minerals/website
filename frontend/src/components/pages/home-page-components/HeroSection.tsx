@@ -9,7 +9,7 @@ import { Link } from "@/i18n/navigation";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useGetSlidersQuery } from "@/redux/api/sliderApi";
-import { getFileUrl } from "@/utils/fileUrl";
+import { getImageUrl } from "@/utils/fileUrl";
 
 // Define a type for multi-language text
 type LocalizedText = {
@@ -116,7 +116,7 @@ export default function HeroSection() {
                 id: index + 1,
                 title: { en: s.title, am: s.title },
                 description: { en: s.description || "", am: s.description || "" },
-                image: s.attachment?.file_path ? getFileUrl(s.attachment.file_path) : "",
+                image: s.attachment?.file_path ? getImageUrl(s.attachment, "large") : "",
                 bg: "bg-base-200/60",
             }));
             setSlides(mappedSlides);

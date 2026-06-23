@@ -14,7 +14,7 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useGetASMsQuery } from "@/redux/api/asmApi";
-import { getFileUrl } from "@/utils/fileUrl";
+import { getFileUrl, getImageUrl } from "@/utils/fileUrl";
 import PublicEmptyState from "@/components/common/PublicEmptyState";
 import { useTranslations } from "next-intl";
 
@@ -189,7 +189,7 @@ const PublicAsmPage = () => {
 
                                                 {preview.attachment?.file_path && (
                                                     <img
-                                                        src={getFileUrl(preview.attachment.file_path)}
+                                                        src={getImageUrl(preview.attachment, "thumb")}
                                                         alt={preview.title}
                                                         className="rounded-lg shadow-sm border border-teal-200/50 w-full"
                                                     />
@@ -223,7 +223,7 @@ const PublicAsmPage = () => {
 
                                         {preview.attachment?.file_path && (
                                             <img
-                                                src={getFileUrl(preview.attachment.file_path)}
+                                                src={getImageUrl(preview.attachment, "thumb")}
                                                 alt={preview.title}
                                                 className="mt-4 rounded-lg shadow-sm w-full"
                                             />

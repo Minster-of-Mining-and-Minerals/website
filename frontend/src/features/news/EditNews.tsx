@@ -10,7 +10,7 @@ import { useUpdateNewsMutation, useGetNewsByIdQuery } from "@/redux/api/newsApi"
 import {
     useDeleteAttachmentMutation,
 } from "@/redux/api/attachementApi";
-import { getFileUrl } from "@/utils/fileUrl";
+import { getFileUrl, getImageUrl } from "@/utils/fileUrl";
 import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import "quill/dist/quill.snow.css";
@@ -142,7 +142,7 @@ const EditNews = () => {
                 attachment_id: attachmentInfo.attachment_id,
                 file_name: attachmentInfo.file_name,
                 file_path: attachmentInfo.file_path,
-                previewUrl: getFileUrl(attachmentInfo.file_path),
+                previewUrl: getImageUrl(attachmentInfo, "medium"),
                 category: att.category,
                 isBlob: false,
                 file_type: getFileType(attachmentInfo.file_name),
@@ -263,7 +263,7 @@ const EditNews = () => {
 
     const getCurrentMedia = () => (headlineFiles.length ? headlineFiles[currentMediaIndex] : null);
     const currentMedia = getCurrentMedia();
-    const getMediaUrl = (file: UploadedFileInfo) => file.isBlob ? file.previewUrl : getFileUrl(file.file_path!);
+    const getMediaUrl = (file: UploadedFileInfo) => file.isBlob ? file.previewUrl : getImageUrl(file, "medium");
 
     return (
         <div className="min-h-screen w-full grid grid-cols-2 gap-10">

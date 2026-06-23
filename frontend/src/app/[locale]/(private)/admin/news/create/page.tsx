@@ -11,7 +11,7 @@ import {
     useDeleteAttachmentMutation,
     useGetAttachmentsQuery,
 } from "@/redux/api/attachementApi";
-import { getFileType as getFileTypeUtil, getFileUrl } from "@/utils/fileUrl";
+import { getFileType as getFileTypeUtil, getFileUrl, getImageUrl } from "@/utils/fileUrl";
 import "quill/dist/quill.snow.css";
 import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -104,7 +104,7 @@ const FileUploadField: React.FC<FileUploadFieldProps> = ({
                         attachment_id: found.attachment_id,
                         file_name: found.file_name,
                         file_path: found.file_path,
-                        previewUrl: getFileUrl(found.file_path),
+                        previewUrl: getImageUrl(found, "medium"),
                         category,
                         isBlob: false,
                         file_type: getFileType(found.file_name),
@@ -369,7 +369,7 @@ const CreateNews = () => {
     // Helper to get the correct URL for preview
     const getMediaUrl = (file: UploadedFileInfo) => {
         if (file.isBlob) return file.previewUrl; // Blob URL for new uploads
-        if (file.file_path) return getFileUrl(file.file_path); // Server URL for existing files
+        if (file.file_path) return getImageUrl(file, "medium");
         return file.previewUrl;
     };
 

@@ -8,7 +8,7 @@ import { useGetEventsQuery } from "@/redux/api/eventApi";
 import { useGetEventCategoriesQuery } from "@/redux/api/eventCategoryApi";
 import EventCard from "@/components/pages/events-page-components/EventCard";
 import { extractExcerpt } from "@/utils/newsMapper";
-import { getFileUrl } from "@/utils/fileUrl";
+import { getImageUrl } from "@/utils/fileUrl";
 import { formatDate, formatTimeShort } from "@/utils/datetime";
 import PublicEmptyState from "@/components/common/PublicEmptyState";
 import { useTranslations } from "next-intl";
@@ -91,7 +91,7 @@ const EventsPage = () => {
                         filteredEvents.map((item: any) => {
                         const excerpt = extractExcerpt(item.content) || item.description || "";
                         const attachment = item.attachments?.[0]?.attachment;
-                        const mediaUrl = attachment?.file_path ? getFileUrl(attachment.file_path) : null;
+                        const mediaUrl = attachment?.file_path ? getImageUrl(attachment, "thumb") : null;
                         const media = mediaUrl ? { url: mediaUrl, type: "image" as "image" | "video" } : null; // assuming images for simplicity
                         
                         const displayDate = formatDate(item.start_time);

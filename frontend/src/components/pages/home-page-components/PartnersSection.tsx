@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import Marquee from "react-fast-marquee";
 
 import { useGetPartnersQuery } from "@/redux/api/partnerApi";
-import { getFileUrl } from "@/utils/fileUrl";
+import { getImageUrl } from "@/utils/fileUrl";
 
 type PartnersSectionProps = {
     speed?: number; // higher = faster (react-fast-marquee logic)
@@ -35,7 +35,7 @@ const PartnersSection: React.FC<PartnersSectionProps> = ({ speed = 50 }) => {
             // Set logos from attachments
             if (firstPartner.attachments && firstPartner.attachments.length > 0) {
                 const apiLogos = firstPartner.attachments
-                    .map((a: any) => a.attachment?.file_path ? getFileUrl(a.attachment.file_path) : "")
+                    .map((a: any) => a.attachment?.file_path ? getImageUrl(a.attachment, "thumb") : "")
                     .filter((url: string) => url !== "");
                 setLogos(apiLogos);
             }

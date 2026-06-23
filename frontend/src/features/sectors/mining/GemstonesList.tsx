@@ -10,7 +10,7 @@ import { Gamestone } from "@/redux/types/gamestone";
 import { DataTable } from "@/features/template/component/DataTable";
 import { TableLayout } from "@/features/template/component/TableLayout";
 import type { FilterField, ActionButton } from "@/types/tableLayout";
-import { getFileUrl } from "@/utils/fileUrl";
+import { getImageUrl } from "@/utils/fileUrl";
 import { ComponentGuard } from "@/components/auth/ComponentGuard";
 
 /* ----------------------------------
@@ -153,7 +153,7 @@ export default function GemstonesList() {
        CARD VIEW
     ----------------------------------- */
     const GamestoneCard = ({ item }: { item: Gamestone }) => {
-        const imageUrl = item.attachment?.file_path ? getFileUrl(item.attachment.file_path) : null;
+        const imageUrl = item.attachment?.file_path ? getImageUrl(item.attachment, "thumb") : null;
         return (
             <div className="bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow group">
                 <div className="h-40 bg-gradient-to-br from-[#094C81]/10 to-[#094C81]/5 relative overflow-hidden">

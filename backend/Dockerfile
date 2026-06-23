@@ -4,7 +4,7 @@ FROM node:20-alpine
 WORKDIR /app
 
 # Install build dependencies for native modules (like bcrypt)
-RUN apk add --no-cache python3 make g++ 
+RUN apk add --no-cache python3 make g++ libc6-compat
 
 # Copy package files
 COPY package*.json ./

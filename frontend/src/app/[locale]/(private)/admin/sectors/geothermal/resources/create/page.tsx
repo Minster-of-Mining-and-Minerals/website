@@ -18,7 +18,7 @@ import {
     useUploadAttachmentsMutation,
     useDeleteAttachmentMutation,
 } from "@/redux/api/attachementApi";
-import { getFileUrl } from "@/utils/fileUrl";
+import { getFileUrl, getImageUrl } from "@/utils/fileUrl";
 
 /* =====================================================
    TYPES
@@ -185,7 +185,7 @@ function DocumentsUploadSection({
                         <h3 className="text-base font-semibold mb-4 pr-8">{previewFile.file_name}</h3>
                         {previewFile.file_name.toLowerCase().endsWith(".pdf") ? (
                             <iframe
-                                src={previewFile.isBlob ? previewFile.previewUrl ?? "" : getFileUrl(previewFile.file_path ?? "")}
+                                src={previewFile.isBlob ? previewFile.previewUrl ?? "" : getImageUrl(previewFile, "medium")}
                                 className="w-full h-[70vh] rounded"
                                 title={previewFile.file_name}
                             />

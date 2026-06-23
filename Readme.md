@@ -1,89 +1,287 @@
-# MoM Plan Management System
+# MoM Website
 
-This repository contains the MoM Plan Management System, consisting of a PostgreSQL database, a Node.js backend, and a Next.js frontend. The easiest way to run the entire application locally is using Docker Compose.
+Ministry of Mines public website and admin CMS: **PostgreSQL**, **Node.js/Express API**, and **Next.js** frontend.
+
+You can run everything with **Docker Compose** or run **backend** and **frontend** locally against a Postgres instance.
+
+---
 
 ## Prerequisites
 
-Before you begin, ensure you have the following installed on your machine:
+**Docker (recommended for full stack)**
+
 - [Docker](https://docs.docker.com/get-docker/)
 - [Docker Compose](https://docs.docker.com/compose/install/)
 
-## Environment Setup
+**Local development (without Docker)**
 
-The `docker-compose.yml` file is already configured with default environment variables. However, if you need to override them, you can create a `.env` file in the root directory:
+- Node.js 20+
+- PostgreSQL 16+
+- npm
+
+---
+
+## Project structure
+
+```
+website/
+├── backend/          # Express API, uploads, Sequelize
+├── frontend/         # Next.js app (public site + admin)
+├── docker-compose.yml
+├── .env.example      # Docker Compose overrides (root)
+├── backend/example.env
+└── frontend/example.env
+```
+
+---
+
+## Environment variables
+
+Copy the example files and adjust for your machine. **Do not commit real `.env` files** (they are gitignored).
+
+### Root `.env` (Docker Compose)
+
+Used by `docker-compose.yml` for shared secrets:
+
+```bash
+cp .env.example .env
+```
+
+| Variable | Purpose |
+|---|---|
+| `AUTH_SECRET` | NextAuth session signing (frontend container) |
+| `JWT_SECRET` | API JWT signing (backend container) |
+| `DB_USER` / `DB_PASSWORD` / `DB_NAME` | Postgres credentials |
+
+Generate strong secrets:
+
+```bash
+openssl rand -base64 48
+```
+
+Use the **same value** for `AUTH_SECRET` and `NEXTAUTH_SECRET` in the frontend env (see below).
+
+### Backend `backend/.env`
+
+```bash
+cp backend/example.env backend/.env
+```
+
+Key variables:
+
+| Variable | Purpose |
+|---|---|
+| `JWT_SECRET` | Signs login API tokens |
+| `DB_*` | Database connection |
+| `EMAIL_*` | Password reset / notifications |
+| `FRONTEND_URL` | CORS and email links |
+| `PORT` | API port (default `4000`) |
+
+### Frontend `frontend/.env`
+
+```bash
+cp frontend/example.env frontend/.env
+```
+
+| Variable | Purpose |
+|---|---|
+| `AUTH_SECRET` | NextAuth (must match `NEXTAUTH_SECRET`) |
+| `NEXTAUTH_SECRET` | NextAuth fallback secret |
+| `NEXT_PUBLIC_BASE_URL` | API base URL (e.g. `http://localhost:4000/api`) |
+| `NEXT_PUBLIC_FILE_URL` / `NEXT_PUBLIC_BASE` | Static files & uploads base |
+| `NEXT_PUBLIC_FRONTEND_URL` | Public site URL |
+
+**Local example**
 
 ```env
-DB_USER=postgres
-DB_PASSWORD=root
-DB_NAME=mom_website
-JWT_SECRET=thisisoursecretcodefortoken
+NEXT_PUBLIC_BASE_URL=http://localhost:4000/api
+NEXT_PUBLIC_FILE_URL=http://localhost:4000
+NEXT_PUBLIC_BASE=http://localhost:4000
+NEXT_PUBLIC_FRONTEND_URL=http://localhost:3000
+AUTH_SECRET=<generate-with-openssl>
+NEXTAUTH_SECRET=<same-as-AUTH_SECRET>
 ```
 
-## Running the Application
+---
 
-To build and start all the services (Database, Backend, and Frontend), run the following command in the root directory:
+## Authentication routes
+
+Admin login and password flows use the **identity gateway** (not `/login`):
+
+| Page | URL |
+|---|---|
+| Login | `/en/access/identity/gateway` |
+| Forgot password | `/en/access/identity/gateway/forgot-password` |
+| Change password | `/en/access/identity/gateway/change-password` |
+
+Legacy `/login` redirects to the public homepage. Unauthenticated access to `/admin/*` redirects to the gateway login.
+
+---
+
+## Run with Docker Compose
+
+From the repository root:
 
 ```bash
-docker-compose up -d --build
-```
-*The `-d` flag runs the containers in the background, and `--build` forces a rebuild of the images if you made code changes.*
-
-Once the containers are up and running, you can access:
-- **Frontend**: http://localhost:3000
-- **Backend API**: http://localhost:4000
-
-## Database Setup & Initialization
-
-After the containers are running for the first time, you need to set up the database schema and populate it with initial data. Run the following commands to execute them inside the running backend container (`mom_backend`):
-
-### 1. Create Database
-*(Note: The database is usually created automatically by the Postgres container on first run via the POSTGRES_DB env var. If you need to manually trigger the creation script from the backend, run this.)*
-```bash
-docker exec -it mom_backend npm run db:create
+docker compose up -d --build
 ```
 
-### 2. Run Migrations
-To create the necessary tables in your database schema, run the Sequelize migrations:
-```bash
-docker exec -it mom_backend npm run db:migrate
-```
+**URLs (default local mapping via nginx in production; direct container ports in dev)**
 
-### 3. Run Seeders
-To populate the database with initial required data (e.g., default users, roles), run the seeders:
-```bash
-docker exec -it mom_backend npm run db:seed:all
-```
+| Service | URL |
+|---|---|
+| Frontend | http://localhost:3000 |
+| Backend API | http://localhost:4000 |
+| Uploads | http://localhost:4000/uploads/... |
 
-## Stopping the Application (Making Down)
+### Database setup (Docker)
 
-To safely stop the running containers without destroying them:
+Migrations run automatically when the backend container starts. To run manually:
 
 ```bash
-docker-compose stop
+docker exec -it mom_backend npm run migrate
+docker exec -it mom_backend npm run seed
 ```
 
-To completely stop and **remove** the containers and networks:
+### Image reprocessing (Docker)
+
+After migrations, generate WebP variants for **existing** uploads:
 
 ```bash
-docker-compose down
+docker exec -it mom_backend npm run reprocess-attachments
 ```
 
-**Important Note on Database Reset:**
-If you want to completely wipe the database and start fresh, you need to remove the associated Docker volume. Add the `-v` flag to the down command:
+---
+
+## Run locally (without Docker)
+
+### 1. Database
+
+Create a Postgres database matching `DB_NAME` in `backend/.env` (default `mom_website`).
+
+### 2. Backend
+
 ```bash
-docker-compose down -v
+cd backend
+npm install
+npm run migrate
+npm run seed          # optional initial data
+npm run dev           # http://localhost:4000
 ```
 
-## Viewing Logs
+### 3. Frontend
 
-If you need to debug or see what is happening, you can view the logs:
-
-To view logs for all services:
 ```bash
-docker-compose logs -f
+cd frontend
+npm install
+npm run dev           # http://localhost:3000
 ```
 
-To view logs for a specific service (e.g., `backend` or `frontend`):
+### 4. Image reprocessing (local)
+
+With Postgres running and migrations applied:
+
 ```bash
-docker-compose logs -f backend
+cd backend
+npm run reprocess-attachments
 ```
+
+---
+
+## Image uploads & performance
+
+Uploaded **images** (JPEG, PNG, WebP) are processed on the server with **Sharp** and stored as WebP variants:
+
+| Variant | Max width | Typical use |
+|---|---|---|
+| `thumb` | 400px | Cards, lists, admin thumbnails |
+| `medium` | 1200px | Detail sections, previews |
+| `large` | 2400px | Hero banners, full-width |
+
+Files are stored under:
+
+```
+uploads/attachments/{attachment_id}/
+  thumb.webp
+  medium.webp
+  large.webp
+  original_<name>.jpg   # kept for reference / download
+```
+
+**PDFs, documents, audio, and video** are stored as a single file (no resizing).
+
+### Frontend usage
+
+Use `getImageUrl(attachment, size)` from `frontend/src/utils/fileUrl.ts`:
+
+```ts
+getImageUrl(gem.attachment, "thumb")   // list cards
+getImageUrl(gem.attachment, "large")   // hero image
+getImageUrl(attachment, "medium")        // admin preview
+```
+
+If variants are missing (old uploads), the helper falls back to `file_path`.
+
+### When to run reprocess
+
+Run `npm run reprocess-attachments` when:
+
+- Setting up a fresh environment with existing upload data
+- Deploying the image pipeline for the first time on production
+- Restoring uploads from a backup that predates variants
+
+**New uploads** are processed automatically; reprocess is only needed for older files.
+
+---
+
+## Useful commands
+
+### Docker
+
+```bash
+docker compose stop          # stop containers
+docker compose down          # stop and remove containers
+docker compose down -v       # also remove DB volume (wipes data)
+docker compose logs -f       # all logs
+docker compose logs -f backend
+```
+
+### Backend
+
+```bash
+npm run dev                  # development server
+npm run migrate              # apply Sequelize migrations
+npm run migrate:undo         # undo last migration
+npm run seed                 # run seeders
+npm run reprocess-attachments  # build WebP variants for existing images
+```
+
+### Frontend
+
+```bash
+npm run dev                  # development server
+npm run build                # production build
+npm run start                # production server (after build)
+```
+
+---
+
+## Production notes
+
+- Set strong `JWT_SECRET`, `AUTH_SECRET`, and `DB_PASSWORD` via server env or secrets manager — never use placeholder values.
+- Ensure `NEXT_PUBLIC_*` URLs match your public domain (e.g. `https://www.mom.gov.et`).
+- After deploy, run migrations and `reprocess-attachments` once if upgrading from a version without image variants.
+- Uploads are served from `/uploads` with long-lived cache headers for images.
+
+---
+
+## Troubleshooting
+
+| Issue | Check |
+|---|---|
+| Login redirect loop | `AUTH_SECRET` / `NEXTAUTH_SECRET` match and backend is reachable |
+| Images still slow | Run `reprocess-attachments`; confirm network loads `.webp` not huge `.jpg` |
+| Migration fails | Postgres running; `DB_*` in `backend/.env` correct |
+| Sharp error in Docker | Rebuild backend image after dependency changes |
+
+For full env templates, see `backend/example.env`, `frontend/example.env`, and `.env.example`.

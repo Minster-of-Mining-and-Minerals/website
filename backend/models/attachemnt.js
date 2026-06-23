@@ -120,6 +120,30 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING(500),
         allowNull: false,
       },
+      file_path_thumb: {
+        type: DataTypes.STRING(500),
+        allowNull: true,
+      },
+      file_path_medium: {
+        type: DataTypes.STRING(500),
+        allowNull: true,
+      },
+      file_path_large: {
+        type: DataTypes.STRING(500),
+        allowNull: true,
+      },
+      mime_type: {
+        type: DataTypes.STRING(100),
+        allowNull: true,
+      },
+      width: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+      },
+      height: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+      },
       uploaded_by: {
         type: DataTypes.UUID,
         allowNull: true,

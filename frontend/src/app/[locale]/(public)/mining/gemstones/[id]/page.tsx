@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import { useGetGamestoneByIdQuery } from "@/redux/api/gamestoneApi";
 import { Gamestone } from "@/redux/types/gamestone";
-import { getFileUrl } from "@/utils/fileUrl";
+import { getFileUrl, getImageUrl } from "@/utils/fileUrl";
 
 /* ================================================
    SUB-CLASS CARD - Enhanced Design
@@ -33,7 +33,7 @@ function SubClassCard({ item }: { item: Gamestone }) {
     const descriptionRef = useRef<HTMLDivElement>(null);
 
     const imageUrl = item.attachment?.file_path
-        ? getFileUrl(item.attachment.file_path)
+        ? getImageUrl(item.attachment, "thumb")
         : null;
 
     const hasDescription = Boolean(item.description?.trim());
@@ -337,7 +337,7 @@ export default function GemstoneDetailPage() {
     }
 
     const imageUrl = gemstone.attachment?.file_path
-        ? getFileUrl(gemstone.attachment.file_path)
+        ? getImageUrl(gemstone.attachment, "large")
         : null;
     const subItems: Gamestone[] = gemstone.sub_items ?? [];
     const docs: { attachment: any }[] = gemstone.attachments ?? [];

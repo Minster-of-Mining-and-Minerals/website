@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "../../ui/button";
 import { useGetCardsQuery } from "@/redux/api/cardApi";
-import { getFileUrl } from "@/utils/fileUrl";
+import { getImageUrl } from "@/utils/fileUrl";
 
 interface CardData {
     title: string;
@@ -24,7 +24,7 @@ const CardSection = () => {
             setCardData({
                 title: firstCard.title,
                 description: firstCard.description || "",
-                image: firstCard.attachment?.file_path ? getFileUrl(firstCard.attachment.file_path) : "",
+                image: firstCard.attachment?.file_path ? getImageUrl(firstCard.attachment, "thumb") : "",
                 buttonText: firstCard.button_name || "",
                 button_url: firstCard.button_url || "#",
             });

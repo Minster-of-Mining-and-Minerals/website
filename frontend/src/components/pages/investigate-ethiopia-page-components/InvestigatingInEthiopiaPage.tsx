@@ -9,7 +9,7 @@ import {
     Loader2,
 } from 'lucide-react';
 import { useGetInvestigateEthiopiasQuery } from '@/redux/api/investigateEthiopiaApi';
-import { getFileUrl } from '@/utils/fileUrl';
+import { getImageUrl } from '@/utils/fileUrl';
 import PublicEmptyState from '@/components/common/PublicEmptyState';
 import { useTranslations } from 'next-intl';
 
@@ -163,7 +163,7 @@ const InvestigatingInEthiopiaPage = () => {
                             <div key={index} className="flex flex-col items-center text-center p-10 bg-gray-50 rounded-3xl hover:bg-white hover:shadow-2xl transition-all border border-transparent hover:border-gray-100 group">
                                 <div className="relative w-full aspect-[16/9] mb-8 overflow-hidden rounded-2xl bg-white shadow-inner flex items-center justify-center border border-gray-50">
                                     <img
-                                        src={getFileUrl(proc?.attachment?.file_path)}
+                                        src={getImageUrl(proc?.attachment, "medium")}
                                         alt={proc?.title}
                                         className="h-full w-full object-contain transition-all duration-500 scale-90 group-hover:scale-110"
                                     />

@@ -1,4 +1,6 @@
 // utils/newsMapper.ts
+import { getImageUrl } from "./fileUrl";
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_BASE;
 export const extractExcerpt = (content: any, maxLength = 160) => {
     if (!content) return "";
@@ -46,14 +48,9 @@ export function extractHeadlineImage(attachments: any[]) {
 
     if (!headline) return null;
 
-    const rawPath = headline.attachment.file_path;
+    const url = getImageUrl(headline.attachment, "thumb");
 
-    // 🔥 IMPORTANT FIX
-    const normalizedPath = rawPath.replace(/\\/g, "/");
-
-    const url = `${API_BASE_URL}/${normalizedPath}`;
-
-    const ext = normalizedPath.split(".").pop()?.toLowerCase();
+    const ext = headline.attachment.file_path.split(".").pop()?.toLowerCase();
 
     return {
         url,
@@ -75,10 +72,8 @@ export function extractAllHeadlineAttachments(attachments: any[]) {
     }
 
     return headlines.map((att) => {
-        const rawPath = att.attachment.file_path;
-        const normalizedPath = rawPath.replace(/\\/g, "/");
-        const url = `${API_BASE_URL}/${normalizedPath}`;
-        const ext = normalizedPath.split(".").pop()?.toLowerCase();
+        const url = getImageUrl(att.attachment, "large");
+        const ext = att.attachment.file_path.split(".").pop()?.toLowerCase();
 
         return {
             url,

@@ -2,7 +2,7 @@
 import * as LucideIcons from "lucide-react";
 import { CheckCircle, Download, FileText, Scale } from "lucide-react";
 import { useGetMiningRegulationProcessesQuery } from "@/redux/api/miningRegulationProcessApi";
-import { getFileUrl } from "@/utils/fileUrl";
+import { getFileUrl, getImageUrl } from "@/utils/fileUrl";
 import PublicEmptyState from "@/components/common/PublicEmptyState";
 import { useTranslations } from "next-intl";
 
@@ -83,7 +83,7 @@ const MiningLegislationAndRegulationProcess = () => {
                                     <div className="relative h-80 w-full overflow-hidden">
                                         {framework.attachment ? (
                                             <img
-                                                src={getFileUrl(framework.attachment.file_path || framework.attachment.file_url || "")}
+                                                src={getImageUrl(framework.attachment, "large")}
                                                 alt={framework.title}
                                                 className="w-full h-full mt-0 object-cover group-hover:scale-105 transition-transform duration-700"
                                             />

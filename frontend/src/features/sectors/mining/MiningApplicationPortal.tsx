@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { useGetMiningApplicationProcessesQuery } from '@/redux/api/miningApplicationProcessApi';
 import * as LucideIcons from 'lucide-react';
-import { getFileUrl } from '@/utils/fileUrl';
+import { getImageUrl } from '@/utils/fileUrl';
 import PublicEmptyState from '@/components/common/PublicEmptyState';
 import { useTranslations } from 'next-intl';
 
@@ -41,7 +41,7 @@ const HeroSlider = ({ attachments }: { attachments: any[] }) => {
                     {/* IMAGE WRAPPER (IMPORTANT) */}
                     <div className="w-full h-full relative">
                         <img
-                            src={getFileUrl(att.attachment?.file_path)}
+                            src={getImageUrl(att.attachment, "large")}
                             alt={att.overlay_text || "Application Portal Interface"}
                             className='w-full h-full object-cover transition-transform duration-700 group-hover:scale-105'
                         />

@@ -1,4 +1,5 @@
 import { Leadership } from "@/redux/types/leadership";
+import { getImageUrl } from "@/utils/fileUrl";
 
 export interface LeadershipNode {
     id: string;
@@ -14,15 +15,15 @@ export function buildLeadershipTree(data: Leadership[]): LeadershipNode | null {
 
     // Step 1: create nodes
     data.forEach(item => {
-        const filePath = item.attachments?.attachment?.file_path;
+        const attachment = item.attachments?.attachment;
 
         map.set(item.leadership_id, {
             id: item.leadership_id,
             name: item.name,
             title: item.title,
             description: item.description,
-            image: filePath
-                ? `${process.env.NEXT_PUBLIC_BASE}/${filePath.replace(/\\/g, "/")}`
+            image: attachment?.file_path
+                ? getImageUrl(attachment, "thumb")
                 : undefined,
             children: [],
         });

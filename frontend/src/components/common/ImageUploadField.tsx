@@ -7,7 +7,7 @@ import {
     useDeleteAttachmentMutation,
     useGetAttachmentsQuery,
 } from "@/redux/api/attachementApi";
-import { getFileUrl, getFileType } from "@/utils/fileUrl";
+import { getFileUrl, getFileType, getImageUrl } from "@/utils/fileUrl";
 import { Label } from "../ui/label";
 import { Button } from "../ui/button";
 
@@ -68,7 +68,7 @@ export const ImageUploadField: React.FC<ImageUploadFieldProps> = ({
                 attachment_id: found.attachment_id,
                 file_name: found.file_name,
                 file_path: found.file_path,
-                previewUrl: getFileUrl(found.file_path),
+                previewUrl: getImageUrl(found, "medium"),
                 category,
             };
             setCurrentImage(imageInfo);

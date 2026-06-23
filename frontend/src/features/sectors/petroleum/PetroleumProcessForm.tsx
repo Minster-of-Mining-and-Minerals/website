@@ -18,7 +18,7 @@ import {
     useDeleteAttachmentMutation,
     useGetAttachmentsQuery,
 } from "@/redux/api/attachementApi";
-import { getFileUrl } from "@/utils/fileUrl";
+import { getFileUrl, getImageUrl } from "@/utils/fileUrl";
 import "quill/dist/quill.snow.css";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -74,7 +74,7 @@ const FileUploadField: React.FC<FileUploadFieldProps> = ({
                         attachment_id: found.attachment_id,
                         file_name: found.file_name,
                         file_path: found.file_path,
-                        previewUrl: getFileUrl(found.file_path),
+                        previewUrl: getImageUrl(found, "medium"),
                         isBlob: false,
                         file_type: getFileType(found.file_name),
                     };

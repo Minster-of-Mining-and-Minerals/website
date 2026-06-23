@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import clsx from "clsx";
 import { Button } from "../../ui/button";
 import { useGetNewsQuery } from "@/redux/api/newsApi";
-import { getFileUrl } from "@/utils/fileUrl";
+import { getImageUrl } from "@/utils/fileUrl";
 import Link from "next/link";
 import { formatDate } from "@/utils/datetime";
 
@@ -43,7 +43,7 @@ export default function LatestNewsSection() {
                     id: n.news_id,
                     title: n.title,
                     description: deltaToPlainText(n.content).substring(0, 200) + "...",
-                    image: headlineAttachment?.file_path ? getFileUrl(headlineAttachment.file_path) : "/placeholder-news.jpg",
+                    image: headlineAttachment?.file_path ? getImageUrl(headlineAttachment, "thumb") : "/placeholder-news.jpg",
                     date: formatDate(n.created_at),
                 };
             });

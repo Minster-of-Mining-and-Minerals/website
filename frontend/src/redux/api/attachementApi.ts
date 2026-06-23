@@ -5,6 +5,12 @@ export interface Attachment {
     attachment_id: string;
     file_name: string;
     file_path: string;
+    file_path_thumb?: string | null;
+    file_path_medium?: string | null;
+    file_path_large?: string | null;
+    mime_type?: string | null;
+    width?: number | null;
+    height?: number | null;
     uploaded_by: string;
     created_at: string;
 }

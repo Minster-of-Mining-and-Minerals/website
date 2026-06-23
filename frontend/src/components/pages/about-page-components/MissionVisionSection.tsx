@@ -1,7 +1,7 @@
 "use client";
 import { useGetStrategiesQuery } from "@/redux/api/strategyApi";
 import InfoCard from "./InfoCard";
-import { getFileUrl } from "@/utils/fileUrl";
+import { getImageUrl } from "@/utils/fileUrl";
 import PublicEmptyState from "@/components/common/PublicEmptyState";
 import { Loader2, Target } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -55,14 +55,14 @@ export default function VisionMissionValues() {
     const missionVision = {
         mission: {
             icon: missionSection?.attachment?.file_path
-                ? getFileUrl(missionSection.attachment.file_path)
+                ? getImageUrl(missionSection.attachment, "medium")
                 : "/icons/goal.png",
             title: "Mission",
             description: missionSection?.content || "",
         },
         vision: {
             icon: visionSection?.attachment?.file_path
-                ? getFileUrl(visionSection.attachment.file_path)
+                ? getImageUrl(visionSection.attachment, "medium")
                 : "/icons/witness.png",
             title: "Vision",
             description: visionSection?.content || "",
@@ -71,7 +71,7 @@ export default function VisionMissionValues() {
 
     const coreValues = {
         icon: coreValuesSection?.attachment?.file_path
-            ? getFileUrl(coreValuesSection.attachment.file_path)
+            ? getImageUrl(coreValuesSection.attachment, "medium")
             : "/icons/diamond.png",
         title: "Values",
         values: coreValuesSection?.core_values?.map(v => v.content) || [],

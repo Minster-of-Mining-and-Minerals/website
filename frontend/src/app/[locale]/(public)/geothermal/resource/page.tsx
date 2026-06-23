@@ -5,6 +5,7 @@ import { useGetResourcesQuery, useRecordResourceAccessMutation } from '@/redux/a
 import PublicEmptyState from '@/components/common/PublicEmptyState';
 import { Loader2, FolderOpen } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { getAttachmentUrl } from '@/utils/fileUrl';
 
 const ResourcePage = () => {
     const t = useTranslations("empty_state");
@@ -40,11 +41,9 @@ const ResourcePage = () => {
     };
 
     // Helper to get file URL (adjust based on your API endpoint)
-    const getFileUrl = (filePath: string) => {
-        if (!filePath) return '#';
-        const normalizedPath = filePath.replace(/\\/g, '/');
-        const baseUrl = process.env.NEXT_PUBLIC_BASE || '';
-        return `${baseUrl}/${normalizedPath}`;
+    const getResourceFileUrl = (attachment: any) => {
+        if (!attachment?.file_path) return '#';
+        return getAttachmentUrl(attachment, 'medium');
     };
 
     // Helper function to get file icon based on type (yellow/orange style)
@@ -109,7 +108,7 @@ const ResourcePage = () => {
                 name: attachment.attachment?.file_name || 'Unnamed File',
                 type: getFileInfo(attachment.attachment?.file_name).type,
                 size: getFileInfo(attachment.attachment?.file_name).size,
-                url: getFileUrl(attachment.attachment?.file_path),
+                url: getResourceFileUrl(attachment.attachment),
                 description: attachment.label || 'Resource Document',
                 attachmentId: attachment.attachment_id,
                 resourceId: resource.resource_id,

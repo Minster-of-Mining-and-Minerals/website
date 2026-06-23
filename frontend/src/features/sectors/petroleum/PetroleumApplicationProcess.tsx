@@ -3,7 +3,7 @@
 import React, { useMemo } from "react";
 import { useGetPetroleumProcessesQuery } from "@/redux/api/petroleumProcessApi";
 import { Loader2, FileText } from "lucide-react";
-import { getFileUrl } from "@/utils/fileUrl";
+import { getFileUrl, getImageUrl } from "@/utils/fileUrl";
 import PublicEmptyState from "@/components/common/PublicEmptyState";
 import { useTranslations } from "next-intl";
 
@@ -64,8 +64,9 @@ export default function PetroleumApplicationProcess() {
             {process_blocks?.[0]?.attachments?.length > 0 && (
                 <div className="relative w-full h-[450px] rounded-xl overflow-hidden shadow-md border border-gray-100">
                     <img
-                        src={getFileUrl(
-                            process_blocks[0].attachments[0].attachment?.file_path || ""
+                        src={getImageUrl(
+                            process_blocks[0].attachments[0].attachment,
+                            "large"
                         )}
                         alt="Map"
                         className="w-full h-full object-cover mt-0 bg-white"
@@ -150,7 +151,7 @@ export default function PetroleumApplicationProcess() {
                                                                 {step.attachment && (
                                                                     <div className="flex-shrink-0">
                                                                         <img
-                                                                            src={getFileUrl(step.attachment.file_path)}
+                                                                            src={getImageUrl(step.attachment, "thumb")}
                                                                             className="w-16 h-16 rounded-full object-cover"
                                                                             alt=""
                                                                         />

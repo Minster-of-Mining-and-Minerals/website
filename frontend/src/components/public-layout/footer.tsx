@@ -14,6 +14,7 @@ import { IconBrandTelegram, IconBrandTiktok } from "@tabler/icons-react";
 import { useGetFootersQuery } from "@/redux/api/footerApi";
 import { useGetAttachmentsQuery } from "@/redux/api/attachementApi";
 import { useGetSocialMediasQuery } from "@/redux/api/socialMediaApi";
+import { getImageUrl } from "@/utils/fileUrl";
 
 // Map icon names to actual components
 const ICON_MAP: Record<string, any> = {
@@ -90,7 +91,7 @@ const Footer = () => {
 
         let logoUrl = DEFAULT_FOOTER_DATA.about.logo;
         if (f.attachment?.file_path) {
-            logoUrl = `${process.env.NEXT_PUBLIC_BASE}/${f.attachment.file_path.replace(/\\/g, "/")}`;
+            logoUrl = getImageUrl(f.attachment, "thumb");
         }
 
         const mappedSections = (f.sections || []).map((s: any, sectionIndex: number) => ({

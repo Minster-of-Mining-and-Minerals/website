@@ -1,6 +1,6 @@
 "use client";
 import { useGetSnapshotsQuery } from "@/redux/api/snapshotApi";
-import { getFileUrl } from "@/utils/fileUrl";
+import { getImageUrl } from "@/utils/fileUrl";
 import { Loader2 } from "lucide-react";
 import PublicEmptyState from "@/components/common/PublicEmptyState";
 import { useTranslations } from "next-intl";
@@ -29,7 +29,7 @@ const GeothermalPage = () => {
         );
     }
 
-    const imageUrl = snapshot.attachment?.file_path ? getFileUrl(snapshot.attachment.file_path) : "/home-2.jpg";
+    const imageUrl = snapshot.attachment?.file_path ? getImageUrl(snapshot.attachment, "large") : "/home-2.jpg";
 
     return (
         <div className='w-full max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-7 gap-10 px-4'>

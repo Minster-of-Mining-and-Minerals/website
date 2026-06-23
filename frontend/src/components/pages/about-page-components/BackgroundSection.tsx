@@ -8,7 +8,7 @@ import PublicEmptyState from "@/components/common/PublicEmptyState";
 import { Loader2, ImageIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BASE ?? "http://localhost:4000";
+import { getImageUrl } from "@/utils/fileUrl";
 
 const BackgroundPage = () => {
     const { data: backgrounds, isLoading, isError } = useGetBackgroundsQuery();
@@ -43,12 +43,12 @@ const BackgroundPage = () => {
     // Get front and back images
     const frontAttachment =
         bg.attachments?.[0]?.attachment?.file_path
-            ? `${BACKEND_URL}/${bg.attachments[0].attachment.file_path.replaceAll("\\", "/")}`
+            ? getImageUrl(bg.attachments[0].attachment, "large")
             : "/map.jpg";
 
     const backAttachment =
         bg.attachments?.[1]?.attachment?.file_path
-            ? `${BACKEND_URL}/${bg.attachments[1].attachment.file_path.replaceAll("\\", "/")}`
+            ? getImageUrl(bg.attachments[1].attachment, "large")
             : "/home-2.jpg";
 
     return (

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Search, Sparkles, Gem, MapPin, Filter, ChevronDown, Loader2, Calendar } from "lucide-react";
 import { useGetGamestonesQuery } from "@/redux/api/gamestoneApi";
 import { Gamestone } from "@/redux/types/gamestone";
-import { getFileUrl } from "@/utils/fileUrl";
+import { getFileUrl, getImageUrl } from "@/utils/fileUrl";
 import PublicEmptyState from "@/components/common/PublicEmptyState";
 import { useTranslations } from "next-intl";
 
@@ -120,7 +120,7 @@ const GemstonesPage = () => {
                 <div className="space-y-6">
                     {filtered.map((gem: Gamestone) => {
                         const imageUrl = gem.attachment?.file_path
-                            ? getFileUrl(gem.attachment.file_path)
+                            ? getImageUrl(gem.attachment, "thumb")
                             : null;
                         const subCount = gem.sub_items?.length ?? 0;
 

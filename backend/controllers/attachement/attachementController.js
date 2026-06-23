@@ -1,13 +1,16 @@
 const { Attachment } = require("../../models");
 const path = require("path");
 const fs = require("fs");
+const { randomUUID } = require("crypto");
+const {
+    isProcessableImage,
+    processImage,
+    removeAttachmentFiles,
+    toAttachmentPayload,
+} = require("../../utils/imageProcessor");
 
-// ================================
-// UPLOAD FILES (no issue linked)
-// ================================
 const uploadFiles = async (req, res) => {
     try {
-        // Check if files exist
         if (!req.files || req.files.length === 0) {
             return res.status(400).json({
                 success: false,
@@ -15,7 +18,6 @@ const uploadFiles = async (req, res) => {
             });
         }
 
-        // Create upload directory if it doesn't exist
         const uploadDir = path.join("uploads", "attachments");
         if (!fs.existsSync(uploadDir)) {
             fs.mkdirSync(uploadDir, { recursive: true });
@@ -24,29 +26,38 @@ const uploadFiles = async (req, res) => {
         const uploadedFiles = [];
 
         for (const file of req.files) {
-            const newPath = path.join(uploadDir, file.filename);
-            fs.renameSync(file.path, newPath);
-
-            // Build the record data
             const recordData = {
-                file_name: file.filename,
-                file_path: newPath,
                 created_at: new Date(),
             };
 
-            // Only add uploaded_by if req.user exists
             if (req.user && req.user.user_id) {
                 recordData.uploaded_by = req.user.user_id;
             }
 
-            // Save entry in Attachment table
-            const record = await Attachment.create(recordData);
+            if (isProcessableImage(file.mimetype)) {
+                const attachmentId = randomUUID();
+                const processed = await processImage(
+                    file.path,
+                    attachmentId,
+                    file.originalname,
+                );
 
-            uploadedFiles.push({
-                attachment_id: record.attachment_id,
-                file_name: record.file_name,
-                file_path: record.file_path,
-            });
+                Object.assign(recordData, processed, { attachment_id: attachmentId });
+
+                if (fs.existsSync(file.path)) {
+                    fs.unlinkSync(file.path);
+                }
+            } else {
+                const newPath = path.join(uploadDir, file.filename);
+                fs.renameSync(file.path, newPath);
+
+                recordData.file_name = file.filename;
+                recordData.file_path = newPath.replace(/\\/g, "/");
+                recordData.mime_type = file.mimetype;
+            }
+
+            const record = await Attachment.create(recordData);
+            uploadedFiles.push(toAttachmentPayload(record));
         }
 
         return res.status(201).json({
@@ -64,9 +75,6 @@ const uploadFiles = async (req, res) => {
     }
 };
 
-// ================================
-// DELETE FILE BY ATTACHMENT ID
-// ================================
 const deleteAttachment = async (req, res) => {
     try {
         const { attachment_id } = req.params;
@@ -79,10 +87,7 @@ const deleteAttachment = async (req, res) => {
             });
         }
 
-        if (fs.existsSync(file.file_path)) {
-            fs.unlinkSync(file.file_path);
-        }
-
+        removeAttachmentFiles(file);
         await file.destroy();
 
         return res.status(200).json({
@@ -103,26 +108,16 @@ const deleteAttachment = async (req, res) => {
     }
 };
 
-// ================================
-// GET ATTACHMENT LIST
-// ================================
 const getAllAttachments = async (req, res) => {
     try {
         const attachments = await Attachment.findAll({
             order: [["created_at", "DESC"]],
-            attributes: [
-                "attachment_id",
-                "file_name",
-                "file_path",
-                "uploaded_by",
-                "created_at",
-            ],
         });
 
         return res.status(200).json({
             success: true,
             count: attachments.length,
-            attachments,
+            attachments: attachments.map(toAttachmentPayload),
         });
     } catch (error) {
         console.error("Fetch error:", error);

@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useGetPetroleumObjectivesQuery } from "@/redux/api/petroleumObjectiveApi";
-import { getFileUrl } from "@/utils/fileUrl";
+import { getImageUrl } from "@/utils/fileUrl";
 import { Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import PublicEmptyState from "@/components/common/PublicEmptyState";
 import { useTranslations } from "next-intl";
@@ -16,7 +16,7 @@ const ImageSlider = ({ attachments, title }: { attachments: any[], title: string
     if (!attachments || attachments.length === 0) return null;
 
     const currentFile = attachments[currentIndex]?.attachment;
-    const imageUrl = currentFile?.file_path ? getFileUrl(currentFile.file_path) : null;
+    const imageUrl = currentFile?.file_path ? getImageUrl(currentFile, "large") : null;
 
     if (!imageUrl) return null;
 
@@ -79,7 +79,7 @@ const ImageSlider = ({ attachments, title }: { attachments: any[], title: string
             {attachments.length > 1 && (
                 <div className="flex gap-3 overflow-x-auto pb-3 scrollbar-none justify-center flex-wrap">
                     {attachments.map((att, i) => {
-                        const thumbUrl = att.attachment?.file_path ? getFileUrl(att.attachment.file_path) : null;
+                        const thumbUrl = att.attachment?.file_path ? getImageUrl(att.attachment, "thumb") : null;
                         if (!thumbUrl) return null;
                         return (
                             <button

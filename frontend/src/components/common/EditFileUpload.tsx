@@ -7,7 +7,7 @@ import {
     useDeleteAttachmentMutation,
     useGetAttachmentsQuery,
 } from "@/redux/api/attachementApi";
-import { getFileUrl } from "@/utils/fileUrl";
+import { getFileUrl, getImageUrl } from "@/utils/fileUrl";
 import { Label } from "../ui/label";
 import { Button } from "../ui/button";
 
@@ -104,7 +104,7 @@ export const EditFileUpload: React.FC<FileUploadFieldProps> = ({
                         attachment_id: found.attachment_id,
                         file_name: found.file_name,
                         file_path: found.file_path,
-                        previewUrl: getFileUrl(found.file_path),
+                        previewUrl: getImageUrl(found, "medium"),
                         category,
                         isBlob: false,
                         file_type: getFileTypeFromName(found.file_name),
@@ -227,7 +227,7 @@ export const EditFileUpload: React.FC<FileUploadFieldProps> = ({
     };
 
     const getPreviewContent = (file: UploadedFileInfo) => {
-        const previewUrl = file.isBlob ? file.previewUrl : getFileUrl(file.file_path);
+        const previewUrl = file.isBlob ? file.previewUrl : getImageUrl(file, "medium");
 
         if (!previewUrl) return null;
 
@@ -405,7 +405,7 @@ export const EditFileUpload: React.FC<FileUploadFieldProps> = ({
                                 onClick={() => {
                                     const url = previewFile.isBlob
                                         ? previewFile.previewUrl
-                                        : getFileUrl(previewFile.file_path);
+                                        : getImageUrl(previewFile, "medium");
                                     if (url) {
                                         window.open(url, '_blank');
                                     }

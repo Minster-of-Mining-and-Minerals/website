@@ -11,7 +11,7 @@ import { toast } from "sonner";
 import { XIcon, FileIcon, ChevronDown, Calendar as CalendarIcon, MapPin, Globe } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { getFileUrl } from "@/utils/fileUrl";
+import { getFileUrl, getImageUrl } from "@/utils/fileUrl";
 import "quill/dist/quill.snow.css";
 import { EditFileUpload } from "@/components/common/EditFileUpload";
 import Quill from 'quill';
@@ -135,7 +135,7 @@ export default function EventForm({ initialData, onSubmit, isLoading: isSubmitti
                         attachment_id: info.attachment_id,
                         file_name: info.file_name,
                         file_path: info.file_path,
-                        previewUrl: getFileUrl(info.file_path),
+                        previewUrl: getImageUrl(info, "medium"),
                         category: "headline",
                         isBlob: false,
                         file_type: getFileType(info.file_name)
