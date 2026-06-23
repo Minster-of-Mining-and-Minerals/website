@@ -3,6 +3,7 @@
 
 # Environment variables
 /backend/.env
+.env
 # Ignore uploads
 /backend/uploads/
 /backend/public/uploads/
