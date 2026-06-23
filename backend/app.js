@@ -37,6 +37,8 @@ const federalOfficeRoute = require("./routers/contact/federalOfficeRoutes");
 const regionRoute = require("./routers/contact/regionRoutes");
 const regionalOfficeRoute = require("./routers/contact/regionalOfficeRoutes");
 const messageRoute = require("./routers/contact/messageRoutes");
+const tenderRoute = require("./routers/contact/tenderRoutes");
+const vacancyRoute = require("./routers/contact/vacancyRoutes");
 
 // ================== Footer Page Routes ==========================
 const socialMediaRoute = require("./routers/footer/socialMediaRoutes");
@@ -181,6 +183,8 @@ app.use("/api/federal-office", federalOfficeRoute);
 app.use("/api/region", regionRoute);
 app.use("/api/regional-offices", regionalOfficeRoute);
 app.use("/api/message", messageRoute);
+app.use("/api/tenders", tenderRoute);
+app.use("/api/vacancies", vacancyRoute);
 
 // ================== Footer Page Routes ==========================
 app.use("/api/social-media", socialMediaRoute);

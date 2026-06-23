@@ -52,8 +52,28 @@ export const routePermissions: RouteConfig[] = [
         label: "Contacts",
         icon: "Phone",
         permissions: {
-            anyPermissions: ["CONTACT:READ"],
+            anyPermissions: ["CONTACT:READ", "TENDERS:READ", "VACANCIES:READ"],
         },
+        children: [
+            {
+                path: "/admin/contacts",
+                label: "Contact Management",
+                icon: "Phone",
+                permissions: { anyPermissions: ["CONTACT:READ"] },
+            },
+            {
+                path: "/admin/tenders",
+                label: "Tender Management",
+                icon: "FileText",
+                permissions: { anyPermissions: ["TENDERS:READ"] },
+            },
+            {
+                path: "/admin/vacancies",
+                label: "Vacancy Management",
+                icon: "Briefcase",
+                permissions: { anyPermissions: ["VACANCIES:READ"] },
+            },
+        ],
     },
     {
         path: "/admin/footer",

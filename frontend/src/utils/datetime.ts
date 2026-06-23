@@ -70,6 +70,15 @@ export function formatTime(iso: string | null | undefined): string {
   return `${format(zoned, "hh:mm a")} EAT`;
 }
 
+/** Format DATEONLY strings (YYYY-MM-DD) without timezone shift. */
+export function formatDateOnly(dateStr: string | null | undefined): string {
+  if (!dateStr) return "";
+  const [year, month, day] = dateStr.split("T")[0].split("-").map(Number);
+  if (!year || !month || !day) return dateStr;
+  const date = new Date(year, month - 1, day);
+  return format(date, "dd MMM yyyy");
+}
+
 /** Format time only in app timezone (no suffix, for compact cards). */
 export function formatTimeShort(iso: string | null | undefined): string {
   const zoned = toZonedDate(iso);

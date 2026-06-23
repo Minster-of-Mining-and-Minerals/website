@@ -69,7 +69,7 @@ const DEFAULT_FOOTER_DATA = {
                 { id: "3-2", label: "Regional Offices", href: "/offices/regional" },
                 { id: "3-3", label: "FAQ", href: "/faq" },
                 { id: "3-4", label: "Stakeholder Consultations", href: "/stakeholder-consultations" },
-                { id: "3-5", label: "Tenders and Vacancies", href: "/tenders-and-vacancies" },
+                { id: "3-5", label: "Tenders and Vacancies", href: "/contact/tenders-and-vacancies" },
                 { id: "3-6", label: "Feedback and Complaints", href: "/feedback-and-complaints" },
             ],
         },

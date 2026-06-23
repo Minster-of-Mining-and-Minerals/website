@@ -73,6 +73,8 @@ export const baseApi = createApi({
     "AuditLogs",
     "Event",
     "EventCategory",
+    "Tender",
+    "Vacancy",
     "Route",
   ],
   endpoints: () => ({}),
