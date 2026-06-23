@@ -18,6 +18,7 @@ import { toast } from "react-toastify";
 import { useRouter } from "@/i18n/navigation";
 import { ArrowLeftIcon, Mail, ShieldCheck, Lock, EyeIcon, EyeOffIcon } from "lucide-react";
 import { useRequestOTPMutation, useVerifyOTPMutation, useResetPasswordMutation } from "@/redux/api/authApi";
+import { AUTH_LOGIN } from "@/constants/authRoutes";
 
 const emailSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -95,7 +96,7 @@ export default function ForgotPasswordPage() {
         newPassword: values.newPassword
       }).unwrap();
       toast.success("Password reset successfully! Please login.");
-      router.push("/login");
+      router.push(AUTH_LOGIN);
     } catch (error: any) {
       toast.error(error?.data?.message || "Failed to reset password");
     }
@@ -105,16 +106,14 @@ export default function ForgotPasswordPage() {
     <div className="min-h-screen bg-[#F9FBFC] flex items-center justify-center px-4 py-12">
       <div className="w-full relative max-w-6xl min-h-[80vh] shadow-2xl rounded-2xl border border-[#DCE7F1] overflow-hidden flex flex-col lg:flex-row bg-white">
 
-        {/* Back Button */}
         <Button
-          onClick={() => step === 1 ? router.push("/login") : setStep((prev) => (prev - 1) as any)}
+          onClick={() => step === 1 ? router.push(AUTH_LOGIN) : setStep((prev) => (prev - 1) as any)}
           className="cursor-pointer shadow-none z-50 bg-transparent hover:bg-slate-100 p-2 top-4 left-4 absolute flex items-center gap-1"
         >
           <ArrowLeftIcon className="w-5 h-5 text-golden-dark" />
           <span className="text-sm text-golden-dark font-medium">Back</span>
         </Button>
 
-        {/* Left Section */}
         <div className="w-full bg-[#F9FBFC] p-8 flex items-center justify-center border-b lg:border-b-0 lg:border-r border-[#DCE7F1]">
           <div className="text-center">
             <img
@@ -125,11 +124,9 @@ export default function ForgotPasswordPage() {
           </div>
         </div>
 
-        {/* Right Section */}
         <div className="w-full px-8 lg:px-16 py-12 flex items-center justify-center">
           <div className="w-full max-w-md">
 
-            {/* Step 1: Request OTP */}
             {step === 1 && (
               <div className="space-y-6">
                 <div className="text-center mb-8">
@@ -167,7 +164,6 @@ export default function ForgotPasswordPage() {
               </div>
             )}
 
-            {/* Step 2: Verify OTP */}
             {step === 2 && (
               <div className="space-y-6">
                 <div className="text-center mb-8">
@@ -208,7 +204,6 @@ export default function ForgotPasswordPage() {
               </div>
             )}
 
-            {/* Step 3: Reset Password */}
             {step === 3 && (
               <div className="space-y-6">
                 <div className="text-center mb-8">

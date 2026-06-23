@@ -2,6 +2,7 @@
 
 import { signIn, signOut, auth } from "@/auth";
 import { AuthError } from "next-auth";
+import { AUTH_LOGIN } from "@/constants/authRoutes";
 
 export const login = async (email: string, password: string) => {
   if (!email || !password) {
@@ -44,7 +45,7 @@ export const login = async (email: string, password: string) => {
 };
 
 export const logout = async () => {
-  await signOut({ redirectTo: "/login" });
+  await signOut({ redirectTo: AUTH_LOGIN });
 };
 
 export const getSession = async () => {

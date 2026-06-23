@@ -1,10 +1,11 @@
 import { signOut } from "next-auth/react";
+import { AUTH_LOGIN } from "@/constants/authRoutes";
 
 /**
  * Perform a thorough logout by clearing all browser storage and sessions.
  * This ensures no stale data remains in localStorage, sessionStorage, or cookies.
  */
-export const performLogout = async (callbackUrl: string = "/login") => {
+export const performLogout = async (callbackUrl: string = AUTH_LOGIN) => {
   // 1. Clear all browser storage
   if (typeof window !== "undefined") {
     localStorage.clear();

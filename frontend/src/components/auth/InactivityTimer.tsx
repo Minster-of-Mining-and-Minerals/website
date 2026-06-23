@@ -3,6 +3,7 @@
 import { useEffect, useRef, useCallback } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { usePathname } from "next/navigation";
+import { AUTH_LOGIN } from "@/constants/authRoutes";
 
 // Set inactivity limit (10 minutes)
 const INACTIVITY_TIMEOUT = 10 * 60 * 1000; 
@@ -16,7 +17,7 @@ export default function InactivityTimer() {
   const handleSignOut = useCallback(async () => {
     console.log("Inactivity timeout reached, signing out...");
     // Redirect to login after signing out
-    await signOut({ redirect: true, callbackUrl: "/login" });
+    await signOut({ redirect: true, callbackUrl: AUTH_LOGIN });
   }, []);
 
   const resetTimer = useCallback(() => {

@@ -2,6 +2,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { getSession } from "next-auth/react";
 
 import { signOut } from "next-auth/react";
+import { AUTH_LOGIN } from "@/constants/authRoutes";
 
 // Custom base query with authentication
 const rawBaseQuery = fetchBaseQuery({
@@ -30,7 +31,7 @@ const baseQueryWithReauth = async (args: any, api: any, extraOptions: any) => {
     }
 
     // Sign out from NextAuth
-    await signOut({ callbackUrl: "/login" });
+    await signOut({ callbackUrl: AUTH_LOGIN });
   }
 
   return result;

@@ -1,6 +1,7 @@
 import NextAuth from "next-auth";
 import authConfig from "./auth.config";
 import { JWT } from "next-auth/jwt";
+import { AUTH_LOGIN } from "./constants/authRoutes";
 export const { handlers, signIn, signOut, auth } = NextAuth({
   ...authConfig,
   secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET,
@@ -11,8 +12,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     updateAge: 2 * 60 * 60, // 2 hours
   },
   pages: {
-    signIn: "/login",
-    error: "/login",
+    signIn: AUTH_LOGIN,
+    error: AUTH_LOGIN,
   },
   callbacks: {
     async jwt({ token, user }) {
@@ -78,4 +79,4 @@ declare module "next-auth/jwt" {
     is_first_logged_in?: boolean;
   }
 }
-
+

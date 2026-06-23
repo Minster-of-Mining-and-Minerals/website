@@ -1,17 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 
 import { ArrowLeftIcon, EyeIcon, EyeOffIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { signIn } from "@/auth";
 import { login } from "@/actions/user";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { set } from "react-hook-form";
+import { Link, useRouter } from "@/i18n/navigation";
+import { AUTH_FORGOT_PASSWORD } from "@/constants/authRoutes";
 
 export default function ExternalLogin() {
     const [showPassword, setShowPassword] = useState(false);
@@ -31,17 +30,14 @@ export default function ExternalLogin() {
     const onSubmit = async (e: React.FormEvent) => {
         setIsLoading(true);
         e.preventDefault();
-        console.log(formData.email, formData.password, "formData");
         const result = await login(formData.email as string, formData.password as string);
-        console.log(result, "result");
         if (result?.error) {
             setAuthError(result.error);
         }
 
         if (result?.success) {
-            await update(); // Force session refresh
+            await update();
             router.push(callbackUrl || "/admin/dashboard");
-
         }
         setIsLoading(false);
     };
@@ -50,7 +46,6 @@ export default function ExternalLogin() {
         <div className="min-h-screen bg-[#F9FBFC]  flex items-center justify-center px-4">
             <div className="w-full relative max-w-6xl min-h-[80vh] shadow-2xl rounded-2xl border border-[#DCE7F1] overflow-hidden flex flex-col lg:flex-row">
 
-                {/* Back Button */}
                 <Button
                     onClick={() => router.push("/")}
                     className="cursor-pointer shadow-none z-50 bg-transparent hover:bg-slate-100 p-2 top-4 left-4 absolute flex items-center gap-1"
@@ -59,7 +54,6 @@ export default function ExternalLogin() {
                     <span className="text-sm text-golden-dark font-medium">Back</span>
                 </Button>
 
-                {/* Left Section */}
                 <div className="w-full bg-cover bg-center p-8 flex items-center justify-center">
                     <div className="backdrop-blur-md p-6 rounded-xl text-center">
                         <img
@@ -70,7 +64,6 @@ export default function ExternalLogin() {
                     </div>
                 </div>
 
-                {/* Right Section */}
                 <div className="w-full px-16 py-8 flex items-center justify-center">
                     <div className="w-full max-w-md">
                         <h1 className="text-3xl font-bold  font-semibold text-center text-golden-dark mb-6">
@@ -84,8 +77,6 @@ export default function ExternalLogin() {
                         )}
 
                         <form onSubmit={onSubmit} className="space-y-4">
-
-                            {/* Email */}
                             <div>
                                 <Label className="text-golden-dark">Email</Label>
                                 <Input
@@ -98,7 +89,6 @@ export default function ExternalLogin() {
                                 />
                             </div>
 
-                            {/* Password */}
                             <div>
                                 <Label className="text-golden-dark">Password</Label>
                                 <div className="relative mt-1">
@@ -126,14 +116,12 @@ export default function ExternalLogin() {
                                 </div>
                             </div>
 
-                            {/* Forgot Password */}
                             <div className="w-full text-right">
-                                <Link href="/forgot-password" className="text-sm text-[#0C4A6E] hover:underline">
+                                <Link href={AUTH_FORGOT_PASSWORD} className="text-sm text-[#0C4A6E] hover:underline">
                                     Forgot Password?
                                 </Link>
                             </div>
 
-                            {/* Submit */}
                             <button
                                 type="submit"
                                 className="w-full bg-golden-dark hover:bg-golden-darkHover h-14  text-xl text-white py-2 rounded-md shadow-md"
