@@ -8,6 +8,8 @@
 /backend/uploads/
 /backend/public/uploads/
 /backend/tmp/
+/backend/db-snapshot.sql
+/backend/db-snapshot.sql.*
 # Logs
 logs/
 *.log
