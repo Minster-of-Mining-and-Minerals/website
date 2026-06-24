@@ -1,8 +1,18 @@
 "use strict";
 
+
+const {
+  createTableIfNotExists,
+  dropTableIfExists,
+  addColumnIfNotExists,
+  removeColumnIfExists,
+  addConstraintIfNotExists,
+  dropConstraintIfExists,
+  dropEnumIfExists,
+} = require("./lib/migration-utils");
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("sliders", {
+    await createTableIfNotExists(queryInterface, "sliders", {
       slider_id: {
         type: Sequelize.UUID,
         allowNull: false,
@@ -30,7 +40,23 @@ module.exports = {
       order: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        defaultValue: 0, // Default order to 0
+        defaultValue: 0,
+      },
+      button_name: {
+        type: Sequelize.STRING(255),
+        allowNull: true,
+      },
+      button_url: {
+        type: Sequelize.STRING(500),
+        allowNull: true,
+      },
+      button2_name: {
+        type: Sequelize.STRING(255),
+        allowNull: true,
+      },
+      button2_url: {
+        type: Sequelize.STRING(500),
+        allowNull: true,
       },
       created_at: {
         allowNull: false,
@@ -50,6 +76,6 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("sliders");
+    await dropTableIfExists(queryInterface, "sliders");
   },
 };

@@ -1,8 +1,18 @@
 "use strict";
 
+
+const {
+  createTableIfNotExists,
+  dropTableIfExists,
+  addColumnIfNotExists,
+  removeColumnIfExists,
+  addConstraintIfNotExists,
+  dropConstraintIfExists,
+  dropEnumIfExists,
+} = require("./lib/migration-utils");
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("mining_guideline", {
+    await createTableIfNotExists(queryInterface, "mining_guideline", {
       mining_guideline_id: {
         type: Sequelize.UUID,
         primaryKey: true,
@@ -47,6 +57,6 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("mining_guideline");
+    await dropTableIfExists(queryInterface, "mining_guideline");
   },
 };

@@ -1,8 +1,18 @@
 "use strict";
 
+
+const {
+  createTableIfNotExists,
+  dropTableIfExists,
+  addColumnIfNotExists,
+  removeColumnIfExists,
+  addConstraintIfNotExists,
+  dropConstraintIfExists,
+  dropEnumIfExists,
+} = require("./lib/migration-utils");
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("mining_guideline_attachments", {
+    await createTableIfNotExists(queryInterface, "mining_guideline_attachments", {
       mining_guideline_attachment_id: {
         type: Sequelize.UUID,
         primaryKey: true,
@@ -27,7 +37,7 @@ module.exports = {
           key: "attachment_id",
         },
         onUpdate: "CASCADE",
-        onDelete: "RESTRICT",
+        onDelete: "CASCADE",
       },
       label: {
         type: Sequelize.STRING,
@@ -41,6 +51,6 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("mining_guideline_attachments");
+    await dropTableIfExists(queryInterface, "mining_guideline_attachments");
   },
 };

@@ -1,8 +1,18 @@
 "use strict";
 
+
+const {
+  createTableIfNotExists,
+  dropTableIfExists,
+  addColumnIfNotExists,
+  removeColumnIfExists,
+  addConstraintIfNotExists,
+  dropConstraintIfExists,
+  dropEnumIfExists,
+} = require("./lib/migration-utils");
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("snapshot", {
+    await createTableIfNotExists(queryInterface, "snapshot", {
       snapshot_id: {
         type: Sequelize.UUID,
         allowNull: false,
@@ -38,7 +48,7 @@ module.exports = {
           key: "attachment_id",
         },
         onUpdate: "CASCADE",
-        onDelete: "RESTRICT",
+        onDelete: "CASCADE",
       },
 
       attachment_description: {
@@ -70,7 +80,7 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("snapshot");
-    await queryInterface.sequelize.query('DROP TYPE IF EXISTS "enum_snapshot_sector";');
+    await dropTableIfExists(queryInterface, "snapshot");
+    await dropEnumIfExists(queryInterface, "enum_snapshot_sector");
   },
 };

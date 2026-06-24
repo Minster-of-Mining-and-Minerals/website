@@ -1,8 +1,18 @@
 "use strict";
 
+
+const {
+  createTableIfNotExists,
+  dropTableIfExists,
+  addColumnIfNotExists,
+  removeColumnIfExists,
+  addConstraintIfNotExists,
+  dropConstraintIfExists,
+  dropEnumIfExists,
+} = require("./lib/migration-utils");
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("steps", {
+    await createTableIfNotExists(queryInterface, "steps", {
       step_id: {
         type: Sequelize.UUID,
         allowNull: false,
@@ -34,7 +44,7 @@ module.exports = {
           key: "attachment_id",
         },
         onUpdate: "CASCADE",
-        onDelete: "RESTRICT",
+        onDelete: "CASCADE",
       },
 
       order: {
@@ -60,6 +70,6 @@ module.exports = {
   },
 
   async down(queryInterface) {
-    await queryInterface.dropTable("steps");
+    await dropTableIfExists(queryInterface, "steps");
   },
 };

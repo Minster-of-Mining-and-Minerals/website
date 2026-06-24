@@ -19,6 +19,8 @@ module.exports = {
       { resource: "about", actions: crudActions },
       { resource: "contact", actions: crudActions },
       { resource: "opportunities", actions: [...crudActions, "publish"] },
+      { resource: "tenders", actions: [...crudActions, "publish"] },
+      { resource: "vacancies", actions: [...crudActions, "publish"] },
       { resource: "contact_messages", actions: ["read", "update", "delete"] },
       { resource: "footer", actions: crudActions },
       { resource: "investigate_ethiopia", actions: crudActions },

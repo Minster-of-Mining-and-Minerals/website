@@ -1,8 +1,18 @@
 "use strict";
 
+
+const {
+  createTableIfNotExists,
+  dropTableIfExists,
+  addColumnIfNotExists,
+  removeColumnIfExists,
+  addConstraintIfNotExists,
+  dropConstraintIfExists,
+  dropEnumIfExists,
+} = require("./lib/migration-utils");
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("route_translations", {
+    await createTableIfNotExists(queryInterface, "route_translations", {
       route_translation_id: {
         type: Sequelize.UUID,
         allowNull: false,
@@ -52,6 +62,6 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("route_translations");
+    await dropTableIfExists(queryInterface, "route_translations");
   },
 };

@@ -1,8 +1,10 @@
 "use strict";
 
+const { addConstraintIfNotExists, dropConstraintIfExists, createTableIfNotExists, dropTableIfExists } = require("./lib/migration-utils");
+
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("permissions", {
+    await createTableIfNotExists(queryInterface, "permissions", {
       permission_id: {
         type: Sequelize.UUID,
         allowNull: false,
@@ -33,9 +35,16 @@ module.exports = {
         defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
       },
     });
+
+    await addConstraintIfNotExists(queryInterface, "permissions", {
+      fields: ["resource", "action"],
+      type: "unique",
+      name: "uq_permissions_resource_action",
+    });
   },
 
-  async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("permissions");
+  async down(queryInterface) {
+    await dropConstraintIfExists(queryInterface, "permissions", "uq_permissions_resource_action");
+    await dropTableIfExists(queryInterface, "permissions");
   },
 };

@@ -1,8 +1,18 @@
 "use strict";
 
+
+const {
+  createTableIfNotExists,
+  dropTableIfExists,
+  addColumnIfNotExists,
+  removeColumnIfExists,
+  addConstraintIfNotExists,
+  dropConstraintIfExists,
+  dropEnumIfExists,
+} = require("./lib/migration-utils");
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("asm_previews", {
+    await createTableIfNotExists(queryInterface, "asm_previews", {
       preview_id: {
         type: Sequelize.UUID,
         allowNull: false,
@@ -55,6 +65,6 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("asm_previews");
+    await dropTableIfExists(queryInterface, "asm_previews");
   },
 };

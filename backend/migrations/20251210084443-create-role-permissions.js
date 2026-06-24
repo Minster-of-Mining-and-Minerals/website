@@ -1,8 +1,18 @@
 "use strict";
 
+
+const {
+  createTableIfNotExists,
+  dropTableIfExists,
+  addColumnIfNotExists,
+  removeColumnIfExists,
+  addConstraintIfNotExists,
+  dropConstraintIfExists,
+  dropEnumIfExists,
+} = require("./lib/migration-utils");
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("role_permissions", {
+    await createTableIfNotExists(queryInterface, "role_permissions", {
       role_permission_id: {
         type: Sequelize.UUID,
         allowNull: false,
@@ -48,6 +58,6 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("role_permissions");
+    await dropTableIfExists(queryInterface, "role_permissions");
   },
 };

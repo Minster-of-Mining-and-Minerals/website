@@ -1,8 +1,18 @@
 "use strict";
 
+
+const {
+  createTableIfNotExists,
+  dropTableIfExists,
+  addColumnIfNotExists,
+  removeColumnIfExists,
+  addConstraintIfNotExists,
+  dropConstraintIfExists,
+  dropEnumIfExists,
+} = require("./lib/migration-utils");
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("event_attachments", {
+    await createTableIfNotExists(queryInterface, "event_attachments", {
       event_attachment_id: {
         type: Sequelize.UUID,
         allowNull: false,
@@ -38,6 +48,6 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("event_attachments");
+    await dropTableIfExists(queryInterface, "event_attachments");
   },
 };

@@ -1,8 +1,18 @@
 "use strict";
 
+
+const {
+  createTableIfNotExists,
+  dropTableIfExists,
+  addColumnIfNotExists,
+  removeColumnIfExists,
+  addConstraintIfNotExists,
+  dropConstraintIfExists,
+  dropEnumIfExists,
+} = require("./lib/migration-utils");
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("petroleum_objective", {
+    await createTableIfNotExists(queryInterface, "petroleum_objective", {
       petroleum_objective_id: {
         type: Sequelize.UUID,
         allowNull: false,
@@ -57,7 +67,7 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("petroleum_objective");
+    await dropTableIfExists(queryInterface, "petroleum_objective");
 
     // Important: drop ENUM manually (Postgres only)
     await queryInterface.sequelize.query(

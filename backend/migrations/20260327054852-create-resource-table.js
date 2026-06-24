@@ -1,5 +1,15 @@
 "use strict";
 
+
+const {
+  createTableIfNotExists,
+  dropTableIfExists,
+  addColumnIfNotExists,
+  removeColumnIfExists,
+  addConstraintIfNotExists,
+  dropConstraintIfExists,
+  dropEnumIfExists,
+} = require("./lib/migration-utils");
 module.exports = {
   async up(queryInterface, Sequelize) {
     // First, create the ENUM type for sector
@@ -7,7 +17,7 @@ module.exports = {
       CREATE TYPE "enum_resource_sector" AS ENUM ('mining', 'geology', 'petroleum', 'other');
     `);
 
-    await queryInterface.createTable("resource", {
+    await createTableIfNotExists(queryInterface, "resource", {
       resource_id: {
         type: Sequelize.UUID,
         allowNull: false,
@@ -49,7 +59,7 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("resource");
+    await dropTableIfExists(queryInterface, "resource");
 
     // Drop the ENUM type
     await queryInterface.sequelize.query(`
