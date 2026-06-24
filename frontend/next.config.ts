@@ -9,8 +9,19 @@ const nextConfig: NextConfig = {
   },
   /* config options here */
   images: {
-    domains: ['localhost'], // allow images from localhost
     remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "www.mom.gov.et",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "http",
+        hostname: "localhost",
+        port: "4000",
+        pathname: "/**",
+      },
       {
         protocol: "https",
         hostname: "nomadsinn.com",
