@@ -62,29 +62,23 @@ export default function Layout({
                 icon={<Quote />}
                 description="Contact us for more information"
             />
-            <div className="relative ">
-                {/* Overlay Search Bar - positioned to cover half of the PageHeader */}
-                <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-7xl z-[999]">
-
-                    <div className="py-5 flex justify-center items-center w-full    px-7">
-
-                        <div className="container  mx-auto max-w-7xl  px-4 bg-white  py-2 rounded-lg  border border-gray-200   w-fit ">
-                            <div className="flex flex-wrap gap-2 w-fit   ">
-                                {tabs.map((tab) => (
-                                    <Link href={tab.slug} >
-                                        <Button
-                                            key={tab.key}
-                                            className={`px-5 py-3 rounded-md text-sm font-medium bg-white transition
+            <div className="relative">
+                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-7xl z-[999] px-4 md:px-6">
+                    <div className="py-5 w-full bg-white rounded-lg border border-gray-200 shadow-xl px-4 md:px-7">
+                        <div className="flex items-center justify-start md:justify-center gap-2 overflow-x-auto whitespace-nowrap hide-scrollbar">
+                            {tabs.map((tab) => (
+                                <Link key={tab.key} href={tab.slug} className="shrink-0">
+                                    <Button
+                                        className={`px-5 py-3 rounded-md text-sm font-medium bg-white transition
                     ${activeTab === tab.key
-                                                    ? "border bg-golden-dark text-white hover:bg-golden-dark border-golden-dark"
-                                                    : "text-gray-500 hover:text-golden-dark hover:bg-golden-dark20"
-                                                }`}
-                                        >
-                                            {tab.label}
-                                        </Button>
-                                    </Link>
-                                ))}
-                            </div>
+                                                ? "border bg-golden-dark text-white hover:bg-golden-dark border-golden-dark"
+                                                : "text-gray-500 hover:text-golden-dark hover:bg-golden-dark20"
+                                            }`}
+                                    >
+                                        {tab.label}
+                                    </Button>
+                                </Link>
+                            ))}
                         </div>
                     </div>
                 </div>

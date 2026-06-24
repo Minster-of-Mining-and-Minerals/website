@@ -18,10 +18,10 @@ const TenderAndVacanciesPage = () => {
         Mines and Petroleum.
       </p>
 
-      <div className="flex gap-2 mb-8">
+      <div className="flex gap-2 mb-8 overflow-x-auto whitespace-nowrap hide-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0">
         <button
           onClick={() => setActiveTab("tender")}
-          className={`px-5 py-2 rounded-md text-sm font-medium transition
+          className={`shrink-0 px-5 py-2 rounded-md text-sm font-medium transition
             ${
               activeTab === "tender"
                 ? "bg-golden-dark text-white"
@@ -33,7 +33,7 @@ const TenderAndVacanciesPage = () => {
 
         <button
           onClick={() => setActiveTab("vacancy")}
-          className={`px-5 py-2 rounded-md text-sm font-medium transition
+          className={`shrink-0 px-5 py-2 rounded-md text-sm font-medium transition
             ${
               activeTab === "vacancy"
                 ? "bg-golden-dark text-white"
