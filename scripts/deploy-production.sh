@@ -6,16 +6,30 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$REPO_ROOT"
 
+# Load only DB_* vars — do not source full .env (may contain unquoted spaces / JS lines)
+load_db_env() {
+  local file="$1"
+  local line key val
+  while IFS= read -r line || [ -n "$line" ]; do
+    line="${line%%#*}"
+    line="$(echo "$line" | sed 's/^[[:space:]]*//; s/[[:space:]]*$//')"
+    [ -z "$line" ] && continue
+    case "$line" in
+      DB_USER=*|DB_PASSWORD=*|DB_NAME=*)
+        key="${line%%=*}"
+        val="${line#*=}"
+        val="${val%\"}"; val="${val#\"}"
+        val="${val%\'}"; val="${val#\'}"
+        export "$key=$val"
+        ;;
+    esac
+  done < "$file"
+}
+
 if [ -f .env ]; then
-  set -a
-  # shellcheck disable=SC1091
-  source .env
-  set +a
+  load_db_env .env
 elif [ -f backend/.env ]; then
-  set -a
-  # shellcheck disable=SC1091
-  source backend/.env
-  set +a
+  load_db_env backend/.env
 fi
 
 DB_USER="${DB_USER:-postgres}"
