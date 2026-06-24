@@ -11,6 +11,11 @@ if [ -f .env ]; then
   # shellcheck disable=SC1091
   source .env
   set +a
+elif [ -f backend/.env ]; then
+  set -a
+  # shellcheck disable=SC1091
+  source backend/.env
+  set +a
 fi
 
 DB_USER="${DB_USER:-postgres}"
@@ -50,13 +55,14 @@ echo "   Waiting for Postgres..."
 sleep 8
 
 echo "3. Importing upgraded database..."
-cd "$REPO_ROOT/backend"
-DB_HOST=localhost \
-DB_PORT=5432 \
-DB_USER="$DB_USER" \
-DB_PASSWORD="$DB_PASSWORD" \
-DB_NAME="$DB_NAME" \
-npm run db:import
+if ! docker ps --format '{{.Names}}' | grep -q '^mom_postgres$'; then
+  echo "Postgres container is not running."
+  exit 1
+fi
+# Strip PG 17+/18-only lines for Postgres 16 server
+sed -e '/transaction_timeout/d' -e '/^\\restrict/d' -e '/^\\unrestrict/d' "$SNAPSHOT" | \
+docker exec -i -e "PGPASSWORD=$DB_PASSWORD" mom_postgres \
+  psql -U "$DB_USER" -d "$DB_NAME" -v ON_ERROR_STOP=1
 
 echo "4. Extracting reprocessed uploads..."
 cd "$REPO_ROOT/backend"

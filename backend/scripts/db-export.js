@@ -13,6 +13,7 @@ const {
   getDbConfig,
   resolvePgDumpCommand,
 } = require("./db-snapshot-utils");
+const { sanitizeSnapshotFile } = require("./sanitize-db-snapshot");
 
 async function runExport() {
   const config = getDbConfig();
@@ -71,6 +72,7 @@ async function runExport() {
   }
 
   fs.renameSync(tempFile, SNAPSHOT_FILE);
+  sanitizeSnapshotFile(SNAPSHOT_FILE);
 
   const sizeMb = (fs.statSync(SNAPSHOT_FILE).size / (1024 * 1024)).toFixed(2);
   console.log(`Snapshot saved: ${SNAPSHOT_FILE} (${sizeMb} MB)`);
