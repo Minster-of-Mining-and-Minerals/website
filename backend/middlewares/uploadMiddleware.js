@@ -16,7 +16,7 @@ const allowedTypes = [
   "image/png",
 ];
 
-const tempUploadDir = path.join(__dirname, "../public/uploads/temp");
+const tempUploadDir = path.join(__dirname, "../uploads/temp");
 if (!fs.existsSync(tempUploadDir))
   fs.mkdirSync(tempUploadDir, { recursive: true });
 

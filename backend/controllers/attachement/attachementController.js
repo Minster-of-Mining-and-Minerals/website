@@ -8,6 +8,7 @@ const {
     removeAttachmentFiles,
     toAttachmentPayload,
 } = require("../../utils/imageProcessor");
+const { moveFileSync } = require("../../utils/fileMove");
 
 const uploadFiles = async (req, res) => {
     try {
@@ -49,7 +50,7 @@ const uploadFiles = async (req, res) => {
                 }
             } else {
                 const newPath = path.join(uploadDir, file.filename);
-                fs.renameSync(file.path, newPath);
+                moveFileSync(file.path, newPath);
 
                 recordData.file_name = file.filename;
                 recordData.file_path = newPath.replace(/\\/g, "/");
