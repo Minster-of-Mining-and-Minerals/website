@@ -153,7 +153,7 @@ export default function GemstonesList() {
        CARD VIEW
     ----------------------------------- */
     const GamestoneCard = ({ item }: { item: Gamestone }) => {
-        const imageUrl = item.attachment?.file_path ? getImageUrl(item.attachment, "thumb") : null;
+        const imageUrl = item.attachment?.file_path ? getImageUrl(item.attachment, "large") : null;
         return (
             <div className="bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow group">
                 <div className="h-40 bg-gradient-to-br from-[#094C81]/10 to-[#094C81]/5 relative overflow-hidden">

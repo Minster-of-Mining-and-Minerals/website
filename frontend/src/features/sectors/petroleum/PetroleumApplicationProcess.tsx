@@ -151,7 +151,7 @@ export default function PetroleumApplicationProcess() {
                                                                 {step.attachment && (
                                                                     <div className="flex-shrink-0">
                                                                         <img
-                                                                            src={getImageUrl(step.attachment, "thumb")}
+                                                                            src={getImageUrl(step.attachment, "large")}
                                                                             className="w-16 h-16 rounded-full object-cover"
                                                                             alt=""
                                                                         />

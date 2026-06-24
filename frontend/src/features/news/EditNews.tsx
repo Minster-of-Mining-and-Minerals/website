@@ -142,7 +142,7 @@ const EditNews = () => {
                 attachment_id: attachmentInfo.attachment_id,
                 file_name: attachmentInfo.file_name,
                 file_path: attachmentInfo.file_path,
-                previewUrl: getImageUrl(attachmentInfo, "medium"),
+                previewUrl: getImageUrl(attachmentInfo, "large"),
                 category: att.category,
                 isBlob: false,
                 file_type: getFileType(attachmentInfo.file_name),
@@ -263,7 +263,7 @@ const EditNews = () => {
 
     const getCurrentMedia = () => (headlineFiles.length ? headlineFiles[currentMediaIndex] : null);
     const currentMedia = getCurrentMedia();
-    const getMediaUrl = (file: UploadedFileInfo) => file.isBlob ? file.previewUrl : getImageUrl(file, "medium");
+    const getMediaUrl = (file: UploadedFileInfo) => file.isBlob ? file.previewUrl : getImageUrl(file, "large");
 
     return (
         <div className="min-h-screen w-full grid grid-cols-2 gap-10">

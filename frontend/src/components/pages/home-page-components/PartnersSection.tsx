@@ -35,7 +35,7 @@ const PartnersSection: React.FC<PartnersSectionProps> = ({ speed = 50 }) => {
             // Set logos from attachments
             if (firstPartner.attachments && firstPartner.attachments.length > 0) {
                 const apiLogos = firstPartner.attachments
-                    .map((a: any) => a.attachment?.file_path ? getImageUrl(a.attachment, "thumb") : "")
+                    .map((a: any) => a.attachment?.file_path ? getImageUrl(a.attachment, "large") : "")
                     .filter((url: string) => url !== "");
                 setLogos(apiLogos);
             }

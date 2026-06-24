@@ -120,7 +120,7 @@ const GemstonesPage = () => {
                 <div className="space-y-6">
                     {filtered.map((gem: Gamestone) => {
                         const imageUrl = gem.attachment?.file_path
-                            ? getImageUrl(gem.attachment, "thumb")
+                            ? getImageUrl(gem.attachment, "large")
                             : null;
                         const subCount = gem.sub_items?.length ?? 0;
 

@@ -68,7 +68,7 @@ export const ImageUploadField: React.FC<ImageUploadFieldProps> = ({
                 attachment_id: found.attachment_id,
                 file_name: found.file_name,
                 file_path: found.file_path,
-                previewUrl: getImageUrl(found, "medium"),
+                previewUrl: getImageUrl(found, "large"),
                 category,
             };
             setCurrentImage(imageInfo);

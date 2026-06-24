@@ -215,9 +215,8 @@ uploads/attachments/{attachment_id}/
 Use `getImageUrl(attachment, size)` from `frontend/src/utils/fileUrl.ts`:
 
 ```ts
-getImageUrl(gem.attachment, "thumb")   // list cards
-getImageUrl(gem.attachment, "large")   // hero image
-getImageUrl(attachment, "medium")        // admin preview
+getImageUrl(gem.attachment, "large")   // public display (default)
+getImageUrl(attachment, "large")       // admin preview
 ```
 
 If variants are missing (old uploads), the helper falls back to `file_path`.
@@ -263,6 +262,20 @@ npm run dev                  # development server
 npm run build                # production build
 npm run start                # production server (after build)
 ```
+
+---
+
+## Production deploy
+
+See **[DEPLOY.md](./DEPLOY.md)** for the full server rollout.
+
+**Quick summary**
+
+1. **Git:** push/pull `website-update` — includes upgraded `backend/db-snapshot.sql`.
+2. **SCP:** copy `backend/deploy-uploads.tar.gz` (~1.8 GB) to the server separately (too large for GitHub).
+3. **Server:** `chmod +x scripts/deploy-production.sh && ./scripts/deploy-production.sh`
+
+Uploads persist via `./backend/uploads` volume mount in `docker-compose.yml`.
 
 ---
 

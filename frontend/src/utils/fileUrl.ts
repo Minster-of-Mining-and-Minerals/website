@@ -15,7 +15,7 @@ export type AttachmentLike = {
 
 export function getImageUrl(
     attachment: AttachmentLike | null | undefined,
-    size: ImageSize = "medium"
+    size: ImageSize = "large"
 ): string {
     if (!attachment?.file_path) return "";
 
@@ -40,7 +40,7 @@ export function isImageAttachment(attachment: AttachmentLike | null | undefined)
 
 export function getAttachmentUrl(
     attachment: AttachmentLike | null | undefined,
-    imageSize: ImageSize = "medium"
+    imageSize: ImageSize = "large"
 ): string {
     if (!attachment?.file_path) return "";
     if (isImageAttachment(attachment)) {

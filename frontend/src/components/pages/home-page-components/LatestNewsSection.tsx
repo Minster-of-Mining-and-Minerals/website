@@ -43,7 +43,7 @@ export default function LatestNewsSection() {
                     id: n.news_id,
                     title: n.title,
                     description: deltaToPlainText(n.content).substring(0, 200) + "...",
-                    image: headlineAttachment?.file_path ? getImageUrl(headlineAttachment, "thumb") : "/placeholder-news.jpg",
+                    image: headlineAttachment?.file_path ? getImageUrl(headlineAttachment, "large") : "/placeholder-news.jpg",
                     date: formatDate(n.created_at),
                 };
             });

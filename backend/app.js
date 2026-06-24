@@ -6,7 +6,7 @@ const { Server } = require("socket.io");
 const path = require("path");
 const bodyParser = require("body-parser");
 
-dotenv.config();
+dotenv.config({ path: path.join(__dirname, ".env"), override: true });
 
 const { swaggerUi, swaggerSpec } = require("./swagger");
 

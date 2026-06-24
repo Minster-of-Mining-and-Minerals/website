@@ -79,7 +79,7 @@ const ImageSlider = ({ attachments, title }: { attachments: any[], title: string
             {attachments.length > 1 && (
                 <div className="flex gap-3 overflow-x-auto pb-3 scrollbar-none justify-center flex-wrap">
                     {attachments.map((att, i) => {
-                        const thumbUrl = att.attachment?.file_path ? getImageUrl(att.attachment, "thumb") : null;
+                        const thumbUrl = att.attachment?.file_path ? getImageUrl(att.attachment, "large") : null;
                         if (!thumbUrl) return null;
                         return (
                             <button

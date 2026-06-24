@@ -104,7 +104,7 @@ export const EditFileUpload: React.FC<FileUploadFieldProps> = ({
                         attachment_id: found.attachment_id,
                         file_name: found.file_name,
                         file_path: found.file_path,
-                        previewUrl: getImageUrl(found, "medium"),
+                        previewUrl: getImageUrl(found, "large"),
                         category,
                         isBlob: false,
                         file_type: getFileTypeFromName(found.file_name),
@@ -227,7 +227,7 @@ export const EditFileUpload: React.FC<FileUploadFieldProps> = ({
     };
 
     const getPreviewContent = (file: UploadedFileInfo) => {
-        const previewUrl = file.isBlob ? file.previewUrl : getImageUrl(file, "medium");
+        const previewUrl = file.isBlob ? file.previewUrl : getImageUrl(file, "large");
 
         if (!previewUrl) return null;
 
@@ -405,7 +405,7 @@ export const EditFileUpload: React.FC<FileUploadFieldProps> = ({
                                 onClick={() => {
                                     const url = previewFile.isBlob
                                         ? previewFile.previewUrl
-                                        : getImageUrl(previewFile, "medium");
+                                        : getImageUrl(previewFile, "large");
                                     if (url) {
                                         window.open(url, '_blank');
                                     }

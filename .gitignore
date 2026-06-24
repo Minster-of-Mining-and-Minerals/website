@@ -4,10 +4,23 @@
 # Environment variables
 /backend/.env
 .env
-# Ignore uploads
+/frontend/.env.local
+
+# Local uploads (use deploy-uploads.tar.gz for production)
 /backend/uploads/
 /backend/public/uploads/
+
+# Migration / upgrade working files (not for deploy)
+/backend/db-snapshot-v1-original.sql
+/backend/db-snapshot-v2-final.sql
+/backend/server-uploads.tar.gz
+/backend/deploy-uploads.tar.gz
+/backend/db-snapshot.sql.*.bak
 /backend/tmp/
+
+# Server backups created by deploy script
+/backups/
+
 # Logs
 logs/
 *.log

@@ -33,7 +33,7 @@ function SubClassCard({ item }: { item: Gamestone }) {
     const descriptionRef = useRef<HTMLDivElement>(null);
 
     const imageUrl = item.attachment?.file_path
-        ? getImageUrl(item.attachment, "thumb")
+        ? getImageUrl(item.attachment, "large")
         : null;
 
     const hasDescription = Boolean(item.description?.trim());

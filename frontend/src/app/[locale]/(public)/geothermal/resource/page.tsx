@@ -43,7 +43,7 @@ const ResourcePage = () => {
     // Helper to get file URL (adjust based on your API endpoint)
     const getResourceFileUrl = (attachment: any) => {
         if (!attachment?.file_path) return '#';
-        return getAttachmentUrl(attachment, 'medium');
+        return getAttachmentUrl(attachment, 'large');
     };
 
     // Helper function to get file icon based on type (yellow/orange style)

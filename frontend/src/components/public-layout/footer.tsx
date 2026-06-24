@@ -91,7 +91,7 @@ const Footer = () => {
 
         let logoUrl = DEFAULT_FOOTER_DATA.about.logo;
         if (f.attachment?.file_path) {
-            logoUrl = getImageUrl(f.attachment, "thumb");
+            logoUrl = getImageUrl(f.attachment, "large");
         }
 
         const mappedSections = (f.sections || []).map((s: any, sectionIndex: number) => ({

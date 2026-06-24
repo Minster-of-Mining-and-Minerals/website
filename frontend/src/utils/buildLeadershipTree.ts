@@ -23,7 +23,7 @@ export function buildLeadershipTree(data: Leadership[]): LeadershipNode | null {
             title: item.title,
             description: item.description,
             image: attachment?.file_path
-                ? getImageUrl(attachment, "thumb")
+                ? getImageUrl(attachment, "large")
                 : undefined,
             children: [],
         });

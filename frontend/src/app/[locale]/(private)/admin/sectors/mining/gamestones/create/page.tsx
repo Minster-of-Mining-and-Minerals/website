@@ -179,7 +179,7 @@ function DocumentsUploadSection({
                         <h3 className="text-base font-semibold mb-4 pr-8">{previewFile.file_name}</h3>
                         {previewFile.file_name.toLowerCase().endsWith(".pdf") ? (
                             <iframe
-                                src={previewFile.isBlob ? previewFile.previewUrl ?? "" : getImageUrl(previewFile, "medium")}
+                                src={previewFile.isBlob ? previewFile.previewUrl ?? "" : getImageUrl(previewFile, "large")}
                                 className="w-full h-[70vh] rounded"
                                 title={previewFile.file_name}
                             />

@@ -24,7 +24,7 @@ const CardSection = () => {
             setCardData({
                 title: firstCard.title,
                 description: firstCard.description || "",
-                image: firstCard.attachment?.file_path ? getImageUrl(firstCard.attachment, "thumb") : "",
+                image: firstCard.attachment?.file_path ? getImageUrl(firstCard.attachment, "large") : "",
                 buttonText: firstCard.button_name || "",
                 button_url: firstCard.button_url || "#",
             });

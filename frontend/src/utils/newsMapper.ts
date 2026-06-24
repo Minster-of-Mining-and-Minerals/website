@@ -48,7 +48,7 @@ export function extractHeadlineImage(attachments: any[]) {
 
     if (!headline) return null;
 
-    const url = getImageUrl(headline.attachment, "thumb");
+    const url = getImageUrl(headline.attachment, "large");
 
     const ext = headline.attachment.file_path.split(".").pop()?.toLowerCase();
 

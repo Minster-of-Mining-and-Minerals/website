@@ -104,7 +104,7 @@ const FileUploadField: React.FC<FileUploadFieldProps> = ({
                         attachment_id: found.attachment_id,
                         file_name: found.file_name,
                         file_path: found.file_path,
-                        previewUrl: getImageUrl(found, "medium"),
+                        previewUrl: getImageUrl(found, "large"),
                         category,
                         isBlob: false,
                         file_type: getFileType(found.file_name),
@@ -369,7 +369,7 @@ const CreateNews = () => {
     // Helper to get the correct URL for preview
     const getMediaUrl = (file: UploadedFileInfo) => {
         if (file.isBlob) return file.previewUrl; // Blob URL for new uploads
-        if (file.file_path) return getImageUrl(file, "medium");
+        if (file.file_path) return getImageUrl(file, "large");
         return file.previewUrl;
     };
 

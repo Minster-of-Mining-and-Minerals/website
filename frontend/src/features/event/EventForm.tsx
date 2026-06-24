@@ -135,7 +135,7 @@ export default function EventForm({ initialData, onSubmit, isLoading: isSubmitti
                         attachment_id: info.attachment_id,
                         file_name: info.file_name,
                         file_path: info.file_path,
-                        previewUrl: getImageUrl(info, "medium"),
+                        previewUrl: getImageUrl(info, "large"),
                         category: "headline",
                         isBlob: false,
                         file_type: getFileType(info.file_name)

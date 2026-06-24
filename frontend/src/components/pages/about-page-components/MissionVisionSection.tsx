@@ -55,14 +55,14 @@ export default function VisionMissionValues() {
     const missionVision = {
         mission: {
             icon: missionSection?.attachment?.file_path
-                ? getImageUrl(missionSection.attachment, "medium")
+                ? getImageUrl(missionSection.attachment, "large")
                 : "/icons/goal.png",
             title: "Mission",
             description: missionSection?.content || "",
         },
         vision: {
             icon: visionSection?.attachment?.file_path
-                ? getImageUrl(visionSection.attachment, "medium")
+                ? getImageUrl(visionSection.attachment, "large")
                 : "/icons/witness.png",
             title: "Vision",
             description: visionSection?.content || "",
@@ -71,7 +71,7 @@ export default function VisionMissionValues() {
 
     const coreValues = {
         icon: coreValuesSection?.attachment?.file_path
-            ? getImageUrl(coreValuesSection.attachment, "medium")
+            ? getImageUrl(coreValuesSection.attachment, "large")
             : "/icons/diamond.png",
         title: "Values",
         values: coreValuesSection?.core_values?.map(v => v.content) || [],

@@ -189,7 +189,7 @@ const PublicAsmPage = () => {
 
                                                 {preview.attachment?.file_path && (
                                                     <img
-                                                        src={getImageUrl(preview.attachment, "thumb")}
+                                                        src={getImageUrl(preview.attachment, "large")}
                                                         alt={preview.title}
                                                         className="rounded-lg shadow-sm border border-teal-200/50 w-full"
                                                     />
@@ -223,7 +223,7 @@ const PublicAsmPage = () => {
 
                                         {preview.attachment?.file_path && (
                                             <img
-                                                src={getImageUrl(preview.attachment, "thumb")}
+                                                src={getImageUrl(preview.attachment, "large")}
                                                 alt={preview.title}
                                                 className="mt-4 rounded-lg shadow-sm w-full"
                                             />
