@@ -1,13 +1,13 @@
 "use client";
 
 import React, { useState } from "react";
-import { MessageSquare } from "lucide-react";
+import { MessageSquare, UserCircle2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useGetNewsFeedbackCountQuery, useRecordNewsFeedbackMutation, useGetNewsFeedbacksQuery } from "@/redux/api/newsApi";
 import { toast } from "sonner";
-import { UserCircle2 } from "lucide-react";
+import { formatLongDate } from "@/utils/datetime";
 
 interface NewsFeedbackProps {
     newsId: string;
@@ -84,6 +84,38 @@ const NewsFeedback: React.FC<NewsFeedbackProps> = ({ newsId }) => {
                     </div>
                 </form>
             </div>
+
+            {feedbacks.length > 0 && (
+                <div className="bg-white rounded-lg shadow-sm p-6">
+                    <h3 className="text-lg font-bold text-gray-900 mb-6 pb-3 border-b">
+                        Published Comments
+                    </h3>
+                    <div className="space-y-6">
+                        {feedbacks.map((item) => (
+                            <div key={item.news_feedback_id} className="flex gap-4">
+                                <div className="flex-shrink-0">
+                                    <div className="w-10 h-10 rounded-full bg-golden-dark/10 flex items-center justify-center text-golden-dark border border-golden-dark/20">
+                                        <UserCircle2 size={22} />
+                                    </div>
+                                </div>
+                                <div className="flex-grow space-y-1 min-w-0">
+                                    <div className="flex items-center justify-between gap-2">
+                                        <h4 className="font-semibold text-gray-900 truncate">
+                                            {item.fullname}
+                                        </h4>
+                                        <span className="text-xs text-gray-400 flex-shrink-0">
+                                            {formatLongDate(item.created_at)}
+                                        </span>
+                                    </div>
+                                    <p className="text-gray-600 text-sm leading-relaxed">
+                                        {item.thought}
+                                    </p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

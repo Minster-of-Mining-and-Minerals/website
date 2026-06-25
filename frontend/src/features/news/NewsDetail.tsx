@@ -1,7 +1,7 @@
 "use client";
 import { useGetNewsByIdQuery, useRecordNewsReadMutation, useGetNewsFeedbacksQuery } from "@/redux/api/newsApi";
-import { Calendar, User, ArrowLeft, MessageSquare } from "lucide-react";
-import React, { useState, useEffect } from "react";
+import { Calendar, User, ArrowLeft } from "lucide-react";
+import React, { useEffect } from "react";
 import { useParams } from "next/navigation";
 import NewsLeftSide from "@/components/pages/news-page-components/NewsLeftSide";
 import { mapRelatedNews } from "@/utils/mapRelatedNews";
@@ -29,13 +29,6 @@ const NewsDetail = () => {
         return () => clearTimeout(timer);
     }, [newsId, recordNewsRead]);
 
-    const [rating, setRating] = useState(0);
-    const [comment, setComment] = useState("");
-    const [fullName, setFullName] = useState("");
-    const [comments, setComments] = useState<
-        { name: string; comment: string; date: string; rating: number }[]
-    >([]);
-
     if (isLoading) return <div className="text-center py-12">Loading...</div>;
     if (isError || !newsItem)
         return (
@@ -46,27 +39,6 @@ const NewsDetail = () => {
                 </div>
             </div>
         );
-
-    const handleSubmitFeedback = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!fullName.trim() || !comment.trim()) {
-            alert("Please enter your full name and comment.");
-            return;
-        }
-
-        const newComment = {
-            name: fullName,
-            comment,
-            date: new Date().toISOString().split("T")[0],
-            rating,
-        };
-
-        setComments([newComment, ...comments]);
-        setComment("");
-        setFullName("");
-        setRating(0);
-        alert("Thank you for your feedback! Your comment has been submitted.");
-    };
 
     return (
         <div className="min-h-screen bg-gray-50">
