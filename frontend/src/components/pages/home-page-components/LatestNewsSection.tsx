@@ -131,7 +131,7 @@ export default function LatestNewsSection() {
                 </div>
 
                 {/* Thumbnails */}
-                <div className="mt-6 flex w-full md:justify-center md:items-center gap-4 overflow-x-auto py-2 px-4 md:px-0 scroll-smooth snap-x snap-mandatory">
+                <div className="mt-6 flex w-full md:justify-center md:items-center gap-4 overflow-x-auto hide-scrollbar py-2 px-4 md:px-0 scroll-smooth snap-x snap-mandatory">
                     {newsItems.map((n, i) => (
                         <button
                             key={n.id}
