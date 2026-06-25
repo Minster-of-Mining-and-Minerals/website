@@ -6,9 +6,9 @@
 .env
 /frontend/.env.local
 
-# Local uploads (use deploy-uploads.tar.gz for production)
-/backend/uploads/
-/backend/public/uploads/
+# Local uploads (not versioned — use deploy-uploads.tar.gz for production)
+uploads/
+**/uploads/
 
 # Migration / upgrade working files (not for deploy)
 /backend/db-snapshot-v1-original.sql
