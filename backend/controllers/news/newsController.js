@@ -478,12 +478,26 @@ const recordNewsFeedback = async (req, res) => {
     try {
         const { news_id, fullname, thought } = req.body;
 
-        const news = await News.findByPk(news_id);
+        if (!news_id || !fullname?.trim() || !thought?.trim()) {
+            return res.status(400).json({
+                success: false,
+                message: "News ID, full name, and feedback are required.",
+            });
+        }
+
+        const news = await News.findOne({
+            where: { news_id, deleted_at: null, status: "published" },
+        });
         if (!news) {
             return res.status(404).json({ success: false, message: "News not found." });
         }
 
-        const newsFeedback = await NewsFeedback.create({ news_id, fullname, thought });
+        const newsFeedback = await NewsFeedback.create({
+            news_id,
+            fullname: fullname.trim(),
+            thought: thought.trim(),
+            is_published: false,
+        });
 
         return res.status(200).json({
             success: true,
@@ -549,9 +563,9 @@ const getNewsFeedbackCount = async (req, res) => {
             });
         }
 
-        // Count feedback
+        // Count only published feedback for public display
         const feedbackCount = await NewsFeedback.count({
-            where: { news_id },
+            where: { news_id, is_published: true },
         });
 
         return res.status(200).json({

@@ -1,5 +1,5 @@
 export const getFileUrl = (filePath: string) => {
-    const apiBase = process.env.NEXT_PUBLIC_BASE || "https://www.mom.gov.et";
+    const apiBase = process.env.NEXT_PUBLIC_FILE_URL || "https://www.mom.gov.et";
     return `${apiBase}/${filePath.replace(/\\/g, "/")}`;
 };
 

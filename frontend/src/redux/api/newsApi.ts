@@ -67,7 +67,7 @@ export const newsApi = baseApi.injectEndpoints({
         }),
 
         /** ---------------------------
-         * RECORD NEWS FEEDBACK
+         * RECORD NEWS FEEDBACK (public)
          * --------------------------- */
         recordNewsFeedback: builder.mutation<NewsFeedback, CreateNewsFeedbackPayload>({
             query: (body) => ({
@@ -76,7 +76,10 @@ export const newsApi = baseApi.injectEndpoints({
                 body,
             }),
             transformResponse: (response: any): NewsFeedback => response.data,
-            invalidatesTags: ["News"],
+            invalidatesTags: (_r, _e, { news_id }) => [
+                { type: "News", id: news_id },
+                "News",
+            ],
         }),
 
         /** ---------------------------
