@@ -175,19 +175,22 @@ export default function PublicNavbar() {
                             ? pathname === item.link || pathname.startsWith(item.link + "/")
                             : false;
 
+                        const parentNavClass = `flex w-full px-3 py-2 rounded-lg text-base font-medium transition-colors ${
+                            isActive
+                                ? "text-golden-dark font-semibold bg-golden-dark20"
+                                : "text-gray-600 hover:text-golden-dark hover:bg-golden-dark10"
+                        }`;
+
                         return (
                             <div key={idx} className="flex flex-col">
                                 {/* ================= PARENT ================= */}
                                 {item.children ? (
                                     <button
+                                        type="button"
                                         onClick={() =>
                                             setOpenMobileIndex(isOpen ? null : idx)
                                         }
-                                        className={`flex w-full items-center justify-between text-lg font-medium px-3 py-2 rounded-lg transition-colors
-                                            ${isActive
-                                                ? "text-golden-dark font-semibold bg-golden-dark20"
-                                                : "text-gray-600 hover:text-golden-dark hover:bg-golden-dark10"
-                                            }`}
+                                        className={`${parentNavClass} items-center justify-between text-left`}
                                     >
                                         <span>{item.name}</span>
                                         <ChevronDown
@@ -198,11 +201,7 @@ export default function PublicNavbar() {
                                     <Link
                                         href={item.link || "#"}
                                         onClick={() => setIsMobileMenuOpen(false)}
-                                        className={`flex w-full px-3 py-2 rounded-lg transition-colors
-                                            ${isActive
-                                                ? "text-golden-dark font-semibold bg-golden-dark20"
-                                                : "text-gray-600 hover:text-golden-dark hover:bg-golden-dark10"
-                                            }`}
+                                        className={parentNavClass}
                                     >
                                         {item.name}
                                     </Link>

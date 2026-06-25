@@ -1,86 +1,66 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { DataTable } from "@/features/template/component/DataTable";
 import { TableLayout } from "@/features/template/component/TableLayout";
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
-import { Eye, Trash2, MailOpen, Loader2 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { Eye, Loader2 } from "lucide-react";
 import { useGetMessagesQuery } from "@/redux/api/messageApi";
-import { ComponentGuard } from "@/components/auth/ComponentGuard";
-
-type ContactMessage = {
-    id: string;
-    name: string;
-    email: string;
-    subject: string;
-    message: string;
-    date: string;
-    status: "new" | "read";
-};
+import { Message } from "@/redux/types/message";
+import { formatDate } from "@/utils/datetime";
 
 export default function AdminContactMessages() {
+    const router = useRouter();
     const [pageIndex, setPageIndex] = useState(0);
     const [pageSize, setPageSize] = useState(10);
 
     const { data: messages = [], isLoading } = useGetMessagesQuery();
 
-    /** Map API data to UI structure */
-    const mappedMessages: ContactMessage[] = messages.map((msg: any) => ({
-        id: msg.message_id,
-        name: msg.full_name,
-        email: msg.email_address,
-        subject: msg.subject,
-        message: msg.message,
-        date: msg.created_at?.split("T")[0],
-        status: "new", // default since backend does not have status
-    }));
-
-    const columns: ColumnDef<ContactMessage>[] = [
-        { accessorKey: "name", header: "Name" },
-        { accessorKey: "email", header: "Email" },
-        { accessorKey: "subject", header: "Subject" },
-        { accessorKey: "date", header: "Date" },
+    const columns: ColumnDef<Message>[] = [
         {
-            accessorKey: "status",
-            header: "Status",
-            cell: ({ row }) => {
-                const status = row.getValue("status") as string;
-                return (
-                    <Badge variant={status === "new" ? "default" : "secondary"}>
-                        {status.toUpperCase()}
-                    </Badge>
-                );
-            },
+            accessorKey: "full_name",
+            header: "Name",
+        },
+        {
+            accessorKey: "email_address",
+            header: "Email",
+            cell: ({ row }) => (
+                <span className="break-all">{row.getValue("email_address")}</span>
+            ),
+        },
+        {
+            accessorKey: "subject",
+            header: "Subject",
+            cell: ({ row }) => (
+                <button
+                    type="button"
+                    onClick={() => router.push(`/admin/contacts/messages/${row.original.message_id}`)}
+                    className="text-left font-medium text-[#094C81] hover:underline line-clamp-2"
+                >
+                    {row.getValue("subject")}
+                </button>
+            ),
+        },
+        {
+            accessorKey: "created_at",
+            header: "Date",
+            cell: ({ row }) => formatDate(row.getValue("created_at")),
         },
         {
             id: "actions",
             header: "Actions",
-            cell: ({ row }) => {
-                return (
-                    <div className="flex items-center gap-1">
-                        <Button variant="ghost" size="icon" title="View details">
-                            <Eye className="w-4 h-4" />
-                        </Button>
-                        <ComponentGuard anyPermissions={["CONTACT_MESSAGES:UPDATE"]}>
-                            <Button variant="ghost" size="icon" title="Mark as read">
-                                <MailOpen className="w-4 h-4" />
-                            </Button>
-                        </ComponentGuard>
-                        <ComponentGuard anyPermissions={["CONTACT_MESSAGES:DELETE"]}>
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="text-destructive"
-                                title="Delete"
-                            >
-                                <Trash2 className="w-4 h-4" />
-                            </Button>
-                        </ComponentGuard>
-                    </div>
-                );
-            },
+            cell: ({ row }) => (
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => router.push(`/admin/contacts/messages/${row.original.message_id}`)}
+                >
+                    <Eye className="w-4 h-4 mr-1.5" />
+                    View
+                </Button>
+            ),
         },
     ];
 
@@ -89,7 +69,7 @@ export default function AdminContactMessages() {
         setPageSize(size);
     };
 
-    const paginatedMessages = mappedMessages.slice(
+    const paginatedMessages = messages.slice(
         pageIndex * pageSize,
         pageIndex * pageSize + pageSize
     );
@@ -110,7 +90,7 @@ export default function AdminContactMessages() {
             <DataTable
                 columns={columns}
                 data={paginatedMessages}
-                totalPageCount={Math.ceil(mappedMessages.length / pageSize)}
+                totalPageCount={Math.ceil(messages.length / pageSize)}
                 handlePagination={handlePagination}
                 tablePageSize={pageSize}
                 currentIndex={pageIndex}

@@ -2,10 +2,11 @@
 
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Mail, MapPin, Phone, Send, Loader2 } from 'lucide-react';
+import { CheckCircle2, Mail, MapPin, Phone, Send, Loader2 } from 'lucide-react';
 import { useGetFederalOfficesQuery } from '@/redux/api/federalOfficeApi';
 import { useCreateMessageMutation } from '@/redux/api/messageApi';
 import { useState } from "react";
+import { toast } from "sonner";
 
 const ContactForm = () => {
     const { data: federalOffices, isLoading } = useGetFederalOfficesQuery();
@@ -20,7 +21,7 @@ const ContactForm = () => {
         message: "",
     });
 
-    const [success, setSuccess] = useState("");
+    const [successMessage, setSuccessMessage] = useState("");
 
     const handleChange = (e: any) => {
         setFormData({
@@ -32,10 +33,14 @@ const ContactForm = () => {
     const handleSubmit = async (e: any) => {
         e.preventDefault();
 
+        setSuccessMessage("");
+
         try {
             await createMessage(formData).unwrap();
 
-            setSuccess("Your message has been sent successfully.");
+            const message = "Your message has been sent successfully.";
+            setSuccessMessage(message);
+            toast.success(message);
 
             setFormData({
                 full_name: "",
@@ -43,8 +48,9 @@ const ContactForm = () => {
                 subject: "",
                 message: "",
             });
-        } catch (error) {
+        } catch (error: any) {
             console.error("Message send failed:", error);
+            toast.error(error?.data?.message || "Failed to send message. Please try again.");
         }
     };
 
@@ -85,8 +91,14 @@ const ContactForm = () => {
                     Send Us a Message
                 </h2>
 
-                {success && (
-                    <p className="text-green-600 mb-4">{success}</p>
+                {successMessage && (
+                    <div
+                        role="status"
+                        className="mb-4 flex items-start gap-3 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-green-800"
+                    >
+                        <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-green-600" />
+                        <p className="text-sm font-medium">{successMessage}</p>
+                    </div>
                 )}
 
                 <form className="space-y-5" onSubmit={handleSubmit}>

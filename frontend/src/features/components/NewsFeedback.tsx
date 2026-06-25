@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { MessageSquare, UserCircle2 } from "lucide-react";
+import { CheckCircle2, MessageSquare, UserCircle2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,7 @@ interface NewsFeedbackProps {
 const NewsFeedback: React.FC<NewsFeedbackProps> = ({ newsId }) => {
     const [fullname, setFullname] = useState("");
     const [thought, setThought] = useState("");
+    const [successMessage, setSuccessMessage] = useState("");
 
     const [recordFeedback, { isLoading }] = useRecordNewsFeedbackMutation();
     const { data: feedbackCount } = useGetNewsFeedbackCountQuery(newsId);
@@ -28,6 +29,8 @@ const NewsFeedback: React.FC<NewsFeedbackProps> = ({ newsId }) => {
             return toast.error("Full name and thought are required.");
         }
 
+        setSuccessMessage("");
+
         try {
             await recordFeedback({
                 news_id: newsId,
@@ -35,7 +38,9 @@ const NewsFeedback: React.FC<NewsFeedbackProps> = ({ newsId }) => {
                 thought,
             }).unwrap();
 
-            toast.success("Thank you! Your feedback has been submitted for review.");
+            const message = "Thank you! Your feedback has been submitted for review.";
+            setSuccessMessage(message);
+            toast.success(message);
             setFullname("");
             setThought("");
         } catch (error) {
@@ -55,6 +60,16 @@ const NewsFeedback: React.FC<NewsFeedbackProps> = ({ newsId }) => {
                         <span>{feedbackCount?.feedback_count} Comments</span>
                     </div>
                 </div>
+
+                {successMessage && (
+                    <div
+                        role="status"
+                        className="mb-4 flex items-start gap-3 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-green-800"
+                    >
+                        <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-green-600" />
+                        <p className="text-sm font-medium">{successMessage}</p>
+                    </div>
+                )}
 
                 {/* Form */}
                 <form onSubmit={handleSubmit} className="space-y-4">

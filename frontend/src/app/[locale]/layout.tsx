@@ -3,6 +3,7 @@ import "./globals.css";
 import ReduxProvider from "@/providers/ReduxProvider";
 import NextTopLoader from 'nextjs-toploader';
 import { NextIntlClientProvider } from 'next-intl';
+import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
   title: "Minstry of Mines Website",
@@ -31,6 +32,7 @@ export default function RootLayout({
         <NextIntlClientProvider>
           <ReduxProvider>{children}</ReduxProvider>
         </NextIntlClientProvider>
+        <Toaster richColors position="top-right" />
       </body>
     </html>
   );
