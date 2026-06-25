@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import PetroleumLayoutClient from "./PetroleumLayoutClient";
 import { buildPageMetadata } from "@/lib/seo";
 import { PAGE_SEO } from "@/lib/seo-content";
 
@@ -10,16 +9,16 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
-  const seo = PAGE_SEO["/petroleum"];
+  const seo = PAGE_SEO["/services"];
 
   return buildPageMetadata({
     title: seo.title,
     description: seo.description,
-    path: "/petroleum",
+    path: "/services",
     locale,
   });
 }
 
-export default function PetroleumLayout({ children }: Props) {
-  return <PetroleumLayoutClient>{children}</PetroleumLayoutClient>;
+export default function ServicesLayout({ children }: Props) {
+  return children;
 }

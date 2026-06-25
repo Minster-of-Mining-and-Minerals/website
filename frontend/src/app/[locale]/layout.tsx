@@ -4,26 +4,21 @@ import ReduxProvider from "@/providers/ReduxProvider";
 import NextTopLoader from 'nextjs-toploader';
 import { NextIntlClientProvider } from 'next-intl';
 import { Toaster } from "@/components/ui/sonner";
+import { getRootMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Minstry of Mines Website",
-  description: "This is the official website of the Minstry of Mines",
-  icons: {
-    icon: [
-      { url: "/favicon.ico", sizes: "32x32" },
-      { url: "/logo-only.png", type: "image/png", sizes: "512x512" },
-    ],
-    apple: "/logo-only.png",
-  },
-};
+export const metadata: Metadata = getRootMetadata();
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
+  params,
 }: Readonly<{
   children: React.ReactNode;
+  params: Promise<{ locale: string }>;
 }>) {
+  const { locale } = await params;
+
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning>
       <body
         className={`antialiased text-primary`}
         suppressHydrationWarning

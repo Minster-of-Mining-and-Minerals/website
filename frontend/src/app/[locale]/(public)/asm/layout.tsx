@@ -1,37 +1,25 @@
-"use client";
+import type { Metadata } from "next";
+import AsmLayoutClient from "./AsmLayoutClient";
+import { buildPageMetadata } from "@/lib/seo";
+import { PAGE_SEO } from "@/lib/seo-content";
 
-import React from "react";
-import PageHeader from "@/components/pages/home-page-components/PageHeader";
-import { Quote } from "lucide-react";
+type Props = {
+  children: React.ReactNode;
+  params: Promise<{ locale: string }>;
+};
 
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const seo = PAGE_SEO["/asm"];
 
+  return buildPageMetadata({
+    title: seo.title,
+    description: seo.description,
+    path: "/asm",
+    locale,
+  });
+}
 
-
-export default function Layout({
-    children,
-}: {
-    children: React.ReactNode;
-}) {
-
-
-
-
-    return (
-        <>
-            {/* Hero / Page Header (shared across all administration pages) */}
-            <PageHeader
-                title="Artisanal and Small Scale Mining"
-                icon={<Quote />}
-                description="Artisanal and Small Scale Mining"
-            />
-
-            <section className="mx-auto">
-                {/* RIGHT MAIN CONTENT (route content) */}
-                <div className="w-full">
-                    {/* Route-specific content renders here */}
-                    <div className="prose max-w-none ">{children}</div>
-                </div>
-            </section>
-        </>
-    );
+export default function AsmLayout({ children }: Props) {
+  return <AsmLayoutClient>{children}</AsmLayoutClient>;
 }
