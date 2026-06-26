@@ -1,6 +1,7 @@
 "use client";
 
-import { ArrowRight, Loader2 } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import { FeaturedCarouselSkeleton } from "@/components/skeletons";
 import { useEffect, useState } from "react";
 import clsx from "clsx";
 import { Button } from "../../ui/button";
@@ -52,11 +53,7 @@ export default function LatestNewsSection() {
     }, [newsItems.length]);
 
     if (isLoading) {
-        return (
-            <div className="w-full py-20 flex items-center justify-center">
-                <Loader2 className="w-8 h-8 animate-spin text-golden-dark" />
-            </div>
-        );
+        return <FeaturedCarouselSkeleton />;
     }
 
     if (newsItems.length === 0) return null;

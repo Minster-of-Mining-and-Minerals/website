@@ -5,6 +5,7 @@ import Marquee from "react-fast-marquee";
 
 import { useGetPartnersQuery } from "@/redux/api/partnerApi";
 import { getImageUrl } from "@/utils/fileUrl";
+import { PartnersSkeleton } from "@/components/skeletons";
 
 type PartnersSectionProps = {
     speed?: number; // higher = faster (react-fast-marquee logic)
@@ -44,11 +45,7 @@ const PartnersSection: React.FC<PartnersSectionProps> = ({ speed = 50 }) => {
 
     // Show loading state
     if (isLoading) {
-        return (
-            <div className="w-full max-w-7xl flex items-center justify-center py-20">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-golden-dark"></div>
-            </div>
-        );
+        return <PartnersSkeleton />;
     }
 
     // Don't render if no logos or no header data is available

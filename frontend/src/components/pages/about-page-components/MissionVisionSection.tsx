@@ -3,7 +3,8 @@ import { useGetStrategiesQuery } from "@/redux/api/strategyApi";
 import InfoCard from "./InfoCard";
 import { getImageUrl } from "@/utils/fileUrl";
 import PublicEmptyState from "@/components/common/PublicEmptyState";
-import { Loader2, Target } from "lucide-react";
+import { Target } from "lucide-react";
+import { AboutSectionsSkeleton } from "@/components/skeletons";
 import { useTranslations } from "next-intl";
 
 const splitTitle = (title = "") => {
@@ -34,11 +35,7 @@ export default function VisionMissionValues() {
     const coreValuesSection = strategy?.sections?.find(s => s.type === "core_values");
 
     if (isLoading) {
-        return (
-            <div className="flex justify-center items-center min-h-[400px]">
-                <Loader2 className="h-10 w-10 animate-spin text-golden-dark" />
-            </div>
-        );
+        return <AboutSectionsSkeleton />;
     }
 
     if (error || !strategy) {

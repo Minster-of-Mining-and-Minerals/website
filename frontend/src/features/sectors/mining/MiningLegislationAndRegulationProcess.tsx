@@ -4,6 +4,7 @@ import { CheckCircle, Download, FileText, Scale } from "lucide-react";
 import { useGetMiningRegulationProcessesQuery } from "@/redux/api/miningRegulationProcessApi";
 import { getFileUrl, getImageUrl } from "@/utils/fileUrl";
 import PublicEmptyState from "@/components/common/PublicEmptyState";
+import { ResourcePageSkeleton } from "@/components/skeletons";
 import { useTranslations } from "next-intl";
 
 // Helper function for formatting bytes
@@ -31,8 +32,8 @@ const MiningLegislationAndRegulationProcess = () => {
 
     if (isLoading) {
         return (
-            <div className="container mx-auto py-12 flex justify-center items-center min-h-[400px]">
-                <div className="text-gray-500 animate-pulse">Loading mining legislation data...</div>
+            <div className="container mx-auto py-12">
+                <ResourcePageSkeleton />
             </div>
         );
     }

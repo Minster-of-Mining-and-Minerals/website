@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Button } from "../../ui/button";
 import { useGetCardsQuery } from "@/redux/api/cardApi";
 import { getImageUrl } from "@/utils/fileUrl";
+import { CardBannerSkeleton } from "@/components/skeletons";
 
 interface CardData {
     title: string;
@@ -33,13 +34,7 @@ const CardSection = () => {
 
     // Show loading state
     if (isLoading) {
-        return (
-            <section className="w-full flex justify-center md:px-4 mb-20">
-                <div className="relative w-full max-w-7xl md:rounded-3xl overflow-hidden shadow-xl bg-gray-200 h-64 flex items-center justify-center">
-                    <p className="text-gray-600">Loading...</p>
-                </div>
-            </section>
-        );
+        return <CardBannerSkeleton />;
     }
 
     // Don't render if no card data is available

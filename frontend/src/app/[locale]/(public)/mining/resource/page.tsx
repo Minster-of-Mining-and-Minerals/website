@@ -3,7 +3,8 @@
 import React, { useMemo, useState } from 'react';
 import { useGetResourcesQuery, useRecordResourceAccessMutation } from '@/redux/api/resourceApi';
 import PublicEmptyState from '@/components/common/PublicEmptyState';
-import { Loader2, FolderOpen } from 'lucide-react';
+import { FolderOpen } from 'lucide-react';
+import { ResourcePageSkeleton } from '@/components/skeletons';
 import { useTranslations } from 'next-intl';
 import { getAttachmentUrl } from '@/utils/fileUrl';
 
@@ -155,11 +156,7 @@ const ResourcePage = () => {
     };
 
     if (isLoading) {
-        return (
-            <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6 flex items-center justify-center">
-                <Loader2 className="h-10 w-10 animate-spin text-golden-dark" />
-            </div>
-        );
+        return <ResourcePageSkeleton />;
     }
 
     if (error) {

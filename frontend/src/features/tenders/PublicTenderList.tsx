@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Calendar, FileText, ExternalLink, Loader2 } from "lucide-react";
+import { Calendar, FileText, ExternalLink } from "lucide-react";
+import { TenderVacancyListSkeleton } from "@/components/skeletons";
 import PublicEmptyState from "@/components/common/PublicEmptyState";
 import { OpportunityStatusBadge } from "@/components/common/OpportunityStatusBadge";
 import { useGetTendersQuery } from "@/redux/api/tenderApi";
@@ -13,11 +14,7 @@ export default function PublicTenderList() {
   const t = useTranslations("empty_state");
 
   if (isLoading) {
-    return (
-      <div className="flex justify-center py-16">
-        <Loader2 className="h-8 w-8 animate-spin text-golden-dark" />
-      </div>
-    );
+    return <TenderVacancyListSkeleton />;
   }
 
   if (isError) {

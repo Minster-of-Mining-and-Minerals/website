@@ -1,6 +1,7 @@
 "use client";
 
-import { MapPin, Loader2 } from "lucide-react";
+import { MapPin } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useGetFederalOfficesQuery } from "@/redux/api/federalOfficeApi";
 
 const MapSection = () => {
@@ -34,9 +35,7 @@ const MapSection = () => {
     if (isLoading) {
         return (
             <section className="container max-w-7xl mx-auto px-4 py-16">
-                <div className="flex justify-center items-center min-h-[300px]">
-                    <Loader2 className="w-8 h-8 animate-spin text-golden-dark" />
-                </div>
+                <Skeleton className="h-72 w-full rounded-2xl" />
             </section>
         );
     }

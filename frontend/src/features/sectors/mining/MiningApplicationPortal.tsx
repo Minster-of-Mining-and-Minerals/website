@@ -8,6 +8,7 @@ import { useGetMiningApplicationProcessesQuery } from '@/redux/api/miningApplica
 import * as LucideIcons from 'lucide-react';
 import { getImageUrl } from '@/utils/fileUrl';
 import PublicEmptyState from '@/components/common/PublicEmptyState';
+import { SectorSnapshotSkeleton } from '@/components/skeletons';
 import { useTranslations } from 'next-intl';
 
 const DynamicIcon = ({ name, className }: { name: string; className?: string }) => {
@@ -110,14 +111,7 @@ const MiningApplicationPortal = () => {
     const t = useTranslations("empty_state");
 
     if (isLoading) {
-        return (
-            <div className='min-h-screen flex items-center justify-center bg-gray-50'>
-                <div className='text-center'>
-                    <LucideIcons.Loader2 className='w-12 h-12 text-golden-dark animate-spin mx-auto mb-4' />
-                    <p className='text-gray-600 font-medium'>Loading application portal...</p>
-                </div>
-            </div>
-        );
+        return <SectorSnapshotSkeleton />;
     }
 
     const process = records && records.length > 0 ? records[0] : null;

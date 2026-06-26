@@ -9,7 +9,6 @@ import {
     Gem,
     Download,
     FileIcon,
-    Loader2,
     ChevronRight,
     ChevronDown,
     Eye,
@@ -21,6 +20,7 @@ import {
 import { useGetGamestoneByIdQuery } from "@/redux/api/gamestoneApi";
 import { Gamestone } from "@/redux/types/gamestone";
 import { getFileUrl, getImageUrl } from "@/utils/fileUrl";
+import { GemstoneDetailSkeleton } from "@/components/skeletons";
 
 const DESCRIPTION_COLLAPSED_HEIGHT = 72; // ~4.5rem
 
@@ -312,17 +312,7 @@ export default function GemstoneDetailPage() {
 
     /* Loading State */
     if (isLoading) {
-        return (
-            <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
-                <div className="flex items-center justify-center min-h-[60vh]">
-                    <div className="text-center">
-                        <Loader2 className="w-12 h-12 animate-spin text-amber-600 mx-auto mb-4" />
-                        <p className="text-gray-600 font-medium">Loading gemstone details...</p>
-                        <p className="text-sm text-gray-400 mt-1">Please wait while we fetch the information</p>
-                    </div>
-                </div>
-            </div>
-        );
+        return <GemstoneDetailSkeleton />;
     }
 
     /* Error State */

@@ -6,8 +6,8 @@ import * as LucideIcons from 'lucide-react';
 import {
     Briefcase,
     ExternalLink,
-    Loader2,
 } from 'lucide-react';
+import { InvestPageSkeleton } from '@/components/skeletons';
 import { useGetInvestigateEthiopiasQuery } from '@/redux/api/investigateEthiopiaApi';
 import { getImageUrl } from '@/utils/fileUrl';
 import PublicEmptyState from '@/components/common/PublicEmptyState';
@@ -24,11 +24,7 @@ const InvestigatingInEthiopiaPage = () => {
     const t = useTranslations("empty_state");
 
     if (isLoading) {
-        return (
-            <div className="flex min-h-screen items-center justify-center">
-                <Loader2 className="w-10 h-10 animate-spin text-golden-dark" />
-            </div>
-        );
+        return <InvestPageSkeleton />;
     }
 
     const data = records && records.length > 0 ? records[0] : null;

@@ -2,7 +2,8 @@
 
 import React, { useMemo } from "react";
 import { useGetPetroleumProcessesQuery } from "@/redux/api/petroleumProcessApi";
-import { Loader2, FileText } from "lucide-react";
+import { FileText } from "lucide-react";
+import { ResourcePageSkeleton } from "@/components/skeletons";
 import { getFileUrl, getImageUrl } from "@/utils/fileUrl";
 import PublicEmptyState from "@/components/common/PublicEmptyState";
 import { useTranslations } from "next-intl";
@@ -31,11 +32,7 @@ export default function PetroleumApplicationProcess() {
     }, [process_steps]);
 
     if (isLoading) {
-        return (
-            <div className="flex h-[50vh] items-center justify-center">
-                <Loader2 className="h-8 w-8 animate-spin text-[#094C81]" />
-            </div>
-        );
+        return <ResourcePageSkeleton />;
     }
 
     if (!publishedProcess) {

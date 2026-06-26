@@ -12,6 +12,8 @@ import { getImageUrl } from "@/utils/fileUrl";
 import { formatDate, formatTimeShort } from "@/utils/datetime";
 import PublicEmptyState from "@/components/common/PublicEmptyState";
 import { useTranslations } from "next-intl";
+import { SkeletonMediaCard, TagFilterSkeleton } from "@/components/skeletons";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const EventsPage = () => {
     const { data: eventsData = [], isLoading, isError } = useGetEventsQuery({ status: "published" });
@@ -27,6 +29,31 @@ const EventsPage = () => {
     const filteredEvents = activeCategory === "All Events"
         ? eventsData
         : eventsData.filter((item: any) => item.category?.name === activeCategory);
+
+    if (isLoading) {
+        return (
+            <>
+                <PageHeader
+                    title="Events"
+                    icon={<Calendar />}
+                    description="Events and schedules from the Ministry of Mines"
+                />
+                <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                    <div className="mb-8 space-y-4">
+                        <Skeleton className="h-9 w-32" />
+                        <Skeleton className="h-1 w-12 rounded-full" />
+                        <Skeleton className="h-4 w-full max-w-2xl" />
+                    </div>
+                    <TagFilterSkeleton />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {Array.from({ length: 6 }).map((_, index) => (
+                            <SkeletonMediaCard key={index} />
+                        ))}
+                    </div>
+                </section>
+            </>
+        );
+    }
 
     return (
         <>

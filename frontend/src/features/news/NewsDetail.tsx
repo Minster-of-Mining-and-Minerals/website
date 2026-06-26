@@ -10,6 +10,7 @@ import NewsContentRenderer from "../components/NewsContentRenderer";
 import NewsDocuments from "../components/NewsDocuments";
 import NewsFeedback from "../components/NewsFeedback";
 import { formatLongDate } from "@/utils/datetime";
+import { NewsDetailSkeleton } from "@/components/skeletons";
 
 const NewsDetail = () => {
     const params = useParams();
@@ -29,7 +30,7 @@ const NewsDetail = () => {
         return () => clearTimeout(timer);
     }, [newsId, recordNewsRead]);
 
-    if (isLoading) return <div className="text-center py-12">Loading...</div>;
+    if (isLoading) return <NewsDetailSkeleton />;
     if (isError || !newsItem)
         return (
             <div className="min-h-screen bg-gray-50 py-12">

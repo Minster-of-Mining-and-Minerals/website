@@ -14,6 +14,7 @@ import { buildSectorTree } from "@/utils/buildSectorTree";
 import { SectorNode } from "@/redux/types/sectorNode";
 import { D3TreeNode, HierarchyD3TreeProps } from "@/types/d3treeNode";
 import { Maximize2, Minimize2 } from "lucide-react";
+import { AboutSectionsSkeleton } from "@/components/skeletons";
 import { shortenText } from "@/utils/shortenText";
 
 /* Convert SectorNode → react-d3-tree format */
@@ -127,11 +128,7 @@ const HierarchyD3Tree: React.FC<HierarchyD3TreeProps> = ({
     }, [selectedTree, isFullScreen]);
 
     if (isLoading) {
-        return (
-            <div className="flex justify-center items-center min-h-[400px]">
-                Loading hierarchy…
-            </div>
-        );
+        return <AboutSectionsSkeleton />;
     }
 
     if (!selectedTree) {

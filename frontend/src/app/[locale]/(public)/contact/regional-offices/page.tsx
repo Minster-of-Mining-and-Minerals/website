@@ -7,8 +7,8 @@ import {
     Phone,
     Mail,
     Building2,
-    Loader2
 } from "lucide-react";
+import { RegionalOfficesSkeleton } from "@/components/skeletons";
 import { useGetRegionalOfficesQuery } from "@/redux/api/regionalOfficeApi";
 import { useGetRegionsQuery } from "@/redux/api/regionApi";
 import { RegionalOfficeContactCenter } from "@/redux/types/regionalOffice";
@@ -84,12 +84,7 @@ const RegionalOfficesPage = () => {
     if (officesLoading || regionsLoading) {
         return (
             <section className="container max-w-7xl mx-auto px-4 py-12">
-                <div className="flex justify-center items-center min-h-[400px]">
-                    <div className="text-center">
-                        <Loader2 className="w-12 h-12 animate-spin text-golden-dark mx-auto mb-4" />
-                        <p className="text-gray-600">Loading regional offices...</p>
-                    </div>
-                </div>
+                <RegionalOfficesSkeleton />
             </section>
         );
     }

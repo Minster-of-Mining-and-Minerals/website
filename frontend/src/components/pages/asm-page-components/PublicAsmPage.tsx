@@ -9,8 +9,8 @@ import {
     Cpu,
     Gem,
     HandIcon,
-    Loader2
 } from "lucide-react";
+import { AsmPageSkeleton } from "@/components/skeletons";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useGetASMsQuery } from "@/redux/api/asmApi";
@@ -31,12 +31,7 @@ const PublicAsmPage = () => {
     const asm = asms[0];
 
     if (isLoading) {
-        return (
-            <div className="flex flex-col items-center justify-center py-20 gap-4 min-h-[400px]">
-                <Loader2 className="h-8 w-8 animate-spin text-teal-600" />
-                <p className="text-gray-500 animate-pulse">Loading ASM data...</p>
-            </div>
-        );
+        return <AsmPageSkeleton />;
     }
 
     if (!asm) {

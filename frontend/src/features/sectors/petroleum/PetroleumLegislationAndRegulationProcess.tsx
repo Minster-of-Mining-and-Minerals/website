@@ -3,6 +3,7 @@ import React from "react";
 import { FileText, Download } from "lucide-react";
 import { useGetPetroleumRegulationProcessesQuery } from "@/redux/api/petroleumRegulationProcessApi";
 import { getFileUrl } from "@/utils/fileUrl";
+import { ResourcePageSkeleton } from "@/components/skeletons";
 
 const PetroleumLegislationAndRegulationProcess = () => {
     const { data: processes, isLoading, error } = useGetPetroleumRegulationProcessesQuery({ published: true });
@@ -12,8 +13,8 @@ const PetroleumLegislationAndRegulationProcess = () => {
 
     if (isLoading) {
         return (
-            <div className="container mx-auto py-12 flex justify-center items-center min-h-[400px]">
-                <div className="text-gray-500">Loading legislation data...</div>
+            <div className="container mx-auto py-12">
+                <ResourcePageSkeleton />
             </div>
         );
     }

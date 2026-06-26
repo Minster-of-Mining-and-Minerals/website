@@ -3,7 +3,8 @@
 import React, { useState } from "react";
 import { useGetPetroleumObjectivesQuery } from "@/redux/api/petroleumObjectiveApi";
 import { getImageUrl } from "@/utils/fileUrl";
-import { Loader2, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { SectorSnapshotSkeleton } from "@/components/skeletons";
 import PublicEmptyState from "@/components/common/PublicEmptyState";
 import { useTranslations } from "next-intl";
 
@@ -109,12 +110,7 @@ const PetroleumObjectivePage = () => {
     const t = useTranslations("empty_state");
 
     if (isLoading) {
-        return (
-            <div className="flex flex-col items-center justify-center py-40 space-y-4">
-                <Loader2 className="h-10 w-10 animate-spin text-[#094C81]" />
-                <p className="text-gray-500 animate-pulse">Loading petroleum insights...</p>
-            </div>
-        );
+        return <SectorSnapshotSkeleton />;
     }
 
     // Split data into headline and others

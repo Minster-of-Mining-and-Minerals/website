@@ -7,6 +7,7 @@ import { useGetServicesQuery } from "@/redux/api/serviceApi";
 import { Service } from "@/redux/types/service";
 import PublicEmptyState from "@/components/common/PublicEmptyState";
 import { useTranslations } from "next-intl";
+import { ServicesGridSkeleton } from "@/components/skeletons";
 
 const ServicesList = () => {
     const { data: apiData = [], isLoading, isError } = useGetServicesQuery();
@@ -20,7 +21,7 @@ const ServicesList = () => {
     }, [apiData]);
 
     if (isLoading) {
-        return <p className="text-center py-10">Loading services...</p>;
+        return <ServicesGridSkeleton />;
     }
 
     if (isError) {

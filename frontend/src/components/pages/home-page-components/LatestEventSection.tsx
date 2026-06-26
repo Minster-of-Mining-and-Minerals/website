@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { ArrowRight, Loader2, Calendar as CalendarIcon, Clock, MapPin } from "lucide-react";
+import { ArrowRight, Calendar as CalendarIcon, Clock, MapPin } from "lucide-react";
+import { FeaturedCarouselSkeleton } from "@/components/skeletons";
 import { useEffect, useState } from "react";
 import clsx from "clsx";
 import { Button } from "../../ui/button";
@@ -87,11 +88,7 @@ export default function LatestEventSection() {
     }, [eventItems.length]);
 
     if (isLoading) {
-        return (
-            <div className="w-full py-20 flex items-center justify-center">
-                <Loader2 className="w-8 h-8 animate-spin text-golden-dark" />
-            </div>
-        );
+        return <FeaturedCarouselSkeleton />;
     }
 
     if (eventItems.length === 0) return null;

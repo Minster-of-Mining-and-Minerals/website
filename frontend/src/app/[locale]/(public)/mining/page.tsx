@@ -1,7 +1,7 @@
 "use client";
 import { useGetSnapshotsQuery } from "@/redux/api/snapshotApi";
 import { getImageUrl } from "@/utils/fileUrl";
-import { Loader2 } from "lucide-react";
+import { SectorSnapshotSkeleton } from "@/components/skeletons";
 import PublicEmptyState from "@/components/common/PublicEmptyState";
 import { useTranslations } from "next-intl";
 
@@ -13,12 +13,7 @@ const MiningPage = () => {
     const snapshot = snapshots[0];
 
     if (isLoading) {
-        return (
-            <div className="flex flex-col items-center justify-center py-20 gap-4 min-h-[400px]">
-                <Loader2 className="h-8 w-8 animate-spin text-golden-dark" />
-                <p className="text-gray-500 animate-pulse">Loading mining sector data...</p>
-            </div>
-        );
+        return <SectorSnapshotSkeleton />;
     }
 
     if (!snapshot) {

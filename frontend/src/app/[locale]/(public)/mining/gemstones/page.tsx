@@ -1,7 +1,8 @@
 "use client";
 import React, { useState, useMemo } from "react";
 import Link from "next/link";
-import { Search, Sparkles, Gem, MapPin, Filter, ChevronDown, Loader2, Calendar } from "lucide-react";
+import { Search, Sparkles, Gem, MapPin, Filter, ChevronDown, Calendar } from "lucide-react";
+import { GemstonesListSkeleton } from "@/components/skeletons";
 import { useGetGamestonesQuery } from "@/redux/api/gamestoneApi";
 import { Gamestone } from "@/redux/types/gamestone";
 import { getFileUrl, getImageUrl } from "@/utils/fileUrl";
@@ -101,12 +102,7 @@ const GemstonesPage = () => {
             </div>
 
             {/* Content */}
-            {isLoading && (
-                <div className="flex items-center justify-center py-28">
-                    <Loader2 className="w-8 h-8 animate-spin text-golden-dark" />
-                    <span className="ml-3 text-gray-500">Loading gemstones...</span>
-                </div>
-            )}
+            {isLoading && <GemstonesListSkeleton />}
 
             {isError && (
                 <div className="text-center py-20 bg-white rounded-xl border border-red-100">

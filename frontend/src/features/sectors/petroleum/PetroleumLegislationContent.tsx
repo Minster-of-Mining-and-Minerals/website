@@ -2,7 +2,8 @@
 
 import React, { useMemo } from "react";
 import { useGetPetroleumRegulationProcessesQuery } from "@/redux/api/petroleumRegulationProcessApi";
-import { Loader2, ChevronRight, ExternalLink, BookOpen, FileText, List, Scale } from "lucide-react";
+import { ChevronLeft, ChevronRight, ExternalLink, BookOpen, FileText, List, Scale } from "lucide-react";
+import { ResourcePageSkeleton } from "@/components/skeletons";
 import { getFileUrl } from "@/utils/fileUrl";
 import PublicEmptyState from "@/components/common/PublicEmptyState";
 import { useTranslations } from "next-intl";
@@ -214,11 +215,7 @@ export default function PetroleumLegislationContent() {
     const publishedProcess = useMemo(() => data[0] ?? null, [data]);
 
     if (isLoading) {
-        return (
-            <div className="flex h-32 items-center justify-center">
-                <Loader2 className="h-7 w-7 animate-spin text-[#094C81]" />
-            </div>
-        );
+        return <ResourcePageSkeleton />;
     }
 
     if (!publishedProcess) {

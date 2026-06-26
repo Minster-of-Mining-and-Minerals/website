@@ -2,7 +2,8 @@
 
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Calendar, Download, Loader2, MapPin, Users } from "lucide-react";
+import { ArrowLeft, Calendar, Download, MapPin, Users } from "lucide-react";
+import { TenderVacancyDetailSkeleton } from "@/components/skeletons";
 import { useGetVacancyByIdQuery } from "@/redux/api/vacancyApi";
 import { OpportunityStatusBadge } from "@/components/common/OpportunityStatusBadge";
 import NewsContentRenderer from "@/features/components/NewsContentRenderer";
@@ -21,11 +22,7 @@ export default function VacancyDetail() {
   );
 
   if (isLoading) {
-    return (
-      <div className="flex justify-center py-16">
-        <Loader2 className="h-8 w-8 animate-spin text-golden-dark" />
-      </div>
-    );
+    return <TenderVacancyDetailSkeleton />;
   }
 
   if (isError || !vacancy) {

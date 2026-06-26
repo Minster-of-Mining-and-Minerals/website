@@ -4,7 +4,8 @@ import { useGetLeadershipsQuery } from "@/redux/api/leadershipApi";
 import HierarchyNode from "./HierarchyNode";
 import { buildLeadershipTree } from "@/utils/buildLeadershipTree";
 import PublicEmptyState from "@/components/common/PublicEmptyState";
-import { Loader2, Users } from "lucide-react";
+import { AboutSectionsSkeleton } from "@/components/skeletons";
+import { Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 export default function LeadershipSection() {
@@ -12,11 +13,7 @@ export default function LeadershipSection() {
     const t = useTranslations("empty_state");
 
     if (isLoading) {
-        return (
-            <div className="flex flex-col items-center justify-center py-20 gap-4 min-h-[400px]">
-                <Loader2 className="h-8 w-8 animate-spin text-golden-dark" />
-            </div>
-        );
+        return <AboutSectionsSkeleton />;
     }
 
     if (isError || !data) {

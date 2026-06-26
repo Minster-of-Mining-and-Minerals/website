@@ -3,6 +3,7 @@
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { CheckCircle2, Mail, MapPin, Phone, Send, Loader2 } from 'lucide-react';
+import { ContactPageSkeleton } from '@/components/skeletons';
 import { useGetFederalOfficesQuery } from '@/redux/api/federalOfficeApi';
 import { useCreateMessageMutation } from '@/redux/api/messageApi';
 import { useState } from "react";
@@ -55,11 +56,7 @@ const ContactForm = () => {
     };
 
     if (isLoading) {
-        return (
-            <div className="flex justify-center items-center min-h-[400px]">
-                <Loader2 className="w-8 h-8 animate-spin text-golden-dark" />
-            </div>
-        );
+        return <ContactPageSkeleton />;
     }
 
     return (

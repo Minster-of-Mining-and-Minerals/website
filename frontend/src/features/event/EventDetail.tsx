@@ -9,6 +9,7 @@ import EventMediaGallery from "./components/EventMediaGallery";
 import NewsContentRenderer from "@/features/components/NewsContentRenderer";
 import NewsDocuments from "../components/NewsDocuments";
 import EventLeftSide from "@/components/pages/events-page-components/EventLeftSide";
+import { EventDetailSkeleton } from "@/components/skeletons";
 // import EventLeftSide from "@/components/pages/events-page-components/EventLeftSide";
 // import NewsDocuments from "@/features/news/components/NewsDocuments";
 
@@ -19,7 +20,7 @@ const EventDetail = () => {
         skip: !eventId
     });
 
-    if (isLoading) return <div className="text-center py-12">Loading...</div>;
+    if (isLoading) return <EventDetailSkeleton />;
     
     if (isError || !eventItem) {
         return (

@@ -10,6 +10,7 @@ import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useGetSlidersQuery } from "@/redux/api/sliderApi";
 import { getImageUrl } from "@/utils/fileUrl";
+import { HeroSectionSkeleton } from "@/components/skeletons";
 
 // Define a type for multi-language text
 type LocalizedText = {
@@ -141,17 +142,7 @@ export default function HeroSection() {
     }, [current, slides.length]);
 
     if (isLoading) {
-        return (
-            <div className="relative w-full h-[80vh] overflow-hidden bg-black flex items-center justify-center">
-                <motion.div 
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="text-white"
-                >
-                    Loading...
-                </motion.div>
-            </div>
-        );
+        return <HeroSectionSkeleton />;
     }
 
     if (slides.length === 0) return null;
