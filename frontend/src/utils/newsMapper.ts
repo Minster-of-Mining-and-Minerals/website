@@ -5,19 +5,34 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_BASE;
 export const extractExcerpt = (content: any, maxLength = 160) => {
     if (!content) return "";
 
+    let parsedContent = content;
+
+    // Handle stringified Quill Delta JSON from the API
+    if (
+        typeof parsedContent === "string" &&
+        parsedContent.trim().startsWith("{") &&
+        parsedContent.includes('"ops"')
+    ) {
+        try {
+            parsedContent = JSON.parse(parsedContent);
+        } catch {
+            // fall through to plain string handling
+        }
+    }
+
     let text = "";
 
     // Handle Quill Delta
-    if (content?.ops) {
-        text = content.ops
+    if (parsedContent?.ops) {
+        text = parsedContent.ops
             .map((op: any) => (typeof op.insert === "string" ? op.insert : ""))
             .join(" ")
             .replace(/\s+/g, " ")
             .trim();
     }
     // Handle HTML or plain text string
-    else if (typeof content === "string") {
-        text = content
+    else if (typeof parsedContent === "string") {
+        text = parsedContent
             .replace(/<[^>]*>/g, " ") // Strip HTML tags
             .replace(/&nbsp;/g, " ")  // Replace non-breaking spaces
             .replace(/&amp;/g, "&")   // Replace ampersands

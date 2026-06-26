@@ -1,12 +1,12 @@
 "use client";
 
-import Image from "next/image";
 import { ArrowRight, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import clsx from "clsx";
 import { Button } from "../../ui/button";
 import { useGetNewsQuery } from "@/redux/api/newsApi";
 import { getImageUrl } from "@/utils/fileUrl";
+import { extractExcerpt } from "@/utils/newsMapper";
 import Link from "next/link";
 import { formatDate } from "@/utils/datetime";
 
@@ -16,16 +16,6 @@ type NewsItem = {
     description: string;
     image: string;
     date: string;
-};
-
-// Helper to extract plain text from Quill Delta
-const deltaToPlainText = (delta: any): string => {
-    if (!delta || !Array.isArray(delta.ops)) return "";
-    return delta.ops
-        .filter((op: any) => typeof op.insert === "string")
-        .map((op: any) => op.insert)
-        .join("")
-        .trim();
 };
 
 export default function LatestNewsSection() {
@@ -42,7 +32,7 @@ export default function LatestNewsSection() {
                 return {
                     id: n.news_id,
                     title: n.title,
-                    description: deltaToPlainText(n.content).substring(0, 200) + "...",
+                    description: extractExcerpt(n.content, 200),
                     image: headlineAttachment?.file_path ? getImageUrl(headlineAttachment, "large") : "/placeholder-news.jpg",
                     date: formatDate(n.created_at),
                 };
