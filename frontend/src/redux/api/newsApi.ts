@@ -1,14 +1,54 @@
 import { baseApi } from "../baseApi";
-import { News, CreateNewsPayload, UpdateNewsPayload, NewsReactionPayload, NewsReadPayload, NewsFeedback, CreateNewsFeedbackPayload } from "../types/news";
+import {
+    News,
+    CreateNewsPayload,
+    UpdateNewsPayload,
+    NewsReactionPayload,
+    NewsReadPayload,
+    NewsFeedback,
+    CreateNewsFeedbackPayload,
+    PaginatedNewsQueryArgs,
+    PaginatedNewsResponse,
+} from "../types/news";
 
 export const newsApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         /** ---------------------------
-         * GET ALL NEWS
+         * GET ALL NEWS (flat list)
          * --------------------------- */
         getNews: builder.query<News[], { search?: string; tag?: string; status?: string; isAdmin?: boolean } | void>({
             query: (params) => (params ? { url: "/news", params } : { url: "/news" }),
             transformResponse: (response: any): News[] => response.data ?? [],
+            providesTags: ["News"],
+        }),
+
+        /** ---------------------------
+         * GET PAGINATED NEWS
+         * Returns items + pagination metadata. Used by the public news
+         * listing page (URL-driven `?page=&tag=`).
+         * --------------------------- */
+        getPaginatedNews: builder.query<PaginatedNewsResponse, PaginatedNewsQueryArgs | void>({
+            query: (args) => {
+                const params: Record<string, string | number | boolean> = {
+                    page: args?.page ?? 1,
+                    limit: args?.limit ?? 9,
+                };
+                if (args?.search) params.search = args.search;
+                if (args?.tag) params.tag = args.tag;
+                if (args?.status) params.status = args.status;
+                if (args?.isAdmin) params.isAdmin = args.isAdmin;
+
+                return { url: "/news", params };
+            },
+            transformResponse: (response: any): PaginatedNewsResponse => ({
+                items: response.data ?? [],
+                pagination: response.pagination ?? {
+                    total: response.data?.length ?? 0,
+                    page: 1,
+                    limit: response.data?.length ?? 0,
+                    totalPages: 1,
+                },
+            }),
             providesTags: ["News"],
         }),
 
@@ -139,6 +179,7 @@ export const newsApi = baseApi.injectEndpoints({
 
 export const {
     useGetNewsQuery,
+    useGetPaginatedNewsQuery,
     useGetNewsByIdQuery,
     useCreateNewsMutation,
     useUpdateNewsMutation,

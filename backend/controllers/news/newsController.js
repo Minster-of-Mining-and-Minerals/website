@@ -97,6 +97,11 @@ const createNews = async (req, res) => {
 
 /* ===========================
 // GET ALL NEWS
+// - Supports optional pagination via `page` + `limit`. When neither is
+//   provided, the old flat response is preserved so callers that consume
+//   the whole list (admin dashboards, "latest news" widgets) keep working.
+// - Fixes the tag filter: the previous version pushed a second include
+//   for `tag_links` which duplicated the association instead of narrowing.
 // =========================== */
 const getAllNews = async (req, res) => {
     try {
@@ -104,22 +109,32 @@ const getAllNews = async (req, res) => {
 
         const whereClause = { deleted_at: null };
         if (search) {
-            whereClause.title = { [Op.like]: `%${search}%` };
+            whereClause.title = { [Op.iLike]: `%${search}%` };
         }
 
-        // Status Filtering Logic
         if (isAdmin === "true") {
             if (status) {
                 whereClause.status = status;
             }
-            // If no status is provided, admin sees everything (draft, published, archived)
         } else {
-            // Public Side: Only Published and not scheduled for future
             whereClause.status = "published";
             whereClause.published_at = {
                 [Op.lte]: new Date(),
             };
         }
+
+        const tagLinkInclude = {
+            model: NewsTag,
+            as: "tag_links",
+            include: [
+                {
+                    model: Tag,
+                    as: "tag",
+                    ...(tag ? { where: { name: tag }, required: true } : {}),
+                },
+            ],
+            ...(tag ? { required: true } : {}),
+        };
 
         const includeClause = [
             {
@@ -130,24 +145,42 @@ const getAllNews = async (req, res) => {
             { model: NewsMetadata, as: "metadata" },
             { model: NewsReaction, as: "reactions" },
             { model: NewsRead, as: "reads" },
-            {
-                model: NewsTag,
-                as: "tag_links",
-                include: [{ model: Tag, as: "tag" }],
-            },
+            tagLinkInclude,
         ];
 
-        if (tag) {
-            includeClause.push({
-                model: NewsTag,
-                as: "tag_links",
-                include: [
-                    {
-                        model: Tag,
-                        as: "tag",
-                        where: { name: tag },
-                    },
-                ],
+        const hasPagination =
+            req.query.page !== undefined || req.query.limit !== undefined;
+
+        if (hasPagination) {
+            const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+            const limit = Math.min(
+                100,
+                Math.max(1, parseInt(req.query.limit, 10) || 9),
+            );
+            const offset = (page - 1) * limit;
+
+            const { count, rows } = await News.findAndCountAll({
+                where: whereClause,
+                include: includeClause,
+                order: [["created_at", "DESC"]],
+                limit,
+                offset,
+                distinct: true,
+                col: "news_id",
+            });
+
+            const totalPages = Math.max(1, Math.ceil(count / limit));
+
+            return res.status(200).json({
+                success: true,
+                message: "News fetched successfully",
+                data: rows,
+                pagination: {
+                    total: count,
+                    page,
+                    limit,
+                    totalPages,
+                },
             });
         }
 

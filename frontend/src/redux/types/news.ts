@@ -96,3 +96,24 @@ export interface CreateNewsFeedbackPayload {
     fullname: string;
     thought: string;
 }
+
+export interface NewsPagination {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+}
+
+export interface PaginatedNewsResponse {
+    items: News[];
+    pagination: NewsPagination;
+}
+
+export interface PaginatedNewsQueryArgs {
+    page?: number;
+    limit?: number;
+    search?: string;
+    tag?: string;
+    status?: string;
+    isAdmin?: boolean;
+}
