@@ -13,6 +13,7 @@
     "seed": "sequelize-cli db:seed:all",
     "seed:production": "sequelize-cli db:seed --seed 20260622130000-seed-production-permissions.js",
     "seed:undo": "sequelize-cli db:seed:undo:all",
+    "admin": "sequelize-cli db:seed --seed admin-seeder.js",
     "reprocess-attachments": "node scripts/reprocess-attachments.js",
     "db:export": "node scripts/db-export.js",
     "db:import": "node scripts/db-import.js",
