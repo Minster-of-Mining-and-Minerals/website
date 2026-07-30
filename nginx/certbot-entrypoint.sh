@@ -4,8 +4,6 @@
 # - Waits for Nginx to be ready before issuing
 # - Runs a renewal loop every 12 hours after that
 
-set -e
-
 DOMAIN="${CERTBOT_DOMAIN:-www.mom.gov.et}"
 EMAIL="${CERTBOT_EMAIL}"
 CERT_PATH="/etc/letsencrypt/live/${DOMAIN}/fullchain.pem"
@@ -51,7 +49,7 @@ fi
 echo "[certbot] Starting auto-renewal loop (checks every 12 hours)..."
 trap exit TERM
 while :; do
-    certbot renew
+    certbot renew || echo "[certbot] Renewal attempt failed. Will retry in 12 hours."
     sleep 12h &
     wait ${!}
 done
