@@ -10,7 +10,7 @@ module.exports = {
     const now = new Date();
 
     // 1. Common password hash
-    const passwordHash = await bcrypt.hash("password", 10);
+    const passwordHash = await bcrypt.hash("#Admin123", 10);
 
     // 2. Insert Admin User
     await queryInterface.bulkInsert("users", [
@@ -82,7 +82,7 @@ module.exports = {
     await queryInterface.bulkDelete("role_permissions", { role_id: SUPER_ADMIN_ROLE_ID }, {});
     await queryInterface.bulkDelete("roles", { role_id: SUPER_ADMIN_ROLE_ID }, {});
     // Deleting by email as well to handle cases where the ID might have been different in previous seeds
-    await queryInterface.bulkDelete("users", { 
+    await queryInterface.bulkDelete("users", {
       [Sequelize.Op.or]: [
         { user_id: ADMIN_USER_ID },
         { email: "admin@gmail.com" }

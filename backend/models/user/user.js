@@ -65,6 +65,14 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.DATE,
         allowNull: true,
       },
+      reset_password_attempts: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0,
+      },
+      reset_password_lock_until: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
       is_active: {
         type: DataTypes.BOOLEAN,
         defaultValue: true,
